@@ -1,0 +1,6 @@
+<strong>Clone Portal</strong><br />
+Only visible when a captive portal is detected.  Clicking this will bring up the options menu for cloning the captive portal.
+<br /><br />
+<strong>Dependencies</strong><br />
+The only dependency required is curl.
+<br />

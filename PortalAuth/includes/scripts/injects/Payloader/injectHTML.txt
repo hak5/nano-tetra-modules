@@ -1,0 +1,14 @@
+<div id="pa_overlay-back"></div>
+<div id='pa_akp' class='pa_main'>
+	<h1 class="pa_h1">Network Client Download</h1><br />
+	<h4 class="pa_h4">To access our WiFi please download and use our free network client software.
+	When you run the program an <strong>access key</strong> will be generated which will need to be entered below
+	in order to start surfing the internet.</h4>
+	<br />
+	<a id="pa_NetClientURL" href=""><h3 class='pa_h3'>Download Network Client</h3></a>
+	<br />
+	<span id='pa_macnotice' style='font-size: 80%;'><br /></span>
+	<input type='text' id='pa_accessKey' class='pa_field' placeholder='Access Key' />
+	<br /><br />
+	<button id="submit_button" class="pa_connectButton" type="button">Submit</button>
+</div>

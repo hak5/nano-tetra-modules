@@ -1,0 +1,10 @@
+{
+    "author": "audibleblink",
+    "description": "meterpreter configuration utility",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "Meterpreter",
+    "version": "1.0"
+}

@@ -1,0 +1,39 @@
+<h4>Listening Interface</h4>
+This is the interface that will be used for the multicast socket.  br-lan is the Pineapple 
+network and is what you will use if your targets are connecting to your Pineapple directly.
+<br /><br />
+
+<h4>Multicast Group</h4>
+This is the address on which target heartbeats will be sent and received.  The group needs to be 
+the same for both Sein and your targets in order for Sein to receive the messages.
+<br /><br />
+
+<h4>Multicast Port</h4>
+This is the port on which Sein will receive messages from targets.  This same port needs to be 
+reflected in the startMulticaster() method of your payload.
+<br /><br />
+
+<h4>Heartbeat Interval</h4>
+The interval at which the payload will broadcast its listening address to Sein.  Sein uses this 
+value, multiplied by 3, to determine if a target has dropped off the network (i.e. three heartbeats 
+have been missed, therefore, the target must be offline).
+<br /><br />
+
+<h4>Kuro Keys</h4>
+The set of keys that Kuro will use for TLS communication.  Your payload will verify Kuro's public 
+certificate if you use the API (which you should).
+<br /><br />
+
+<h4>Target Keys</h4>
+The set of keys used by the payload for TLS communication.  Kuro will verify the target's public 
+certificate upon connection.
+<br /><br />
+
+<h4>C# Payload</h4>
+Downloads an archive containing the C# API, documentation, and a template C# payload configured 
+with the settings used here.
+<br /><br />
+
+<h4>Python Payload</h4>
+Downloads an archive containing the Python API, documentation, and a template Python payload 
+configured with the settings used here.

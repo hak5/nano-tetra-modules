@@ -1,0 +1,10 @@
+{
+    "author": "Foxtrot",
+    "description": "An easy way to generate modules.",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "Module Maker",
+    "version": "1.0"
+}

@@ -1,0 +1,10 @@
+{
+    "author": "dustbyter",
+    "description": "Base64 encoder and decoder",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "base64encdec",
+    "version": "1.0"
+}

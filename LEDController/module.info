@@ -1,0 +1,10 @@
+{
+    "author": "Foxtrot",
+    "description": "This module allows you to control LEDs.",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "LED Controller",
+    "version": "1.1"
+}

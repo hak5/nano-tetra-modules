@@ -1,0 +1,10 @@
+{
+    "author": "Whistle Master",
+    "description": "Broadcast spoofed WiFi SSIDs",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "Occupineapple",
+    "version": "1.5"
+}

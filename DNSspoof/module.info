@@ -1,0 +1,10 @@
+{
+    "author": "Whistle Master",
+    "description": "Forge replies to arbitrary DNS queries using DNSspoof",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "DNSspoof",
+    "version": "1.3"
+}

@@ -1,0 +1,10 @@
+{
+    "author": "Whistle Master",
+    "description": "SSH Key Manager",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "Key Manager",
+    "version": "1.0"
+}

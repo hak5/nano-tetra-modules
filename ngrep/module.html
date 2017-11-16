@@ -1,0 +1,258 @@
+<div class="panel panel-default" ng-controller="ngrep_Controller"><div class="panel-heading"><h4 class="panel-title pull-left">{{title}}</h4><span class="pull-right">{{version}}</span><div class="clearfix"></div></div></div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-default" ng-controller="ngrep_ControlsController">
+            <div class="panel-heading">
+				<h3 class="panel-title">Controls</h3>
+            </div>
+			<div class="panel-body">
+				<table style="width:100%">
+					<tr>
+						<td style="padding-bottom: .5em;" class="text-muted">Dependencies</td>
+            <td ng-hide="$root.status.installed" style="text-align:right;padding-bottom: .5em;"><button type="button" style="width: 90px;" class="btn btn-{{installLabel}} btn-xs" data-toggle="modal" data-target="#dependenciesInstallModal" ng-disabled="processing">{{install}}</button></td>
+            <td ng-show="$root.status.installed" style="text-align:right;padding-bottom: .5em;"><button type="button" style="width: 90px;" class="btn btn-{{installLabel}} btn-xs" data-toggle="modal" data-target="#dependenciesRemoveModal" ng-disabled="processing">{{install}}</button></td>
+					</tr>
+					<tr ng-show="$root.status.installed">
+						<td style="padding-bottom: .5em;" class="text-muted">ngrep</td>
+						<td style="text-align:right;padding-bottom: .5em;"><button type="button" style="width: 90px;" class="btn btn-{{statusLabel}} btn-xs" ng-disabled="starting" ng-click="togglengrep()">{{status}}</button></td>
+					</tr>
+				</table>
+			</div>
+
+      <div class="modal fade" id="dependenciesInstallModal" tabindex="-1" role="dialog" aria-labelledby="dependenciesModalLabel">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="dependenciesInstallModalLabel">Install dependencies</h4>
+            </div>
+            <div class="modal-body">
+              All required dependencies have to be installed first. This may take a few minutes.<br /><br />
+              Please wait, do not leave or refresh this page. Once the install is complete, this page will refresh automatically.
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-info" ng-click="handleDependencies('internal')" data-dismiss="modal">Internal</button>
+              <button type="button" class="btn btn-info" ng-hide="device == 'tetra' || sdAvailable == false" ng-click="handleDependencies('sd')" data-dismiss="modal">SD Card</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="dependenciesRemoveModal" tabindex="-1" role="dialog" aria-labelledby="dependenciesModalLabel">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="dependenciesRemoveModalLabel">Remove dependencies</h4>
+            </div>
+            <div class="modal-body">
+              All required dependencies will be removed. This may take a few minutes.<br /><br />
+              Please wait, do not leave or refresh this page. Once the remove is complete, this page will refresh automatically.
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-info" ng-click="handleDependencies()" data-dismiss="modal">Confirm</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default" ng-show="$root.status.installed" ng-controller="ngrep_OptionsController">
+    <div class="panel-heading pointer" data-toggle="collapse" data-target="#Options">
+        <h4 class="panel-title">Options</h4>
+    </div>
+    <div id="Options" class="panel-collapse collapse">
+	    <div class="panel-body">
+
+          <div class="form-group">
+              <div class="input-group">
+                  <span class="input-group-addon input-sm">Command</span>
+                  <input type="text" class="form-control input-sm" ng-model="command" placeholder="ngrep command">
+              </div>
+          </div>
+
+          <div class="form-group">
+              <div class="input-group">
+                  <span class="input-group-addon input-sm">Interface</span>
+                  <select ng-change="update()" ng-model="selectedInterface" class="form-control input-sm">
+                      <option>--</option>
+                      <option ng-repeat="interface in interfaces">{{ interface }}</option>
+                  </select>
+              </div>
+          </div>
+
+          <div class="form-group">
+              <div class="input-group">
+                <span class="input-group-addon input-sm">Profile</span>
+                <select class="form-control input-sm" ng-change="update()" ng-model="selectedProfile" >
+                  <option ng-repeat="profile in profiles track by profile.text" ng-value="profile.value">{{ profile.text }}</option>
+                </select>
+              </div>
+          </div>
+
+          <div ng-show="selectedProfile=='--'" class="form-group">
+              <div class="input-group">
+                  <span class="input-group-addon input-sm">Filter</span>
+                  <input ng-change="update()" type="text" class="form-control input-sm" ng-model="filter" placeholder="Filter">
+              </div>
+          </div>
+
+          <div ng-show="selectedProfile=='--'" class="form-group">
+              <div class="input-group">
+                  <span class="input-group-addon input-sm">Expression</span>
+                  <input ng-change="update()" type="text" class="form-control input-sm" ng-model="expression" placeholder="Match Expression">
+              </div>
+          </div>
+
+          <div class="form-group">
+              <div class="input-group">
+                <span class="input-group-addon input-sm">Format</span>
+                <select ng-change="update()" ng-model="format" class="form-control input-sm">
+                  <option>--</option>
+                  <option value="-W normal">normal</option>
+                  <option value="-W byline">byline</option>
+                  <option value="-W single">single</option>
+                  <option value="-W none">none</option>
+                </select>
+              </div>
+          </div>
+
+          <div class="form-group">
+              <div class="input-group">
+                <div class="checkbox"><label><input type="checkbox" ng-change="update()" ng-model="options.option1" ng-true-value="'-q'"> Be quiet (don't print packet reception hash marks)</label></div>
+                <div class="checkbox"><label><input type="checkbox" ng-change="update()" ng-model="options.option2" ng-true-value="'-e'"> Show empty packets</label></div>
+                <div class="checkbox"><label><input type="checkbox" ng-change="update()" ng-model="options.option3" ng-true-value="'-i'"> Ignore case</label></div>
+                <div class="checkbox"><label><input type="checkbox" ng-change="update()" ng-model="options.option4" ng-true-value="'-v'"> Invert match</label></div>
+                <div class="checkbox"><label><input type="checkbox" ng-change="update()" ng-model="options.option5" ng-true-value="'-R'"> Don't do privilege revocation logic</label></div>
+                <div class="checkbox"><label><input type="checkbox" ng-change="update()" ng-model="options.option6" ng-true-value="'-x'"> Print in alternate hexdump format</label></div>
+                <div class="checkbox"><label><input type="checkbox" ng-change="update()" ng-model="options.option7" ng-true-value="'-X'"> Interpret match expression as hexadecimal</label></div>
+                <div class="checkbox"><label><input type="checkbox" ng-change="update()" ng-model="options.option8" ng-true-value="'-w'"> Word-regex (expression must match as a word)</label></div>
+                <div class="checkbox"><label><input type="checkbox" ng-change="update()" ng-model="options.option9" ng-true-value="'-p'"> Don't go into promiscuous mode</label></div>
+                <div class="checkbox"><label><input type="checkbox" ng-change="update()" ng-model="options.option10" ng-true-value="'-t'"> Print timestamp every time a packet is matched</label></div>
+                <div class="checkbox"><label><input type="checkbox" ng-change="update()" ng-model="options.option11" ng-true-value="'-T'"> Print delta timestamp every time a packet is matched</label></div>
+                <div class="checkbox"><label><input type="checkbox" ng-change="update()" ng-model="options.option12" ng-true-value="'-M'"> Don't do multi-line match (do single-line match instead)</label></div>
+                <div class="checkbox"><label><input type="checkbox" ng-change="update()" ng-model="options.option13" ng-true-value="'-N'"> Show sub protocol number</label></div>
+              </div>
+          </div>
+
+	    </div>
+	</div>
+</div>
+
+<div class="panel panel-default" ng-show="$root.status.installed" ng-controller="ngrep_EditorController">
+    <div class="panel-heading pointer" data-toggle="collapse" data-target="#Editor">
+        <h4 class="panel-title">Editor</h4>
+    </div>
+    <div id="Editor" class="panel-collapse collapse">
+      <div class="panel-body">
+
+          <div class="form-group">
+            <div class="input-group">
+                <span class="input-group-addon input-sm">Profile</span>
+                <select class="form-control input-sm" ng-change="showProfile()" ng-model="selectedProfile" >
+                  <option ng-repeat="profile in profiles track by profile.text">{{ profile.text }}</option>
+                </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="input-group">
+                <span class="input-group-addon input-sm">Name</span>
+                <input type="text" class="form-control input-sm" ng-disabled="selectedProfile != '--'" ng-model="profileName" placeholder="New Profile name">
+            </div>
+          </div>
+
+          <div class="form-group">
+              <div class="btn-group pull-right">
+                <button class="btn btn-{{saveProfileLabel}} btn-sm" ng-disabled="saving || profileName == ''" ng-click="saveProfileData()">{{saveProfile}}</button>
+                <button class="btn btn-{{deleteProfileLabel}} btn-sm" ng-disabled="deleting || selectedProfile == '--'" ng-click="deleteProfileData()">{{deleteProfile}}</button>
+              </div>
+              <div class="clearfix"></div>
+              <textarea class="form-control" rows="20" ng-model="profileData"></textarea>
+          </div>
+
+      </div>
+    </div>
+</div>
+
+<div class="panel panel-default" ng-show="$root.status.installed" ng-controller="ngrep_OutputController">
+	<div class="panel-heading">
+        <h4 class="panel-title pull-left">Output</h4>
+		<div class="pull-right">
+			Auto-refresh <div class="btn-group">
+			<button ng-click="toggleAutoRefresh()" class="btn btn-xs btn-{{refreshLabelON}}">ON</button>
+			<button ng-click="toggleAutoRefresh()" class="btn btn-xs btn-{{refreshLabelOFF}}">OFF</button>
+			</div>
+		</div>
+		<div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="input-group">
+            <span class="input-group-addon input-sm">Filter</span>
+            <input type="text" class="form-control input-sm" placeholder="Piped commands used to filter output (e.g. grep, awk)" ng-model="filter">
+            <div class="input-group-btn">
+              <button class="btn btn-default btn-sm" ng-click="clearFilter()">Clear Filter</button>
+              <button class="btn btn-primary btn-sm" ng-click="refreshOutput()">Refresh Log</button>
+            </div>
+        </div>
+    <pre class="scrollable-pre log-pre">{{output}}</pre>
+    </div>
+</div>
+
+<div class="panel panel-default" ng-show="$root.status.installed" ng-controller="ngrep_HistoryController">
+    <div class="panel-heading pointer" data-toggle="collapse" data-target="#History">
+        <h4 class="panel-title">History <span class="badge">{{history.length}}</span></h4>
+    </div>
+    <div id="History" class="panel-collapse collapse">
+        <div class="panel-body">
+	        <button class="btn btn-primary btn-sm pull-right" ng-click="refreshHistory()">Refresh History</button><div class="clearfix"></div>
+			<div class="table-responsive">
+	            <table class="table table-striped table-bordered table-hover" ng-hide="(history.length == 0)">
+	                <thead>
+	                    <tr>
+	                        <th>Date</th>
+	                        <th>Action</th>
+	                    </tr>
+	                </thead>
+	                <tbody>
+	                    <tr ng-repeat="entry in history" ng-if="entry != ''">
+	                        <td>{{entry[0]}}</td>
+	                        <td>
+								<div class="btn-group">
+                  <button type="button" class="btn btn-fixed-length btn-sm btn-default" data-toggle="modal" data-target="#historyModal" ng-click="viewHistory(entry[1])">View</button>
+                  <button type="button" class="btn btn-sm btn-default" ng-click="downloadHistory(entry[1])">Download log</button>
+                  <button type="button" class="btn btn-sm btn-default" ng-click="downloadHistory(entry[2])">Download pcap</button>
+									<button type="button" class="btn btn-fixed-length btn-sm btn-danger" ng-click="deleteHistory(entry[2])">Delete</button>
+								</div>
+							</td>
+	                    </tr>
+	                </tbody>
+	            </table>
+	        </div>
+			<div class="well" ng-show="(history.length === 0)">No history...</div>
+        </div>
+    </div>
+
+	<div class="modal fade" id="historyModal" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel">
+	  <div class="modal-dialog modal-lg" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title" id="historyModalLabel">View History - {{historyDate}}</h4>
+	      </div>
+	      <div class="modal-body">
+	      <pre class="scrollable-pre log-pre">{{historyOutput}}</pre>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+</div>

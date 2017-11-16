@@ -1,0 +1,10 @@
+{
+    "author": "Whistle Master",
+    "description": "Manage all modules logs",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "Log Manager",
+    "version": "1.2"
+}

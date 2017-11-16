@@ -1,0 +1,162 @@
+<div class="row" ng-controller="getController">
+
+	<div class="col-md-3">
+		
+		<!-- Panel that shows the "controls" buttons to run the module -->
+		<div class="panel panel-default">
+			<div class="panel-header text-muted text-center">
+				<a href="javascript:;" data-toggle="collapse" data-target="#collapseControls"><h4>Controls <img src="/img/throbber.gif" ng-show="throbber" /></h4></a>
+			</div>
+			<div id="collapseControls" class="panel-collapse collapse in">
+				<div class="panel-body">
+					<table style="width:100%">
+						<tr ng-repeat="control in controls" ng-show="control.visible">
+							<td style="padding-bottom: .5em;" class="text-muted">{{ control.title }}&nbsp;</td>
+							<!--<td style="text-align:right">{{ control.status }}</td>-->
+							<td style="text-align:right;padding-bottom: .5em;">
+								<button class="btn btn-primary btn-sm" style="width:75px" ng-click="handleControl(control)" ng-hide="control.throbber">{{ control.status }}</button>
+								<img src="/img/throbber.gif" ng-show="control.throbber" />
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+		
+		
+		<!-- Panel that shows the "messages" logged as the module is running -->
+		<div class="panel panel-default">
+			<div class="panel-header text-muted text-center">
+				<a href="javascript:;" data-toggle="collapse" data-target="#collapseMessages"><h4>Messages</h4></a>
+			</div>
+			<div id="collapseMessages" class="panel-collapse collapse in">
+				<div class="panel-body">
+					<p ng-show="(messages.length == 0)" class="text-muted text-center"><i>No Messages</i></p>
+					<a ng-hide="(messages.length < 2)" ng-click="messages = []" class="pull-right" href="javascript:;">Clear All</a>
+					<table style="width:100%" ng-hide="(messages.length == 0)">
+						<tr ng-repeat="message in messages">
+							<td>
+								<hr />
+								<h5><b>{{ message.title }}</b> <a ng-click="dismissMessage($index)" href="javascript:;" class="pull-right">Dismiss</a></h5>
+								<p class="text-muted"><i>{{ message.msg }}</i></p>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="panel-group" id="accordion">
+		<div class="col-md-9">
+			<!-- Library panel -->
+			<div class="panel panel-default">
+				<div class="panel-header text-muted text-center">
+					<h5><a href="javascript:;" data-toggle="collapse" data-parent="#accordion" data-target="#collapseLibrary">History</a></h5>
+				</div>
+				<div id="collapseLibrary" class="panel-collapse collapse in">
+					<div class="panel-body">
+						<div ng-show="profiles.length > 0">
+							<div class="table-responsive">
+								<table class="table table-striped" align="center">
+									<thead>
+										<th>Date</th>
+										<th>Mac</th>
+										<th>IP</th>
+										<th>Host Name</th>
+										<th>Options</th>
+									</thead>
+									<tbody>
+										<tr ng-repeat="profile in profiles">
+											<td>{{ profile.date }} {{ profile.id }}</td>
+											<td>{{ profile.mac }}</td>
+											<td class="text-muted"><i>{{ profile.ip }}</i></td>
+											<td class="text-muted"><i>{{ profile.hostname }}</i></td>
+											<td>
+											    <a href="javascript:;" ng-click="viewInformation(profile)" data-toggle="collapse" data-parent="#accordion" data-target="#collapseInformation">View Information</a><br>
+											    <a href="javascript:;" ng-click="getComments(profile)" data-toggle="collapse" data-parent="#accordion" data-target="#collapseComments">Edit Comments</a><br>
+											    <a href="javascript:;" ng-click="deleteProfile(profile)">Delete</a>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div ng-hide="profiles.length > 0">
+							<p class="text-muted text-center"><i>No client information to display.</i></p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Information Panel -->
+			<div class="panel panel-default">
+				<div class="panel-header text-muted text-center">
+					<h5><a href="javascript:;" data-toggle="collapse" data-parent="#accordion" data-target="#collapseInformation">Information Section</a></h5>
+				</div>
+				<div id="collapseInformation" class="panel-collapse collapse">
+					<div class="panel-body">
+						<form class="form-horizontal">
+							<div class="form-group">
+								<label class="control-label">Profile Information</label> <a href="javascript:;" ng-click="workshopProfile.info = ''">Clear</a>
+								<!--<textarea class="form-control" rows="20" ng-model="workshopProfile.info" placeholder="Select a client above and view the info here"></textarea>-->
+								<p ng-bind-html="workshopProfile.info | rawHTML" placeholder="Select a client above and view the info here">
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+
+
+			<!-- Comments Panel -->
+			<div class="panel panel-default">
+				<div class="panel-header text-muted text-center">
+					<h5><a href="javascript:;" data-toggle="collapse" data-parent="#accordion" data-target="#collapseComments">Comments Section</a></h5>
+				</div>
+				<div id="collapseComments" class="panel-collapse collapse">
+					<div class="panel-body">
+						<!--<label class="control-label">Selected: </label> <label ng-model="workshopProfile.id" />-->
+						<form class="form-horizontal">
+							<div class="form-group">
+								<label class="control-label">Comments</label> <a href="javascript:;" ng-click="workshopProfile.comments = ''">Clear</a>
+								<textarea class="form-control" rows="10" ng-model="workshopProfile.comments" placeholder="Enter your comments"></textarea>
+							</div>
+							<div class="form-group">
+								<button type="submit" ng-click="saveComments(workshopProfile.id, workshopProfile.mac, workshopProfile.comments)" class="btn btn-primary btn-sm">Save</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+
+			<!-- Change Log Pannel -->
+			<div class="panel panel-default">
+				<div class="panel-header text-muted text-center">
+					<h5><a href="javascript:;" data-toggle="collapse" data-parent="#accordion" data-target="#collapseChangelog">Get Change Log</a></h5>
+				</div>
+				<div id="collapseChangelog" class="panel-collapse collapse">
+					<div class="panel-body">
+						<ul>
+							<li><b>1.2</b></li>
+							<ul>
+								<li class="text-muted">Added capability to save comments for profiled client</li>
+								<li class="text-muted">Added timestamp to all profiled clients</li>
+								<li class="text-muted">Fixed bug where a symbolic link to the db remained in the internal storage</li>
+							</ul>
+							<li><b>1.1</b></li>
+							<ul>
+								<li class="text-muted">Added ability to individually delete profiled clients</li>
+							</ul>
+							<li><b>1.0</b></li>
+							<ul>
+								<li class="text-muted">Initial Pineapple Nano Release</li>
+							</ul>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--</div>-->
+
+</div>

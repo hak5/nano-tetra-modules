@@ -1,0 +1,82 @@
+<div ng-controller="RandomRollController">
+	<div class="row">
+		<div class="col-md-4">
+			<p class="well well-sm alert-success" ng-show="randomRollStarted">Successfully Started RandomRoll.</p>
+			<p class="well well-sm alert-success" ng-show="randomRollStopped">Successfully Stopped RandomRoll.</p>
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">RandomRoll
+						<button type="button" class="close pull-right" data-toggle="modal" data-target="#information" aria-label="Close"><span aria-hidden="true">i</span></button></h3></h3>
+					</div>
+					<div class="panel-body">
+						<button class="btn" ng-hide="running" ng-click="randomRollStart();">Start</button>
+						<button class="btn" ng-show="running" ng-click="randomRollStop();">Stop</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">Select Rolls</h3>
+					</div>
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-md-1" ng-repeat="roll in randomRolls">
+								<div>
+									<center>
+										<label>{{roll.randomRollTitle}}</label><br/>
+										<img style="border-radius: 5px;" ng-src="/modules/RandomRoll/assets/Rolls/{{roll.randomRollTitle}}/logo.jpg">
+
+										<input type="checkbox" ng-model="roll.randomRollChecked">
+									</center>
+								</div>
+							</div>
+						</div>
+						<br/><br/>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row" ng-controller="RandomRollLogs">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title" title="/pineapple/modules/RandomRoll/assets/logs/randomroll.log">Logs
+						<span class="pull-right">
+							<button type="button" class="btn btn-danger" style="padding: 0px 5px;" ng-click="clearRandomRollLogs();">
+								Clear
+							</button>
+							<button type="button" class="btn btn-primary" style="padding: 0px 5px;" ng-click="getRandomRollLogs();">
+								Refresh
+							</button>
+						</span>
+					</h3>
+				</div>
+				<div class="panel-body">
+					<textarea class="form-control" rows="10" ng-model="randomRollLogOutput" readonly></textarea>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="information" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Information</h4>
+				</div>
+				<div class="modal-body">
+					<h3><center>RandomRoll 1.1</center></h3>
+					<h5><center>Written by Foxtrot</center></h5>
+					<h5><center>This module allows you to spoof web pages for clients connected to your WiFi Pineapple in order to troll them with some dank memes.</center></h5>
+					<br/><br/>
+					<h5 class="text-danger"><center>Please use Responsibly!</center></h5>
+				</div>
+			</div>
+		</div>
+	</div>

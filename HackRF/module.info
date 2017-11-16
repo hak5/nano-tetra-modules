@@ -1,0 +1,10 @@
+{
+    "author": "Foxtrot",
+    "description": "HackRF on the WiFi Pineapple",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "HackRF",
+    "version": "1.4"
+}

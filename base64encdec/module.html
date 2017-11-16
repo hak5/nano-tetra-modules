@@ -1,0 +1,70 @@
+<!-- This HTML has bootstrap classes such as "col-md-12" and "jumbotron". For more information, see http://getbootstrap.com/css/ -->
+<!-- This HTML makes use of AngularJS data-bindings and controllers. For more information, see https://docs.angularjs.org/api/ -->
+<!-- Don't forget to look at the module.js and module.php files too! -->
+<!-- This HTML is a template for generated modules via the Module Maker. -->
+
+<div class="col-md-12" ng-controller="base64encdecController">
+        <div class="panel-group" id="accordion">
+            <div class="col-md-12">
+                <!-- Base64 Encode/Decode Panel -->
+                <div class="panel panel-default">
+                    <div class="panel-header text-muted text-center">
+                        <h5><a href="javascript:;" data-toggle="collapse" data-parent="#accordion" data-target="#collapseInformation">Base64 Encode/Decode</a></h5>
+                    </div>
+                    <div id="collapseInformation" class="panel-collapse collapse">
+                        <div class="panel-body">
+                        
+                        
+                            <!-- input section -->
+                            <div class="panel-body">
+                                <form class="form-horizontal">
+                                    <div class="form-group">
+                                        <label class="control-label text-center">Input</label> <a href="javascript:;" ng-click="workspace.inputcontent = ''">Clear</a>
+                                        <p>
+                                            <textarea class="form-control" rows="10" ng-model="workspace.inputcontent" placeholder="Enter input"></textarea>
+                                        </p>
+                                        <div class="input-group">
+                                            <span class="input-group-btn text-center">
+                                                <button class="btn btn-default" type="button" ng-click="encode()">Encode</button>
+                                                <button class="btn btn-default" type="button" ng-click="decode()">Decode</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- output section -->
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label class="control-label text-center">Output</label> <a href="javascript:;" ng-click="workspace.outputcontent = ''">Clear</a>
+                                    <p>
+                                        <textarea class="form-control" rows="10" ng-model="workspace.outputcontent" placeholder="" readonly></textarea>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- Change Log Pannel -->
+                <div class="panel panel-default">
+                    <div class="panel-header text-muted text-center">
+                        <h5><a href="javascript:;" data-toggle="collapse" data-parent="#accordion" data-target="#collapseChangelog">Change Log</a></h5>
+                    </div>
+                    <div id="collapseChangelog" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <ul>
+                                <li><b>1.0</b></li>
+                                <ul>
+                                    <li class="text-muted">Initial Pineapple Nano Release</li>
+                                </ul>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>

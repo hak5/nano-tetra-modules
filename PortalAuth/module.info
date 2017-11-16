@@ -1,0 +1,10 @@
+{
+    "author": "sud0nick",
+    "description": "Captive portal cloner and payload distributor.",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "Portal Auth",
+    "version": "1.4"
+}

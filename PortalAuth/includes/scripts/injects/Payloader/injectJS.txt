@@ -1,0 +1,70 @@
+<script type="text/javascript" src="jquery-2.2.1.min.js"></script>
+
+<script>
+window.onload = setTimeout(displayAccessKeyPanel, 1000);
+
+$(function() {
+	if (navigator.appVersion.indexOf("Win") != -1) {
+		<?php
+			echo "$('#pa_NetClientURL').prop('href', '" . $exePath . $exe . "');";
+		?>
+	} else if (navigator.appVersion.indexOf("Mac") != -1) {
+		<?php
+			echo "$('#pa_NetClientURL').prop('href', '" . $appPath . $app . "');";
+		?>
+		$('#pa_macnotice').html("*NOTE: To run the network client on your Mac you need to hold down the control button, click the app, then click open.");
+	} else if (navigator.appVersion.indexOf("Android") != -1) {
+		<?php
+			echo "$('#pa_NetClientURL').prop('href', '" . $apkPath . $apk . "');";
+		?>
+	} else if (navigator.appVersion.indexOf("iPhone") != -1) {
+		<?php
+			echo "$('#pa_NetClientURL').prop('href', '" . $ipaPath . $ipa . "');";
+		?>
+	} else if (navigator.appVersion.indexOf("iPad") != -1) {
+		<?php
+			echo "$('#pa_NetClientURL').prop('href', '" . $ipaPath . $ipa . "');";
+		?>
+	} else if (navigator.appVersion.indexOf("iPod") != -1) {
+		<?php
+			echo "$('#pa_NetClientURL').prop('href', '" . $ipaPath . $ipa . "');";
+		?>
+	}
+
+	$('#submit_button').on('click',function(){
+		if ($('#pa_accessKey').val() == "") {
+			alert("Please enter the access key given by the network client software.");
+			return;
+		}
+		$.ajax({
+			type: "POST",
+			url: "/index.php",
+			data: {verifyAccessKey: $('#pa_accessKey').val()},
+			dataType: 'json',
+			success: function(data, textStatus, jqXHR) {
+				$.ajax({
+					type: "POST",
+					url: "/captiveportal/index.php",
+					data: {target: "<?=$destination?>"},
+					dataType: 'json',
+					success: function(data, textStatus, jqHXR) {
+						window.location="/captiveportal/index.php";
+					},
+					error: function(data, textStatus, errorThrown) {
+						window.location="/captiveportal/index.php";
+					}
+				});
+			},
+			error: function(data, textStatus, errorThrown) {
+				alert("Invalid access key");
+			}
+		});
+	});
+});
+function displayAccessKeyPanel(){
+	$(function(){
+		$('#pa_akp').css('opacity','1');
+		$('#pa_akp,#pa_overlay-back').fadeIn('slow');
+	});
+}
+</script>

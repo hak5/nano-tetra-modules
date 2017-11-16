@@ -1,0 +1,10 @@
+{
+    "author": "audibleblink",
+    "description": "Persistent SSH connections",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "autossh",
+    "version": "1.2"
+}

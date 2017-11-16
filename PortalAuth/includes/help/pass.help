@@ -1,0 +1,5 @@
+<strong>Portal Auth Shell Server v1.0</strong><br />
+<p>
+This python script is used to listen for connections from the Network Client payload.  When a connection is initiated the IP address, port, hostname, and OS type of the compromised system are logged in the file associated with the targetlog variable.  The activitylog variable holds the file location where various messages are stored about the server's activity.
+<br /><br />
+The lhost and lport variables hold the IP address and port number on which the server will listen.  lhost should always be the Pineapple's address while lport can be any available port on the system.  If the lport changes on the server make sure you change the rport variable in the Network Client as well.  After modifying the script, simply click save and the server will be ready to start.

@@ -1,0 +1,49 @@
+<?php
+
+/*==================*/
+/* v DO NOT MODIFY v  */
+/*==================*/
+
+$exe = "<EXE>";
+$app = "<APP>";
+$apk = "<APK>";
+$ipa = "<IPA>";
+
+/*==================*/
+/* ^ DO NOT MODIFY ^  */
+/*==================*/
+
+$base = "/download/";
+$exePath = $base . "windows/";
+$appPath = $base . "osx/";
+$apkPath = $base . "android/";
+$ipaPath = $base . "ios/";
+
+$destination = "http://". $_SERVER['HTTP_HOST'] . $_SERVER['HTTP_URI'] . "";
+
+/*
+	This script checks the entered access key with the user's access key to either allow or deny them access.
+	The key is held in a file that has the name of the user's IP address with all periods replaced with underscores
+	in the $keyDir directory.  The contents of the file are read in and compared with the supplied access key
+	and either True or False are echoed back to the script in InjectJS.
+*/
+header('Access-Control-Allow-Origin: *');
+if (isset($_POST['verifyAccessKey'])) {
+		
+	// Setup variables with the location of the key files
+	$keyDir = "/pineapple/modules/PortalAuth/includes/pass/keys/";
+	$keyFile = $keyDir . str_replace(".", "_", $_SERVER['REMOTE_ADDR']) . ".txt";
+
+	// Open the key file associated with the current client and read the value
+	$accessKey = file_get_contents($keyFile);
+
+	// Check if the access key provided by the client matches the one from the file
+	if ($_POST['verifyAccessKey'] == $accessKey) {
+		echo True;
+	} else {
+		echo False;
+	}
+	kill();
+}
+
+?>

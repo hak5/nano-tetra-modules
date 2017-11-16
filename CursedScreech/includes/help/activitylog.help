@@ -1,0 +1,8 @@
+This log contains the output of Kuro.  It will inform you when a connection is initiated, when 
+a connection has been established with a target, the set TLS level with the target, when a command 
+has been sent to a target, when data is received from a target, and when targets are disconnected.
+<br /><br />
+Sometimes, Sein will interject and add a message to the log.  This only occurs when a target has 
+received a connection request from an attacker holding a key different from Kuro's.  A message is 
+sent to the multicast group, Sein receives it, and posts it in the activity log.  This informs you 
+that someone other than yourself is trying to access the shell on your target.

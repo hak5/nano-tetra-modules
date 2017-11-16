@@ -1,0 +1,10 @@
+{
+    "author": "Whistle Master",
+    "description": "Passive traffic fingerprinting using p0f",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "p0f",
+    "version": "1.0"
+}

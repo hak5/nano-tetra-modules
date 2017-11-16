@@ -1,0 +1,90 @@
+<style>
+.pa_field {
+	width: 70%;
+	height: 30px;
+	font-size: 18px;
+	border: 1px solid black;
+}
+.pa_main {
+	background-color: rgba(255,255,255,.9);
+	left: 0%;
+	margin-top: 200px;
+	text-align: center;
+	padding-top: 75px;
+	position: fixed;
+	border-style:solid;
+	border-width:medium;
+	border-color:#aaa;
+	-webkit-box-shadow: 10px 10px 5px 0px rgba(11,11,11,0.9);
+	-moz-box-shadow: 10px 10px 5px 0px rgba(11,11,11,0.9);
+	box-shadow: 10px 10px 5px 0px rgba(11,11,11,0.9);
+}
+.pa_h1 {margin: auto; font: 36px 'Helvetica Neue', Helvetica, Arial, sans-serif;}
+.pa_h2 {margin: auto; font: 26px 'Helvetica Neue', Helvetica, Arial, sans-serif;}
+.pa_h3 {margin: auto; font: 22px 'Helvetica Neue', Helvetica, Arial, sans-serif;}
+.pa_h4 {margin: auto; font: 16px 'Helvetica Neue', Helvetica, Arial, sans-serif;}
+#pa_akp {
+	top: 50%;
+	left: 50%;
+	width: 600px;
+	height: 340px;
+	padding: 20px;
+	margin-top: -200px;
+	margin-left: -330px;
+	z-index: 15;
+	display: none;
+}
+#pa_overlay-back {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,.7);
+	z-index: 5;
+	display: none;
+}
+.pa_connectButton {
+	-moz-box-shadow:inset 0px 1px 3px 0px #3dc21b;
+	-webkit-box-shadow:inset 0px 1px 3px 0px #3dc21b;
+	box-shadow:inset 0px 1px 3px 0px #3dc21b;
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #1fd950), color-stop(1, #5cbf2a));
+	background:-moz-linear-gradient(top, #1fd950 5%, #5cbf2a 100%);
+	background:-webkit-linear-gradient(top, #1fd950 5%, #5cbf2a 100%);
+	background:-o-linear-gradient(top, #1fd950 5%, #5cbf2a 100%);
+	background:-ms-linear-gradient(top, #1fd950 5%, #5cbf2a 100%);
+	background:linear-gradient(to bottom, #1fd950 5%, #5cbf2a 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#1fd950', endColorstr='#5cbf2a',GradientType=0);
+	background-color:#1fd950;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	border-radius:5px;
+	border:1px solid #18ab29;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:arial;
+	font-size:22px;
+	font-weight:bold;
+	padding:12px 37px;
+	text-decoration:none;
+	text-shadow:0px -1px 0px #2f6627;
+}
+.pa_connectButton:hover {
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #5cbf2a), color-stop(1, #1fd950));
+	background:-moz-linear-gradient(top, #5cbf2a 5%, #1fd950 100%);
+	background:-webkit-linear-gradient(top, #5cbf2a 5%, #1fd950 100%);
+	background:-o-linear-gradient(top, #5cbf2a 5%, #1fd950 100%);
+	background:-ms-linear-gradient(top, #5cbf2a 5%, #1fd950 100%);
+	background:linear-gradient(to bottom, #5cbf2a 5%, #1fd950 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#5cbf2a', endColorstr='#1fd950',GradientType=0);
+	background-color:#5cbf2a;
+}
+.pa_connectButton:active {
+	position:relative;
+	top:1px;
+}
+.pa_left {
+	margin-left: 60px;
+}
+</style>

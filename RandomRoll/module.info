@@ -1,0 +1,10 @@
+{
+    "author": "Foxtrot",
+    "description": "This module allows you to troll unsuspecting clients connected to your WiFi Pineapple.",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "RandomRoll",
+    "version": "1.2"
+}

@@ -1,0 +1,14 @@
+<h4>Sein</h4>
+Sein is our information gatherer.  It listens on the multicast group and port in Settings and 
+updates our target list when a compromised system is found.
+<br /><br />
+
+<h4>Kuro</h4>
+Kuro is our attacker that sends out commands to the clients you select.  At startup it attempts to 
+connect to all clients in the list.  If Sein finds new targets while Kuro is running, connections to 
+them will be attempted automatically.  Commands are sent asynchronously and returned data is received 
+in the same manner.
+<br /><br />
+
+<h4>Dependencies</h4>
+The only dependency required is zip for downloading payloads and target logs.

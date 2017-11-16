@@ -1,0 +1,133 @@
+#!/usr/bin/python
+
+#
+# Evil Portal
+# Newbi3
+# This is the python control script to handle all iptables things for creating and managing a Captive Portal
+#
+
+import sys
+import os
+
+
+CLIENTS_FILE = "/tmp/EVILPORTAL_CLIENTS.txt"
+WHITE_LIST = ["172.16.42.42"]
+
+
+def revoke_client(ip_address=None):
+	global CLIENTS_FILE
+
+	if not ip_address:
+		print "An ipaddress is expected."
+		return
+
+	f = open(CLIENTS_FILE, 'r')
+	lines = f.readlines()
+	f.close()
+
+	f = open(CLIENTS_FILE, 'w')
+	for line in lines:
+		if line == ip_address + "\n":
+			os.system("iptables -t nat -D PREROUTING -s " + line.rstrip('\n') + " -j ACCEPT")
+		else:
+			f.write(line)
+	f.close()
+
+
+def authorize_client(ip_address=None):
+	global CLIENTS_FILE
+
+	if not ip_address:
+		print "An ipaddress is expected."
+		return
+
+	f = open(CLIENTS_FILE, 'a+')
+	lines = f.readlines()
+	if ip_address + "\n" not in lines:
+		os.system("iptables -t nat -I PREROUTING -s " + ip_address + " -j ACCEPT")
+		f.write(ip_address + "\n")
+	f.close()
+
+
+def stop_evilportal():
+	"""
+	stop_evilportal
+	Stop EvilPortals
+	"""
+	global CLIENTS_FILE, WHITE_LIST
+
+	if os.path.isfile(CLIENTS_FILE):
+		# Remove rule for each accepted client
+		[os.system("iptables -t nat -D PREROUTING -s " + line.rstrip('\n') + " -j ACCEPT") for line in open(CLIENTS_FILE, 'r')]
+
+		# Delete the clients file
+		os.remove(CLIENTS_FILE)
+
+	# Stop HTTP Redirection
+	os.system("iptables -t nat -D PREROUTING -s 172.16.42.0/24 -p tcp --dport 80 -j DNAT --to-destination 172.16.42.1:80")
+
+	# Remove DNS Policy
+	os.system("iptables -D INPUT -p tcp --dport 53 -j ACCEPT")
+
+
+def start_evilportal():
+	"""
+	start_evilportal
+	Start EvilPortals IP table based captive portal
+	"""
+	global CLIENTS_FILE, WHITE_LIST
+
+	if os.path.isfile(CLIENTS_FILE):
+		os.remove(CLIENTS_FILE)
+
+	# Make sure forwarding is enabled which it should be but just to be sure do it here
+	os.system("echo 1 > /proc/sys/net/ipv4/ip_forward")
+
+	# Setup the iptables
+	# Set white listed clients
+	f = open(CLIENTS_FILE, "w")
+	for client in WHITE_LIST:
+		os.system("iptables -A INPUT -s " + client + " -j ACCEPT")
+		f.write(client + "\n")
+	f.close()
+
+	# Redirect all web traffic to port 80 on the pineapple
+	os.system("iptables -t nat -A PREROUTING -s 172.16.42.0/24 -p tcp --dport 80 -j DNAT --to-destination 172.16.42.1:80")
+
+	# Accept dns
+	os.system("iptables -A INPUT -p tcp --dport 53 -j ACCEPT")
+
+
+def handler(args=None):
+	cmd = None
+	param = None
+	if args is not None:
+		try:
+			cmd = args[1].lower()
+		except IndexError as e:
+			cmd = "help"
+		try:
+			param = args[2].lower()
+		except IndexError as e:
+			pass
+	else:
+		cmd = "start"
+
+	commands = {"start": "Start EvilPortal", "stop": "Stop EvilPortal", "help": "What you are reading"}
+
+	if cmd == "start":
+		start_evilportal()
+	elif cmd == "stop":
+		stop_evilportal()
+	elif cmd == "authorize":
+		authorize_client(param)
+	elif cmd == "help":
+		print "-"*20
+		print "Evil Portal"
+		print "-"*20
+		for command, description in commands.iteritems():
+			print command + ":\t" + description
+
+
+if __name__ == '__main__':
+	handler(sys.argv)

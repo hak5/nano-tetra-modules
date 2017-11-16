@@ -1,0 +1,149 @@
+<div class="row" ng-controller="CabinetController">
+
+	<div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Cabinet File Manager: Current Directory {{ currentDirectory }}</h3>
+            </div>
+
+            <div class="panel-body">
+				<form class="form-inline" role="form">
+					<div class="form-group">
+						<label for="userDirectory">Change Directory:</label>
+						<input type="text" class="form-control" ng-model="userDirectory">
+					</div>
+					<button type="submit" class="btn btn-default" ng-click="getDirectoryContents(userDirectory)">Go</button>
+				</form>
+				<hr/>
+				<form class="form-inline" role="form">
+					<button type="submit" class="btn btn-default btn-sm" ng-show="currentDirectory == '/'" disabled>Go Back</button>
+					<button type="submit" class="btn btn-default btn-sm" ng-click="goToParentDirctory()" ng-hide="currentDirectory == '/'">Go Back</button>
+					<button type="submit" class="btn btn-default btn-sm" data-toggle="modal" data-target="#fileModal">New File</button>
+					<button type="submit" class="btn btn-default btn-sm" data-toggle="modal" data-target="#folderModal">New Folder</button>
+					<button type="submit" class="btn btn-default btn-sm" ng-click="getDirectoryContents(currentDirectory)">Refresh</button>
+				</form>
+				<div class="table-responsive">
+					<table class="table table-striped" align="center">
+						<thead>
+							<th>File Name</th>
+							<th>Location</th>
+							<th>Permissions</th>
+							<th>Bytes</th>
+							<th>Delete</th>
+							<th>Edit</th>
+						</thead>
+						<tbody>
+							<tr ng-repeat="item in directoryContents">
+								<td ng-hide="item.directory">{{ item.name }}</td>
+								<td ng-show="item.directory"><a href="javascript:;" ng-click="getDirectoryContents(item.path)">{{ item.name }}</a></td>
+								<td class="text-muted"><i>{{ item.path }}</i></td>
+								<td class="text-muted"><i>{{ item.permissions }}</i></td>
+								<td class="text-muted"><i>{{ item.size }}</i></td>
+								<td><a href="" data-toggle="modal" data-target="#deleteModal" ng-click="requestDeleteFile(item)">Delete</a></td>
+								<td><a href="" ng-hide="item.directory" ng-click="requestEditFile(item)" data-toggle="modal" data-target="#fileModal">Edit</a></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit file Modal -->
+	<div id="fileModal" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" ng-click="editFile = {}">&times;</button>
+					<h4 class="modal-title">File Editor {{ editFile.name }}</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="control-label">File Name</label>
+							<input type="text" class="form-control" ng-model="editFile.name" placeholder="Notes.txt">
+						</div>
+						<div class="form-group">
+							<label class="control-label">File Contents</label> <a href="javascript:;" ng-click="editFile.content = ''">Clear</a>
+							<textarea class="form-control" rows="10" ng-model="editFile.content" placeholder="Write some text here"></textarea>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" ng-click="sendEditFile()" class="btn btn-success pull-left" data-dismiss="modal">Save</button>
+					<button type="button" class="btn btn-default pull-right" data-dismiss="modal" ng-click="editFile = {}">Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Delete file Modal -->
+	<div id="deleteModal" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" ng-click="deleteFile = {}">&times;</button>
+					<h4 class="modal-title">Delete File {{ deleteFile.name }}</h4>
+				</div>
+				<div class="modal-body">
+					<p>You are about to delete {{ deleteFile.name }}. Once you do this it can not be undone.</p>
+					<p ng-show="deleteFile.directory">{{ deleteFile.name }} is a directory. Deleteing it will also delete all files and folders contained inside.</p>
+					<p><b>Are you absolutely sure you want to delete {{ deleteFile.name }} located at {{ deleteFile.path }}?</b></p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary pull-left" data-dismiss="modal" ng-click="deleteFile = {}">Cancel</button>
+					<button type="button" class="btn btn-danger pull-right" data-dismiss="modal" ng-click="sendDeleteFile()">Delete</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Create directory Modal -->
+	<div id="folderModal" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Create Folder</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-inline" role="form">
+						<label class="control-label">Folder Name</label>
+						<input type="text" class="form-control" ng-model="newFolder.name" placeholder="Notes.txt">
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" ng-click="createFolder()" class="btn btn-success pull-left" data-dismiss="modal">Create</button>
+					<button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Create Message Modal -->
+	<div id="messageModal" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">{{ message.title }}</h4>
+				</div>
+				<div class="modal-body">
+					<p>{{ message.body }}</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default pull-right" data-dismiss="modal">Dismiss</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>

@@ -1,0 +1,110 @@
+<script type="text/javascript" src="/modules/SignalStrength/js/Chart.min.js"></script>
+<div ng-controller="SignalStrengthController">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h4 class="pull-left">{{title}}</h4>
+			<h4 class="pull-right">v{{version}}</h4>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+	<div class="row">
+	<div class="col-md-6">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h4 class="pull-left">Scan Settings</h4>
+			<span class="pull-right">Continuous:
+				<div class="btn-group">
+					<button class="btn btn-xs btn-{{(continuousScan == true) ? 'success' : 'default'}}" ng-click="toggleContinuous()">On</button>
+					<button class="btn btn-xs btn-{{(continuousScan == false) ? 'danger' : 'default'}}" ng-click="toggleContinuous()">Off</button>
+				</div>
+			</span>
+			<div class="clearfix"></div>
+		</div>
+		<div id="ScanSettings">
+			<table class="table text-center">
+			<tr>
+				<td>
+				<select class="form-control input-sm" ng-model="selectedInterface">
+					<option ng-repeat="interface in interfaces">{{ interface }}</option>
+				</select>
+				</td>
+				<td>
+				<img src="img/throbber.gif" ng-show="scanLoading">
+				</td>
+				<td>
+				<button type="button" class="btn btn-success" ng-click="scanInterface()" ng-disabled="scanLoading">Scan</button>
+				</td>
+			</tr>
+			<tr ng-repeat="status in interfaceStatus">
+				<td>
+					<p>{{ status.interface }}</p>
+				</td>
+				<td></td>
+				<td>
+					<div class="btn-group">
+						<button class="btn btn-xs btn-{{(status.status=='Up') ? 'success' : 'default'}}" ng-click="toggleInterface(status.interface, status.status)">Up</button>
+						<button class="btn btn-xs btn-{{(status.status=='Down') ? 'danger' : 'default'}}" ng-click="toggleInterface(status.interface, status.status)">Down</button>
+					</div>
+				</td>
+			</tr>
+			</table>
+		</div>
+	</div>
+	</div>
+	</div>
+	<div class="panel panel-default">
+		<div class="panel-heading pointer" data-toggle="collapse" data-target="#ScanResultsTable">
+			<h4 class="pull-left">Scan Results Table</h4>
+			<span class="pull-right"><img src="img/throbber.gif" ng-show="scanLoading"></span>
+			<div class="clearfix"></div>
+		</div>
+		<div id="ScanResultsTable" class="panel-collapse collapse in">
+			<table class="table table-striped table-bordered text-center">
+				<tr><th class="text-center">MAC Address</th><th class="text-center">Channel</th><th class="text-center">Quality</th><th class="text-center">Strength</th><th class="text-center">ESSID</th></tr>
+				<tr ng-repeat="target in interfaceScan track by $index"><td>{{ target['bssid'] }}</td><td>{{ target['channel'] }}</td><td>{{ target['quality'] }}</td><td>{{ target['strength'] }}</td><td>{{ target['essid'] }}</td></tr>
+			</table>
+		</div>
+	</div>
+	<div class="panel panel-default">
+		<div class="panel-heading pointer" data-toggle="collapse" data-target="#ScanResultsGraph">
+			<h4 class="pull-left">Signal Level Graph</h4>
+			<span class="pull-right"><img src="img/throbber.gif" ng-show="scanLoading"></span>
+			<div class="clearfix"></div>
+		</div>
+		<div id="ScanResultsGraph" class="panel-collapse collapse in">
+			<canvas id="polar-area" class="chart chart-polar-area" chart-data="chartdata" chart-labels="chartlabels" chart-legend="true"></canvas>
+		</div>
+	</div>
+	<div class="panel panel-default">
+		<div class="panel-heading pointer" data-toggle="collapse" data-target="#AboutDiv">
+			<h4 class="pull-left">About</h4>
+			<div class="clearfix"></div>
+		</div>
+		<div id="AboutDiv" class="panel-body panel-collapse collapse out">
+			<p>SignalStrength leverages the 'iwlist [interface] scanning' command to gather signal strength and quality information about cells that are within range of the Pineapple.</p>
+			<p><b>Continuous Scan</b> allows the function performing the scan to run recursively allowing the data to be constantly refreshed at the interval that each interface is capable of performing the scan.  From testing, wlan0 seems to have a quicker refresh time, but suffers from not having as much range as wlan1.  To stop the continuous scan, simply toggle the continuous button and wait for the currently executing scan to complete.</p>
+			<p><b>Signal Level Graph</b> utilizies the signal strength attribute reported for each cell.  Signal strength is measured in dBm which produces a negative value.  In order to properly graph this value, the dBm reading is incremented by 100 to produce a positive number for each cell which gives an accurate comparison of signal strength between each cell as a positive number allowing it to be graphed properly.  The numbers in the graph are therefore based on the signal strength dBm reading, but are not significant in and of themselves.</p>
+			<p><b>Future Improvements:</b></p>
+			<ul>
+				<li>Ability to change chart type (polar, bar, line)</li>
+				<li>Cells having a single color so when the graph refreshes the cell retains the same color</li>
+				<li>Ability to focus on a single cell to make it easier to physically locate the cell based on increasing signal strength</li>
+			</ul>
+			<p><b>Changelog</b></p>
+			<p>Version 1.0: initial release</p>
+		</div>
+	</div>
+</div>
+
+<script>
+function refreshChart() {
+	if(window.myPolarArea!==undefined)
+		window.myPolarArea.destroy();
+	var polarData = $('[ng-controller="SignalStrengthController"]').scope().polarData;
+	var ctx = document.getElementById("polar-area").getContext("2d");
+	window.myPolarArea = new Chart(ctx).PolarArea(polarData, {
+		responsive:true,
+		animation:false
+	});
+}
+</script>

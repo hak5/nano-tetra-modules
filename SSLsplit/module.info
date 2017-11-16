@@ -1,0 +1,10 @@
+{
+    "author": "Whistle Master",
+    "description": "Perform man-in-the-middle attacks using SSLsplit",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "SSLsplit",
+    "version": "1.0"
+}

@@ -1,0 +1,118 @@
+<!-- Foxtrot (C) 2016 <foxtrotnull@gmail.com> -->
+<div>
+	<div class="row">
+		<div class="col-md-7">
+			<div class="panel panel-default" ng-controller="ModuleMakerGenerator">
+				<div class="panel-heading">
+					<h3 class="panel-title">Generate 
+
+						<button type="button" class="close pull-right" data-toggle="modal" data-target="#information" aria-label="Close"><span aria-hidden="true">i</span></button>
+					</h3>
+				</div>
+				<div class="panel-body">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Title</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control" ng-model="moduleTitle" placeholder="Some Module">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Description</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control" ng-model="moduleDesc" placeholder="This is an example module">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Version</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control" ng-model="moduleVersion" placeholder="1.0">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Author</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control" ng-model="moduleAuthor" placeholder="Author">
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-7 col-md-offset-2">
+								<button class="btn btn-success" ng-click="generateModule();">Generate</button>
+							</div>
+						</div>
+					</form>
+
+					<p class="well well-sm alert-success" ng-show="generateSuccess">Successfully generated module <b>{{moduleName}}</b></p>
+					<p class="well well-sm alert-danger" ng-show="generateFailure">{{generateFailure}}</p>
+				</div>
+			</div>
+			<div id="information" class="modal fade" role="dialog">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title">Information</h4>
+						</div>
+						<div class="modal-body">
+							<h3>module.html</h3>
+							<p>This folder contains the HTML for your module to be displayed within the UI. The HTML, Javascript and PHP all work together to create a responsive and dynamic module.</p>
+
+							<h3>module.info</h3>
+							<p>This simple JSON file contains the basic information about your module, such as name, version and author.</p>
+
+							<h3>js/</h3>
+							<p>The js folder contains all of the Javascript for your module. Note that you do not need to include jquery or bootstrap libraries as they are already built into the UI.</p>
+
+							<h3>api/</h3>
+							<p>The api folder contains the PHP for your module. The <b>module.php</b> file must contain a class that extends the <b>Module</b> class.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default" ng-controller="ModuleMakerManager">
+				<div class="panel-heading">
+					<h3 class="panel-title" title="Modules are stored at /pineapple/modules">Manage
+					<button type="button" ng-click="getInstalledModules();" class="close pull-right"aria-label="Refresh"><span aria-hidden="true">&#8635;</span></button>
+					</h3>
+				</div>
+				<div class="table-responsive table-dropdown">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Module</th>
+								<th>Version</th>
+								<th>Description</th>
+								<th>Author</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="(moduleName, module) in installedModules" ng-hide="(module['type'] === 'System')">
+								<td>
+									{{ module['title'] }}
+								</td>
+								<td>
+									{{ module['version'] }}
+								</td>
+								<td>
+									{{ module['description'] }}
+								</td>
+								<td>
+									{{ module['author'] }}
+								</td>
+								<td>
+									<button type="button" class="btn btn-danger btn-xs btn-fixed-length" ng-click="removeModule(moduleName)">Remove</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<p class="well well-sm alert-success" ng-show="removedModule">Successfully removed module</p>
+			</div>
+		</div>
+	</div>
+</div>

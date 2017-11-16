@@ -1,0 +1,12 @@
+<h4 style='text-align: center'>If you click the <strong>Use Default</strong> button Portal Auth will use sud0nick's personal server to check for captive portals.</h4><br />
+
+<strong>Test Site</strong><br />
+Enter a URL to an internet web site.  This is the site that Portal Auth will attempt to reach to determine if a captive portal is blocking your connection.  This field can also be used to clone a site at the specified URL.
+<br /><br />
+
+<strong>Expected Data</strong><br />
+This is the data you expect Portal Auth to receive when accessing Test Website.  It is recommended that you leave these settings at their default as they have been tested.  If you change them make sure you know exactly what data is coming from the Test Website otherwise you will receive a false positive.
+<br /><br />
+
+<strong>Portal Archive</strong><br />
+This is the location where you store your portals.  If you want to be able to see your portal in Evil Portal II then you must use either /sd/portals/ or /root/portals/<br /><strong>*ALWAYS*</strong> end this directory with a forward slash (/). If you don't, the cloner will not be able to find the archive.

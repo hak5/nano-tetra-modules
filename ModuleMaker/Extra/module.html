@@ -1,0 +1,14 @@
+<!-- This HTML has bootstrap classes such as "col-md-12" and "jumbotron". For more information, see http://getbootstrap.com/css/ -->
+<!-- This HTML makes use of AngularJS data-bindings and controllers. For more information, see https://docs.angularjs.org/api/ -->
+<!-- Don't forget to look at the module.js and module.php files too! -->
+<!-- This HTML is a template for generated modules via the Module Maker. -->
+
+<div class="col-md-12" ng-controller="ExampleController"> <!-- This special argument wires the HTML to your controller (in module.js) -->
+	<div class="jumbotron" style="border-radius: 7px;">
+		<div class="container">
+			<h1>{{ greeting }}</h1> <!-- This is an AngularJS data binding -->
+			<p>{{ content }}</p>    <!-- They represent the $scope.xxxxx inside of your module.js -->
+		</div>
+	</div>
+</div>
+

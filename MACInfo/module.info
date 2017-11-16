@@ -1,0 +1,10 @@
+{
+    "author": "DJEngineer",
+    "description": "Lookup information on MAC Addresses",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "MAC Info",
+    "version": "1.1"
+}

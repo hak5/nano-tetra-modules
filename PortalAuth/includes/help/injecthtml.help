@@ -1,0 +1,3 @@
+<p>
+This is the HTML code that will be injected into the cloned portal.  This is good for adding additional elements to the page but should be limited to modals and other things that rely on InjectJS.  The reason for this is that the HTML code will be injected near the end of the cloned portal which would put your elements at the bottom of the page.
+</p>

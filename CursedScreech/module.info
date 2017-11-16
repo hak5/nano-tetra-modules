@@ -1,0 +1,10 @@
+{
+    "author": "sud0nick",
+    "description": "Securely control compromised systems.",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "CursedScreech",
+    "version": "1.2"
+}

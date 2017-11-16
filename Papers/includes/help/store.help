@@ -1,0 +1,21 @@
+<strong>Encrypted</strong><br />
+Displays if the private key (.pem) is encrypted.  Does not include encryption on .pfx containers.
+<br /><br />
+
+<strong>PineSSL / PineSSH</strong><br />
+For TLS/SSL keys this button configures SSL on the Pineapple or swaps the current SSL keys with those selected.
+<br />
+For SSH key pairs this button has two modes (the state does not change for TLS/SSL keys):
+<br /><br />
+<ul>
+	<li><img src="/modules/Papers/includes/icons/glyphicons-204-lock.png"/>&nbsp&nbsp;Add key to /root/.ssh/authorized_keys to allow connections to users who hold the private key.<br /><br />
+	<li><img src="/modules/Papers/includes/icons/glyphicons-205-unlock.png"/>&nbsp;&nbsp;Revoke key from /root/.ssh/authorized_keys to deny connections from those who use the private key.
+</ul>
+<br />
+
+<strong>Download</strong><br />
+Packages the keys in the selected row into a zip archive and downloads it.
+<br /><br />
+
+<strong>Delete</strong><br />
+Removes the selected keys from the SSL store.  This can't be undone.

@@ -1,0 +1,10 @@
+{
+    "author": "sud0nick",
+    "description": "A TLS/SSL and SSH certificate generator/manager.",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "Papers",
+    "version": "1.4"
+}

@@ -1,0 +1,640 @@
+<!-- CursedScreech by sud0nick (C) 2016 -->
+
+<script>
+$(document).on('mouseenter', '.cs_hoverSuccess', function() {
+	$(this).addClass("btn-success");
+}).on('mouseleave', '.cs_hoverSuccess', function(){
+	$(this).removeClass("btn-success");
+});
+
+$(document).on('mouseenter', '.cs_hoverPrimary', function() {
+	$(this).addClass("btn-primary");
+}).on('mouseleave', '.cs_hoverPrimary', function(){
+	$(this).removeClass("btn-primary");
+});
+
+$(document).on('mouseenter', '.cs_hoverInfo', function() {
+	$(this).addClass("btn-info");
+}).on('mouseleave', '.cs_hoverInfo', function(){
+	$(this).removeClass("btn-info");
+});
+
+$(document).on('mouseenter', '.cs_hoverDanger', function() {
+	$(this).addClass("btn-danger");
+}).on('mouseleave', '.cs_hoverDanger', function(){
+	$(this).removeClass("btn-danger");
+});
+</script>
+
+<div class="row" ng-controller="CursedScreechController">
+
+	<!-- ==================== -->
+	<!--  BEGIN STATUS PANEL  -->
+	<!-- ==================== -->
+	
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">CursedScreech Status</h3>
+			</div>
+			<div class="panel-body">
+				<div class="container-fluid">
+					
+					<div class="row pull-right">
+						<button type="button" class="btn" data-toggle="modal" data-target="#cs_viewLogInfo" ng-click="readLog('status.help','help');">?</button>
+					</div>
+					<br />
+					<div class="row">
+						<div class="col-md-3">
+							<button type="button" class="btn btn-sm btn-success" ng-show="seinButton=='Start'" ng-hide="seinButton=='Stop'" ng-disabled="showSeinThrobber" ng-click="startProc('sein.py');">Start</button>
+							<button type="button" class="btn btn-sm btn-danger" ng-show="seinButton=='Stop'" ng-hide="seinButton=='Start'" ng-disabled="showSeinThrobber" ng-click="stopProc('sein.py');">Stop</button>
+							<h4 ng-show="!showSeinThrobber" ng-hide="showSeinThrobber">Sein: {{ seinStatus }}</h4>
+							<h4 ng-show="showSeinThrobber" ng-hide="!showSeinThrobber">Sein: <img src='/img/throbber.gif'/></h4>
+						</div>
+						
+						<div class="col-md-3">
+							<button type="button" class="btn btn-sm btn-sm btn-success" ng-show="kuroButton=='Start'" ng-hide="kuroButton=='Stop'" ng-disabled="showKuroThrobber" ng-click="startProc('kuro.py');">Start</button>
+							<button type="button" class="btn btn-sm btn-sm btn-danger" ng-show="kuroButton=='Stop'" ng-hide="kuroButton=='Start'" ng-disbaled="showKuroThrobber" ng-click="stopProc('kuro.py');">Stop</button>
+							<h4 ng-show="!showKuroThrobber" ng-hide="showKuroThrobber">Kuro: {{ kuroStatus }}</h4>
+							<h4 ng-show="showKuroThrobber" ng-hide="!showKuroThrobber">Kuro: <img src='/img/throbber.gif'/></h4>
+						</div>
+						
+						<div class="col-md-3">
+							<button type="button" class="btn btn-sm btn-success" ng-show="!dependsInstalled" ng-hide="dependsInstalled" ng-disabled="dependsProcessing" ng-click="depends('install');">Install</button>
+							<button type="button" class="btn btn-sm btn-danger" ng-show="dependsInstalled" ng-hide="!dependsInstalled" ng-disabled="dependsProcessing" ng-click="depends('remove');">Uninstall</button>
+							<img ng-show="dependsProcessing" ng-hide="!dependsProcessing" src='/img/throbber.gif'/>
+							<h4>Dependencies</h4>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- ==================== -->
+	<!--   END STATUS PANEL   -->
+	<!-- ==================== -->
+	
+	<!-- ==================== -->
+	<!-- BEGIN SETTINGS PANEL -->
+	<!-- ==================== -->
+	
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading pointer" data-toggle="collapse" data-target="#settings">
+				<h3 class="panel-title">Settings
+				<img ng-show="showSettingsThrobber" ng-hide="!showSettingsThrobber" src='/img/throbber.gif'/></h3>
+			</div>
+			<div id="settings" class="panel-collapse collapse">
+				<div class="panel-body">
+					<div class="container-fluid">
+						<div class="row pull-right">
+							<button type="button" class="btn" data-toggle="modal" data-target="#cs_viewLogInfo" ng-click="readLog('settings.help','help');">?</button>
+						</div>
+						<br />
+						<div class="row">
+							<div class="col-md-8">
+								<div class="row form-group">
+									<label class="col-md-2 control-label">Listening Interface</label>
+									<div class="col-md-6">
+										<select class="form-control" ng-model="settings_ifaceName" ng-options="iface for iface in available_interfaces">
+										</select>
+									</div>
+								</div>
+								<div class="row form-group">
+									<label class="col-md-2 control-label">Multicast Group</label>
+									<div class="col-md-6">
+										<input type="text" ng-model="settings_mcastGroup" class="form-control">
+									</div>
+									<div class="col-md-2">
+										<button type="button" class="btn btn-sm" ng-click="useDefault('mcast_group');">Default</button>
+									</div>
+								</div>
+								<div class="row form-group">
+									<label class="col-md-2 control-label">Multicast Port</label>
+									<div class="col-md-6">
+										<input type="text" ng-model="settings_mcastPort" class="form-control">
+									</div>
+									<div class="col-md-2">
+										<button type="button" class="btn btn-sm" ng-click="useDefault('mcast_port');">Default</button>
+									</div>
+								</div>
+								<div class="row form-group">
+									<label class="col-md-2 control-label">Heartbeat Interval</label>
+									<div class="col-md-6">
+										<input type="text" ng-model="settings_hb_interval" class="form-control">
+									</div>
+									<div class="col-md-2">
+										<button type="button" class="btn btn-sm" ng-click="useDefault('hb_interval');">Default</button>
+									</div>
+								</div>
+								<div class="row form-group">
+									<label class="col-md-2 control-label">Kuro Keys</label>
+									<div class="col-md-6">
+										<input type="text" ng-model="settings_kuroKey" class="form-control">
+									</div>
+									<div class="col-md-2">
+										<button type="button" class="btn btn-sm" data-toggle="modal" data-target="#cs_keyModal" ng-click="loadCertificates('kuro');">SSL Store</button>
+									</div>
+								</div>
+								<div class="row form-group">
+									<label class="col-md-2 control-label">Target Keys</label>
+									<div class="col-md-6">
+										<input type="text" ng-model="settings_targetKey" class="form-control">
+									</div>
+									<div class="col-md-2">
+										<button type="button" class="btn btn-sm" data-toggle="modal" data-target="#cs_keyModal" ng-click="loadCertificates('target');">SSL Store</button>
+									</div>
+								</div>
+								<div class="row form-group">
+									<div class="col-md-6">
+										<div class="checkbox">
+											<label><input type="checkbox" ng-model="settings_auth">Use PortalAuth for authorization</label>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					
+						<div class="row">
+							<div class="col-md-2" style="padding-top: 5px">
+								<button type="button" class="btn cs_hoverInfo fixed-width" style="width:175px" ng-click="updateSettings();"><img src="/modules/CursedScreech/includes/icons/glyphicons-447-floppy-save.png"/>&nbsp;&nbsp;Save Settings</button>
+							</div>
+							<div class="col-md-2" style="padding-top: 5px">
+								<button type="button" class="btn cs_hoverInfo fixed-width" style="width:175px" ng-click="genPayload('cs');"><img src="/modules/CursedScreech/includes/icons/glyphicons-201-download.png"/>&nbsp;&nbsp;C# Payload</button>
+							</div>
+							<div class="col-md-2" style="padding-top: 5px">
+								<button type="button" class="btn cs_hoverInfo fixed-width" style="width:175px" ng-click="genPayload('python');"><img src="/modules/CursedScreech/includes/icons/glyphicons-201-download.png"/>&nbsp;&nbsp;Python Payload</button>
+							</div>
+						</div>
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- ================== -->
+	<!-- END SETTINGS PANEL -->
+	<!-- ================== -->
+	
+	<!-- ==================================== -->
+	<!-- BEGIN ACTIVITY LOG AND TARGET PANELS -->
+	<!-- ==================================== -->
+	
+	<div class="col-md-12">
+	<div class="row">
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel-heading pointer" data-toggle="collapse" data-target="#cs_activityLog">
+					<h3 class="panel-title">Activity Log
+				</div>
+				<div id="cs_activityLog" class="panel-collapse collapse">
+					<div class="panel-body" style="height: 500px">
+						<div class="container-fluid">
+							<div class="pull-right">
+								<button type="button" class="btn" data-toggle="modal" data-target="#cs_viewLogInfo" ng-click="readLog('activitylog.help','help');">?</button>
+								<br /><br />
+							</div>
+							<textarea ng-model="activityLogData" style="width: 100%; height: 350px" readonly></textarea>
+							<button type="button" class="btn cs_hoverInfo" ng-click="clearLog('activity.log', 'forest');"><img src="/modules/CursedScreech/includes/icons/glyphicons-198-remove-circle.png"/>&nbsp;&nbsp;Clear Log</button>
+							<button type="button" class="btn cs_hoverInfo" ng-click="downloadLog('activity.log', 'forest');"><img src="/modules/CursedScreech/includes/icons/glyphicons-201-download.png"/>&nbsp;&nbsp;Download</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel-heading pointer" data-toggle="collapse" data-target="#cs_targetLog">
+					<h3 class="panel-title">Targets
+				</div>
+				<div id="cs_targetLog" class="panel-collapse collapse">
+					<div class="panel-body" style="height: 500px">
+						<div class="container-fluid">
+
+							<div class="pull-right">
+								<button type="button" class="btn" data-toggle="modal" data-target="#cs_viewLogInfo" ng-click="readLog('targets.help','help');">?</button>
+								<br /><br />
+							</div>
+							
+							<div style="text-align: center">
+								<button type="button" class="btn" ng-class="{ 'btn-success' : showTargetPane }" ng-click="swapPane(showTargetPane);">Targets</button>
+								<button type="button" class="btn" ng-class="{ 'btn-success' : showPayloadPane }" ng-click="getPayloads(); swapPane(showPayloadPane);">Payloads</button>
+							</div>
+							
+							
+							<!-- Target Pane -->
+							<div ng-show="showTargetPane" ng-hide="!showTargetPane">
+								<div class="form-group">
+									<div class="form-group">
+										<select class="form-control block" ng-model="selectedCmd" ng-disabled="kuroButton=='Start'" ng-change="ezCommandChange();" ng-options="value as key for (key, value) in ezcmds">
+											<option value="" selected>Select...</option>
+										</select>
+										<br />
+										<div ng-show="showPayloadSelect">
+											<select ng-disabled="kuroButton=='Start'" class="form-control" ng-model="selectedPayload" ng-options="payload.fileName for payload in payloads">
+												<option value="" disabled selected>Select Payload...</option>
+											</select>
+											<br />
+											<h4>Remote upload path</h4>
+										</div>
+										<input type="text" ng-model="targetCommand" class="form-control block" ng-disabled="kuroButton=='Start'" placeholder="Send command to target"><br />
+										<table style="width: 100%">
+											<tr><td>
+												<button type="button" class="btn btn-sm cs_hoverInfo" style="width: 100px;" ng-disabled="kuroButton=='Start'" ng-click="sendCommand();">Send</button>
+											</td><td align="right">
+												<button type="button" class="btn btn-sm cs_hoverInfo" data-toggle="modal" data-target="#ezcmds_modal">EZ Cmds</button>
+											</td></tr>
+										</table>
+									</div>
+								</div>
+							
+								<div class="table-responsive table-dropdown">
+									<table class="table">
+										<thead>
+											<tr>
+												<th><input type="checkbox" ng-change="selectAllTargets();" ng-model="cbox"></th>
+												<th>Socket</th>
+												<th>Recv Log</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr ng-repeat="target in targets">
+												<td><input type="checkbox" name="targetSelect" ng-model="target.checked"/></td>
+												<td>{{ target.socket }}</td>
+												<td>
+													<button type="button" class="btn btn-sm cs_hoverInfo" data-toggle="modal" data-target="#cs_viewRecvData" ng-click="readLog(target.socket.split(':')[0], 'targets');"><img src="/modules/CursedScreech/includes/icons/glyphicons-28-search.png"/></button>
+													<button type="button" class="btn btn-sm cs_hoverInfo" ng-click="downloadLog(target.socket.split(':')[0], 'targets');"><img src="/modules/CursedScreech/includes/icons/glyphicons-201-download.png"/></button>
+													<button type="button" class="btn btn-sm cs_hoverDanger" ng-click="clearLog(target.socket.split(':')[0], 'targets');"><img src="/modules/CursedScreech/includes/icons/glyphicons-198-remove-circle.png"/></button>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								<table style="width: 100%">
+									<tr><td>
+										<button type="button" class="btn btn-sm cs_hoverInfo" ng-click="clearTargets();"><img src="/modules/CursedScreech/includes/icons/glyphicons-198-remove-circle.png"/>&nbsp;&nbsp;Clear Targets</button>
+									</td><td align="right">
+										<button type="button" class="btn btn-sm cs_hoverInfo" data-toggle="modal" data-target="#cs_allTargetLogs" ng-click="getLogs('targets');"><img src="/modules/CursedScreech/includes/icons/glyphicons-37-file.png"/>&nbsp;&nbsp;All Logs</button>
+									</td></tr>
+								</table>
+							</div>
+							
+							<!-- Payload Pane -->
+							<div ng-show="showPayloadPane" ng-hide="!showPayloadPane">
+								<table width="100%">
+									<tr><td align="right">
+										<img ng-show="uploadLimitThrobber" ng-hide="!uploadLimitThrobber" src='/img/throbber.gif'/>
+										<a href="" ng-show="!uploadLimitThrobber" ng-hide="uploadLimitThrobber" ng-click="configUploadLimit();">Configure Upload Limit</a>
+									</td></tr>
+								</table>
+								<div>
+									<table class="table">
+									<thead>
+										<th>Payload</th>
+										<th>Actions</th>
+									</thead>
+									<tbody>
+										<tr ng-repeat="payload in payloads">
+											<td>{{ payload.fileName }}</td>
+											<td><button class="btn cs_hoverDanger" ng-click="deletePayload(payload);"><img src="/modules/CursedScreech/includes/icons/glyphicons-17-bin.png"/></button>
+											<td></td>
+										</tr>
+									</tbody>
+									</table>
+									
+									<div style="text-align:center">
+										<button class="btn cs_hoverInfo" data-toggle="modal" data-target="#cs_uploaderView"><img src="/modules/CursedScreech/includes/icons/glyphicons-202-upload.png"/>&nbsp;&nbsp;Upload Payload</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+	
+	<!-- ====================== -->
+	<!-- END ACTIVITY LOG PANEL -->
+	<!-- ====================== -->
+	
+	<!-- =================== -->
+	<!--   BEGIN KEY MODAL   -->
+	<!-- =================== -->
+	
+	<div id="cs_keyModal" class="modal fade" rold="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<table style="width: 100%">
+						<tr><td align="left">
+							<h3 class="panel-title">Certificate Store</h3>
+						</td><td align="right">
+							<button type="button" class="btn" ng-show="!showCertThrobber" ng-hide="showCertThrobber" data-toggle="modal" data-target="#cs_viewLogInfo" ng-click="readLog('key.help','help');">?</button>
+						</td></tr>
+					</table>
+				</div>
+				<div class="table-responsive table-dropdown">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Type</th>
+								<th>Files</th>
+								<th>Encrypted</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="(index,data) in certificates">
+								<td>{{ data.Name }}</td>
+								<td>{{ data.KeyType }}</td>
+								<td>{{ data.Type }}</td>
+								<td>{{ data.Encrypted }}</td>
+								<td>
+									<button type="button" class="btn btn-sm cs_hoverInfo" ng-disabled="selectKuroKey && data.Encrypted == 'Yes'" ng-click="selectKey(data.Name);">Select</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<div style="text-align:center">
+						<h4>{{ keyErrorMessage }}</h4>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- ================= -->
+	<!--   END KEY MODAL   -->
+	<!-- ================= -->
+	
+	<!-- ==================== -->
+	<!--  BEGIN EZCMDS MODAL  -->
+	<!-- ==================== -->
+	
+	<div id="ezcmds_modal" class="modal fade" rold="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h3>EZ Commands</h3>
+				</div>
+				<div class="modal-body">
+					<table class="table">
+						<thead>
+							<tr>
+								<th><button type="button" class="btn cs_hoverInfo" data-toggle="modal" data-target="#newEZCmdModal" ng-click=""><img src="/modules/CursedScreech/includes/icons/glyphicons-433-plus.png"/></button></th>
+								<th>Name</th>
+								<th>Command</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="(key, value) in ezcmds">
+								<td>
+									<button type="button" class="btn cs_hoverDanger" ng-disabled="key == 'Send File'" ng-click="deleteEZCmd(key);"><img src="/modules/CursedScreech/includes/icons/glyphicons-198-remove-circle.png"/></button>
+								</td>
+								<td style="width: 200px">
+									<label class="form-label">{{ key }}</label>
+								</td>
+								<td>
+									<input type="text" class="form-control" ng-model="ezcmds[key]" />
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<div style="text-align: center">
+						<button type="button" class="btn cs_hoverSuccess" style="width: 200px" ng-click="saveEZCmds();"><img src="/modules/CursedScreech/includes/icons/glyphicons-447-floppy-save.png"/>&nbsp;&nbsp;Save EZ Cmds</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div id="newEZCmdModal" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal=body">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Command</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									<input type="text" class="form-control" ng-model="newCmdName" />
+								</td>
+								<td>
+									<input type="text" class="form-control" ng-model="newCmdCommand" />
+								</td>
+								<td>
+									<button class="btn cs_hoverSuccess" data-toggle="modal" data-target="#newEZCmdModal" ng-click="addEZCmd();"><img src="/modules/CursedScreech/includes/icons/glyphicons-447-floppy-save.png"/>&nbsp;&nbsp;Save</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- ==================== -->
+	<!--   END EZCMDS MODAL   -->
+	<!-- ==================== -->
+	
+	<!-- ======================== -->
+	<!--  BEGIN TARGET LOG MODAL  -->
+	<!-- ======================== -->
+	
+	<div id="cs_allTargetLogs" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h3>All Target Logs</h3>
+				</div>
+				<div class="modal-body">
+					<table class="table">
+						<thead>
+							<th>Socket</th>
+							<th> Recv Log</th>
+						</thead>
+						<tbody>
+							<tr ng-repeat="log in allTargetLogs">
+								<td>{{ log }}</td>
+								<td>
+									<button type="button" class="btn btn-sm cs_hoverInfo" data-toggle="modal" data-target="#cs_viewRecvData" ng-click="readLog(log, 'targets');"><img src="/modules/CursedScreech/includes/icons/glyphicons-28-search.png"/></button>
+									<button type="button" class="btn btn-sm cs_hoverInfo" ng-click="downloadLog(log, 'targets');"><img src="/modules/CursedScreech/includes/icons/glyphicons-201-download.png"/></button>
+									<button type="button" class="btn btn-sm cs_hoverDanger" ng-click="deleteLog(log, 'targets');"><img src="/modules/CursedScreech/includes/icons/glyphicons-198-remove-circle.png"/></button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- ====================== -->
+	<!--  END TARGET LOG MODAL  -->
+	<!-- ====================== -->
+	
+	<!-- ==================== -->
+	<!-- BEGIN RECVDATA MODAL -->
+	<!-- ==================== -->
+	
+	<div id="cs_viewRecvData" class="modal fade" style="max-height: 900px; overflow-y:auto;" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h3>{{ currentLogTitle }}</h3>
+				</div>
+				<div class="modal-body">
+					<pre>{{ currentLogData }}</pre>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- ==================== -->
+	<!--  END RECVDATA MODAL  -->
+	<!-- ==================== -->
+	
+	
+	<!-- =================== -->
+	<!--   BEGIN LOG MODAL   -->
+	<!-- =================== -->
+	
+	<div id="cs_viewLogInfo" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h3>{{ currentLogTitle }}</h3>
+				</div>
+				<div class="modal-body">
+					<p ng-bind-html="currentLogData"></p>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- ================= -->
+	<!--   END LOG MODAL   -->
+	<!-- ================= -->
+	
+	<!-- ==================================== -->
+	<!-- BEGIN ERROR LOG AND CHANGELOG PANELS -->
+	<!-- ==================================== -->
+	
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading pointer" data-toggle="collapse" data-target="#errorlog">
+				<h3 class="panel-title">Error Logs</h3>
+			</div>
+			<div id="errorlog" class="panel-body panel-collapse collapse">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Log Name</th>
+							<th>Actions</th>
+					</thead>
+					<tbody>
+						<tr ng-repeat="log in logs">
+							<td>{{ log }}</td>
+							<td>
+								<button type="button" class="btn btn-sm cs_hoverInfo" data-toggle="modal" data-target="#cs_viewLogInfo" ng-click="readLog(log, 'error');"><img src="/modules/CursedScreech/includes/icons/glyphicons-28-search.png"/></button>
+								<button type="button" class="btn btn-sm cs_hoverDanger" ng-click="deleteLog(log, 'error');">Delete</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+		
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading pointer" data-toggle="collapse" data-target="#changelog">
+				<h3 class="panel-title">Change Log</h3>
+			</div>
+			<div id="changelog" class="panel-body panel-collapse collapse">
+				<table class="table">
+				<thead>
+					<tr>
+					<th>Version</th>
+					<th>Actions</th>
+				</thead>
+				<tbody>
+					<tr ng-repeat="version in changelogs">
+						<td>{{ version }}</td>
+						<td>
+							<button type="button" class="btn btn-sm cs_hoverInfo" data-toggle="modal" data-target="#cs_viewLogInfo" ng-click="readLog(version, 'changelog');"><img src="/modules/CursedScreech/includes/icons/glyphicons-28-search.png"/></button>
+						</td>
+					</tr>
+				</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	
+	<!-- ================================== -->
+	<!-- END ERROR LOG AND CHANGELOG PANELS -->
+	<!-- ================================== -->
+	
+	
+	<!-- ====================== -->
+	<!--  BEGIN UPLOADER MODAL  -->
+	<!-- ====================== -->
+	
+	<div id="cs_uploaderView" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<div class="btn btn-primary">
+						<label for="selectedFiles" style="cursor: pointer">Add files</label>
+					</div>
+				</div>
+				<div class="modal-body">
+						
+					<table class="table">
+					<thead>
+						<th>File</th>
+						<th>Actions</th>
+					</thead>
+					<tbody>
+						<tr ng-repeat="file in selectedFiles">
+							<td>{{ file.name }}</td>
+							<td><button class="btn cs_hoverDanger" ng-click="removeSelectedFile(file);"><img src="/modules/CursedScreech/includes/icons/glyphicons-17-bin.png"/></td>
+						</tr>
+					</tbody>
+					</table>
+					
+					<div style="text-align:center">
+						<input type="file" accept=".exe, .ps1, .bat" id="selectedFiles" onchange="angular.element(this).scope().setSelectedFiles()" style="visibility: hidden;" multiple>
+						<img ng-show="uploading" ng-hide="!uploading" src='/img/throbber.gif'/>
+						<button class="btn" ng-show="!uploading" ng-hide="uploading" ng-class="{'cs_hoverInfo' : selectedFiles.length > 0}" ng-disabled="selectedFiles.length == 0" ng-click="uploadFile();"><img src="/modules/CursedScreech/includes/icons/glyphicons-202-upload.png"/>&nbsp;&nbsp;Upload</button>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- ==================== -->
+	<!--  END UPLOADER MODAL  -->
+	<!-- ==================== -->
+	
+</div>
+

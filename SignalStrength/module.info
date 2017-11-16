@@ -1,0 +1,10 @@
+{
+    "author": "r3dfish",
+    "description": "Signal Strength gives real time info about wireless devices in range",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "SignalStrength",
+    "version": "1.0"
+}

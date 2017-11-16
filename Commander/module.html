@@ -1,0 +1,62 @@
+<div class="row">
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Commander
+					<button type="button" class="close pull-right" data-toggle="modal" data-target="#information" aria-label="Close"><span aria-hidden="true">i</span></button></h3></h3>
+				</div>
+			</div>
+		</div>
+		<div id="information" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Information</h4>
+					</div>
+					<div class="modal-body">
+						<h3><center>Commander 1.0</center></h3>
+						<h5><center>Written by Foxtrot</center></h5>
+						<h5><center>This module allows you to control your WiFi Pineapple over IRC by acting as a client connecting to your specified server. You can then specify custom commands to execute by talking to it like it was a person.</center></h5>
+						<br/><br/>
+						<h5 class="text-danger"><center>Please use Responsibly!</center></h5>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-5" ng-controller="CommanderController">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Control</h3>
+				</div>
+				<div class="panel-body">
+					Status : <span class="text-success" ng-show="commanderRunning">Running</span> <span ng-hide="commanderRunning" class="text-danger">Not Running!</span>
+
+					<button class="btn btn-sm btn-primary pull-right" ng-click="startCommander()" ng-hide="commanderRunning">Start</button>
+					<button class="btn btn-sm btn-primary pull-right" ng-click="stopCommander()" ng-show="commanderRunning">Stop</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-7" ng-controller="CommanderManageController">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Manage
+						<button type="button" ng-click="getConfiguration();" class="close pull-right"aria-label="Refresh"><span aria-hidden="true">&#8635;</span></button></h3>
+					</div>
+					<div class="panel-body">
+						<p>Edit configuration:</p>
+						<p>
+							<textarea class="form-control" rows="15" ng-model="CommanderConfiguration"></textarea>
+						</p>
+
+						<p class="well well-sm alert-success" ng-show="configSaved">Configuration Saved</p>
+						<button type="submit" class="btn btn-sm btn-primary" ng-click="saveConfiguration()">Save Configuration</button>
+						<button type="submit" class="btn btn-sm btn-warning" ng-click="restoreDefaultConfiguration()">Restore Defaults</button>
+					</div>
+				</div>
+			</div>
+		</div>

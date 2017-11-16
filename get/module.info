@@ -1,0 +1,10 @@
+{
+    "author": "dustbyter",
+    "description": "Profile clients through the browser plugins supported by their browser",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "get",
+    "version": "1.2"
+}

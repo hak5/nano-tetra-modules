@@ -1,0 +1,341 @@
+<div class="row" ng-controller="EvilPortalController">
+
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <a href="javascript:;" data-toggle="collapse" data-target="#collapseControls" class="text-muted"><h4
+                        class="panel-title">Controls <img src="/img/throbber.gif" ng-show="throbber"/></h4></a>
+            </div>
+            <div id="collapseControls" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <table style="width:100%">
+                        <tr ng-repeat="control in controls" ng-show="control.visible">
+                            <td style="padding-bottom: .5em;" class="text-muted">{{ control.title }}</td>
+                            <!--<td style="text-align:right">{{ control.status }}</td>-->
+                            <td style="text-align:right;padding-bottom: .5em;">
+                                <button class="btn btn-default btn-sm" style="width:75px"
+                                        ng-click="handleControl(control)" ng-hide="control.throbber">{{ control.status
+                                    }}
+                                </button>
+                                <img src="/img/throbber.gif" ng-show="control.throbber"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <a href="javascript:;" data-toggle="collapse" data-target="#collapseMessages" class="text-muted"><h4
+                        class="panel-title">Evil Portal Messages</h4></a>
+            </div>
+            <div id="collapseMessages" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <p ng-show="(messages.length == 0)" class="text-muted"><i>No Messages.</i></p>
+                    <a ng-hide="(messages.length < 2)" ng-click="messages = []" class="pull-right" href="javascript:;">Clear
+                        All</a>
+                    <table style="width:100%" ng-hide="(messages.length == 0)">
+                        <tr ng-repeat="message in messages">
+                            <td>
+                                <hr/>
+                                <h5><b>{{ message.title }}</b> <a ng-click="dismissMessage($index)" href="javascript:;"
+                                                                  class="pull-right">Dismiss</a></h5>
+                                <p class="text-muted"><i>{{ message.msg }}</i></p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--<div ng-show="dependencies">-->
+    <div class="panel-group" id="accordion">
+        <div class="col-md-9">
+            <!-- Library panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h5 class="panel-title"><a href="javascript:;" data-toggle="collapse" data-parent="#accordion"
+                                               data-target="#collapseLibrary" class="text-muted">Work Bench</a></h5>
+                </div>
+                <div id="collapseLibrary" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                        <div class="input-group" ng-show="library">
+                            <input type="text" class="form-control" placeholder="PortalName" name="portalName"
+                                   ng-model="newPortalName">
+		                    <span class="input-group-btn">
+		                        <button ng-disabled="newPortalName == ''" class="btn btn-default" type="button" ng-click="createNewPortal()">Create New Portal</button>
+		                    </span>
+                        </div>
+                        <hr ng-show="library"/>
+                        <div ng-show="portals.length > 0 && library == true">
+                            <div class="table-responsive">
+                                <table class="table table-striped" align="center">
+                                    <thead>
+                                    <th>Portal Name</th>
+                                    <th>Location</th>
+                                    <th>Activate</th>
+                                    <th>Delete</th>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="portal in portals">
+                                        <td><a href="javascript:;" ng-click="getPortalFiles(portal)"><b>{{ portal.title
+                                            }}</b></a></td>
+                                        <td class="text-muted"><i>{{ portal.storage }}</i></td>
+                                        <td ng-hide="portal.active"><a href="javascript:;"
+                                                                       ng-click="activatePortal(portal)">Activate</a>
+                                        </td>
+                                        <td ng-show="portal.active"><a href="javascript:;"
+                                                                       ng-click="deactivatePortal(portal)">Deactivate</a>
+                                        </td>
+                                        <td ng-hide="portal.active"><a href="javascript:;" data-toggle="modal"
+                                                                       data-target="#deleteModal"
+                                                                       ng-click="deletePortalRequest(portal)"
+                                                                       ng-hide="portal.storage == 'active'">Delete</a>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div ng-hide="portals.length > 0 || library == false">
+                            <p class="text-muted text-center"><i>No Portals in Library to Display.</i></p>
+                        </div>
+
+                        <div ng-show="library == false">
+                            <button type="submit" class="btn btn-default btn-sm" ng-click="library = true">Back To
+                                Library
+                            </button>
+                            <hr />
+                            <h3>Contents of {{ workshopPortal.name }}</h3>
+
+                            <div class="table-responsive">
+                                <table class="table table-striped" align="center">
+                                    <thead>
+                                    <th>File Name</th>
+                                    <th>Edit</th>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="file in workshopPortal.files">
+                                        <td>{{ file }}</td>
+                                        <td><a href="javascript:;" ng-click="editPortal(workshopPortal, file)"
+                                               data-toggle="modal" data-target="#fileModal">Edit</a></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EvilPortal White List Panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h5 class="panel-title"><a href="javascript:;" data-toggle="collapse" data-parent="#accordion"
+                                               data-target="#collapseWhiteList" class="text-muted"
+                                               ng-click="getList('whiteList')">White List</a></h5>
+                </div>
+                <div id="collapseWhiteList" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <p class="text-muted">
+                            <i>This is a list of clients who are allowed to connect to the internet without ever viewing the captive portal.</i>
+                        </p>
+                        <p>
+                            <textarea class="form-control" rows="15" ng-model="whiteList" readonly></textarea>
+                        </p>
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="IP Address" name="ipaddress"
+                                   ng-model="whiteListInput">
+		                    <span class="input-group-btn">
+		                        <button class="btn btn-default" type="button"
+                                        ng-click="addWhiteListClient()">Add</button>
+		                        <button class="btn btn-default" type="button"
+                                        ng-click="removeWhiteListClient()">Remove</button>
+		                    </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EvilPortal Authorized Clients Panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h5 class="panel-title"><a href="javascript:;" data-toggle="collapse" data-parent="#accordion"
+                                               data-target="#collapseAuthorizedClients" class="text-muted"
+                                               ng-click="getList('accessList')">Authorized Clients</a></h5>
+                </div>
+                <div id="collapseAuthorizedClients" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <p class="text-muted" ng-show="running">
+                            <i>This is a list of clients who have been authorized through the captive portal.</i>
+                        </p>
+                        <p ng-show="running">
+                            <textarea class="form-control" rows="15" ng-model="accessList" readonly></textarea>
+                        </p>
+                        <div class="input-group" ng-show="running">
+                            <input type="text" class="form-control" placeholder="IP Address" name="ipaddress"
+                                   ng-model="accessListInput">
+		                    <span class="input-group-btn">
+		                        <button class="btn btn-default" type="button"
+                                        ng-click="authorizeClient()">Authorize</button>
+		                        <button class="btn btn-default" type="button" ng-click="revokeClient()">Revoke</button>
+		                    </span>
+                        </div>
+                        <div ng-hide="running">
+                            <p class="text-muted text-center"><i>Evil Portal must be started first.</i></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Preview Panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h5 class="panel-title"><a href="javascript:;" data-toggle="collapse" data-parent="#accordion"
+                                               data-target="#collapsePreview" ng-click="refreshLivePreview()"
+                                               class="text-muted">Live Preview</a></h5>
+                </div>
+                <div id="collapsePreview" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <div ng-show="running">
+                            <iframe src="http://172.16.42.1" style="width:100%;height:300px;border:none;"
+                                    id="livePreviewIframe"></iframe>
+                            <button type="submit" ng-click="refreshLivePreview()" class="btn btn-default btn-sm">
+                                Refresh
+                            </button>
+                        </div>
+                        <div ng-hide="running">
+                            <p class="text-muted text-center"><i>Evil Portal must be started first.</i></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Change Log Pannel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h5 class="panel-title"><a href="javascript:;" data-toggle="collapse" data-parent="#accordion"
+                                               data-target="#collapseChangelog" class="text-muted">Evil Portal Change
+                        Log</a></h5>
+                </div>
+                <div id="collapseChangelog" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <ul>
+                            <li><b>2.1</b></li>
+                            <ul>
+                                <li class="text-muted">Removed un-needed verbosity</li>
+                                <li class="text-muted">Made tab key indent in the editor instead of change elements</li>
+                                <li class="text-muted">Added confirmation dialogue box when deleting a portal</li>
+                                <li class="text-muted">Created auto-start feature</li>
+                                <li class="text-muted">Various other quality of life updates</li>
+                            </ul>
+                        </ul>
+                        <ul>
+                            <li><b>2.0</b></li>
+                            <ul>
+                                <li class="text-muted">Captive Portal is now purely iptables (because F***
+                                    NoDogSplash)
+                                </li>
+                            </ul>
+                        </ul>
+                        <ul>
+                            <li><b>1.0</b></li>
+                            <ul>
+                                <li class="text-muted">Initial Pineapple Nano Release</li>
+                            </ul>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--</div>-->
+
+    <div id="fileModal" class="modal fade" role="dialog">
+
+        <script type="text/javascript">
+            // Thanks to sud0nick on forums.hak5.org for this snippet
+            $(document).delegate('#evilportalEditor', 'keydown', function(e) {
+                var keyCode = e.keyCode || e.which;
+
+                if (keyCode == 9) {
+                    e.preventDefault();
+                    var start = $(this).get(0).selectionStart;
+                    var end = $(this).get(0).selectionEnd;
+
+                    // set textarea value to: text before caret + tab + text after caret
+                    $(this).val($(this).val().substring(0, start)
+                            + "\t"
+                            + $(this).val().substring(end));
+
+                    // put caret at right position again
+                    $(this).get(0).selectionStart =
+                            $(this).get(0).selectionEnd = start + 1;
+                }
+            });
+        </script>
+
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                            ng-click="editPortalFile = {}">&times;</button>
+                    <h4 class="modal-title">File Editor {{ editPortalFile.file }}</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label">File Name</label>
+                            <input type="text" class="form-control" ng-model="editPortalFile.file"
+                                   placeholder="Notes.txt" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">File Contents</label> <a href="javascript:;"
+                                                                                  ng-click="editPortalFile.code = ''">Clear</a>
+                            <textarea class="form-control" rows="10" ng-model="editPortalFile.code"
+                                      placeholder="Write some text here" id="evilportalEditor"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" ng-click="savePortalCode(editPortalFile)" class="btn btn-success pull-left"
+                            data-dismiss="modal">Save
+                    </button>
+                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal"
+                            ng-click="editPortalFile = {}">Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Delete file Modal -->
+    <div id="deleteModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" ng-click="portalToDelete = null; portalDeleteValidation = null">&times;</button>
+                    <h4 class="modal-title">Delete Portal {{ portalToDelete.title }}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>You are about to delete {{ portalToDelete.title }} on {{ portalToDelete.storage }} storage. Once you do this it can not be undone.</p>
+                    <p><b>Type the name of the portal you are trying to delete to continue.</b></p>
+                    <input type="text" class="form-control" placeholder="PortalName" name="portalName" ng-model="portalDeleteValidation">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary pull-left" data-dismiss="modal" ng-click="portalToDelete = null; portalDeleteValidation = null">Cancel</button>
+                    <button type="button" class="btn btn-danger pull-right" data-dismiss="modal" ng-click="deletePortal(portalToDelete)" ng-disabled="portalDeleteValidation != portalToDelete.title">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

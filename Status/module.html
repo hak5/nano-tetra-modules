@@ -1,0 +1,460 @@
+<div class="panel panel-default" ng-controller="Status_Controller"><div class="panel-heading"><h4 class="panel-title pull-left">{{title}}</h4><span class="pull-right">{{version}}</span><div class="clearfix"></div></div></div>
+
+<div class="row">
+  <div class="col-md-6" ng-controller="Status_SystemController">
+      <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title pull-left">System</h4>
+                <button type="button" class="btn btn-info pull-right btn-xs" ng-click="getInfo()">Refresh</button>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+              <form class="form-horizontal">
+
+                  <div class="form-group">
+                      <span class="col-sm-3"><strong>Machine</strong></span>
+                      <span class="col-sm-5">{{info.machine}}</span>
+                  </div>
+
+                  <div class="form-group">
+                      <span class="col-sm-3"><strong>Current Time</strong></span>
+                      <span class="col-sm-5">{{info.currentTime}}</span>
+                  </div>
+
+                  <div class="form-group">
+                      <span class="col-sm-3"><strong>Uptime</strong></span>
+                      <span class="col-sm-5">{{info.uptime}}</span>
+                  </div>
+
+                  <div class="form-group">
+                      <span class="col-sm-3"><strong>Hostname</strong></span>
+                      <span class="col-sm-5">{{info.hostname}}</span>
+                  </div>
+
+              </form>
+            </div>
+      </div>
+  </div>
+
+  <div class="col-md-6" ng-controller="Status_CPUController">
+      <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title pull-left">CPU</h4>
+                <div class="btn-group pull-right">
+                  <button type="button" class="btn btn-default btn-xs" ng-click="getSrc()" data-toggle="modal" data-target="#CPUModal">Graph</button>
+                  <button type="button" class="btn btn-info btn-xs" ng-click="getInfo()">Refresh</button>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+              <form class="form-horizontal">
+
+                  <div class="form-group">
+                      <span class="col-sm-3"><strong>CPU Model</strong></span>
+                      <span class="col-sm-5">{{info.cpuModel}}</span>
+                  </div>
+
+                  <div class="form-group">
+                      <span class="col-sm-3"><strong>System Type</strong></span>
+                      <span class="col-sm-5">{{info.type}}</span>
+                  </div>
+
+                  <div class="form-group">
+                      <span class="col-sm-3"><strong>Load Average</strong></span>
+                      <div class="col-sm-5">
+                          <div class="progress" style="margin-bottom: 0px;">
+                            <div class="progress-bar" role="progressbar" style="min-width: 2em; width: {{info.loadAveragePourcentage}}%;">
+                              {{info.loadAveragePourcentage}}%
+                            </div>
+                          </div>
+                      </div>
+                      <span class="col-sm-3">{{info.loadAverageAll}}</span>
+                  </div>
+
+                  <div class="form-group">
+                      <span class="col-sm-3"><strong>BogoMIPS</strong></span>
+                      <span class="col-sm-5">{{info.bogoMIPS}}</span>
+                  </div>
+
+              </form>
+            </div>
+      </div>
+
+      <div class="modal fade" id="CPUModal" tabindex="-1" role="dialog" aria-labelledby="CPUModal">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" ng-click="setSrc()" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="CPUModalLabel">CPU Monitoring</h4>
+            </div>
+            <div class="modal-body">
+              <iframe ng-src="{{src}}" width="100%" height="275" frameborder="0" type="image/svg+xml"></iframe>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-info" ng-click="setSrc()" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+  </div>
+
+</div>
+
+<div class="row">
+  <div class="col-md-6" ng-controller="Status_MemoryController">
+      <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title pull-left">Memory</h4>
+                <button type="button" class="btn btn-info pull-right btn-xs" ng-click="getInfo()">Refresh</button>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+              <form class="form-horizontal">
+                  <div class="form-group">
+                      <span class="col-sm-3"><strong>Total Available</strong></span>
+                      <span class="col-sm-5">{{info.memoryTotal}}</span>
+                  </div>
+
+                  <div class="form-group">
+                      <span class="col-sm-3"><strong>Free</strong></span>
+                      <div class="col-sm-5">
+                          <div class="progress" style="margin-bottom: 0px;">
+                            <div class="progress-bar" role="progressbar" style="min-width: 2em; width: {{info.memoryFreePourcentage}}%;">
+                              {{info.memoryFreePourcentage}}%
+                            </div>
+                          </div>
+                      </div>
+                      <span class="col-sm-3">{{info.memoryFree}}</span>
+                  </div>
+
+                  <div class="form-group">
+                      <span class="col-sm-3"><strong>Used</strong></span>
+                      <div class="col-sm-5">
+                          <div class="progress" style="margin-bottom: 0px;">
+                            <div class="progress-bar" role="progressbar" style="min-width: 2em; width: {{info.memoryUsedPourcentage}}%;">
+                              {{info.memoryUsedPourcentage}}%
+                            </div>
+                          </div>
+                      </div>
+                      <span class="col-sm-3">{{info.memoryUsed}}</span>
+                  </div>
+              </form>
+            </div>
+      </div>
+  </div>
+
+  <div class="col-md-6" ng-controller="Status_SwapController">
+      <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title pull-left">Swap</h4>
+                <button type="button" class="btn btn-info pull-right btn-xs" ng-click="getInfo()">Refresh</button>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+              <form class="form-horizontal">
+
+                  <div class="form-group" ng-show="(info.swapAvailable)">
+                      <span class="col-sm-3"><strong>Total Available</strong></span>
+                      <span class="col-sm-5">{{info.swapTotal}}</span>
+                  </div>
+
+                  <div class="form-group" ng-show="(info.swapAvailable)">
+                      <span class="col-sm-3"><strong>Free</strong></span>
+                      <div class="col-sm-5">
+                          <div class="progress" style="margin-bottom: 0px;">
+                            <div class="progress-bar" role="progressbar" style="min-width: 2em; width: {{info.swapFreePourcentage}}%;">
+                              {{info.swapFreePourcentage}}%
+                            </div>
+                          </div>
+                      </div>
+                      <span class="col-sm-3">{{info.swapFree}}</span>
+                  </div>
+
+                  <div class="form-group" ng-show="(info.swapAvailable)">
+                      <span class="col-sm-3"><strong>Used</strong></span>
+                      <div class="col-sm-5">
+                          <div class="progress" style="margin-bottom: 0px;">
+                            <div class="progress-bar" role="progressbar" style="min-width: 2em; width: {{info.swapUsedPourcentage}}%;">
+                              {{info.swapUsedPourcentage}}%
+                            </div>
+                          </div>
+                      </div>
+                      <span class="col-sm-3">{{info.swapUsed}}</span>
+                  </div>
+
+                  <div class="form-group" ng-show="(!info.swapAvailable)">
+                      <span class="col-sm-3"><strong>Total Available</strong></span>
+                      <span class="col-sm-5"><em>No Swap</em></span>
+                  </div>
+
+              </form>
+            </div>
+      </div>
+  </div>
+
+</div>
+
+<div class="row">
+  <div class="col-md-6" ng-controller="Status_WiFiController">
+      <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title pull-left">WiFi Clients <span class="badge">{{info.wifiClientsList.length}}</span></h4>
+                <button type="button" class="btn btn-info pull-right btn-xs" ng-click="getInfo()">Refresh</button>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+              <form ng-hide="loading" class="form-horizontal">
+
+                  <div ng-repeat="wifiClient in info.wifiClientsList" class="form-group">
+                      <span class="col-sm-4">{{wifiClient['hostname']}}</span>
+                      <span class="col-sm-4">
+                        <button type="button" class="btn btn-default btn-xs" ng-click="getMACInfo(wifiClient['mac'])" data-toggle="modal" data-target="#wiFiModal">{{wifiClient['mac']}}</button>
+                      </span>
+                      <span ng-show="wifiClient['ip'] == '-'" class="col-sm-4">{{wifiClient['ip']}}</span>
+                      <span ng-hide="wifiClient['ip'] == '-'" class="col-sm-4">
+                        <button type="button" class="btn btn-default btn-xs" ng-click="getPingInfo(wifiClient['ip'])" data-toggle="modal" data-target="#wiFiModal">{{wifiClient['ip']}}</button>
+                      </span>
+                  </div>
+
+              </form>
+              <span ng-show="(info.wifiClientsList.length === 0 && !loading)">No WiFi Client...</span>
+              <span ng-show="loading">Loading...</span>
+            </div>
+      </div>
+
+      <div class="modal fade" id="wiFiModal" tabindex="-1" role="dialog" aria-labelledby="wiFiModal">
+    	  <div class="modal-dialog modal-lg" role="document">
+    	    <div class="modal-content">
+    	      <div class="modal-header">
+    	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    	        <h4 class="modal-title" id="wiFiModalLabel">{{title}}</h4>
+    	      </div>
+    	      <div class="modal-body">
+    	      <pre class="scrollable-pre log-pre">{{output}}</pre>
+    	      </div>
+    	      <div class="modal-footer">
+    	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    	      </div>
+    	    </div>
+    	  </div>
+    	</div>
+
+  </div>
+
+  <div class="col-md-6" ng-controller="Status_DHCPController">
+      <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title pull-left">DHCP Clients <span class="badge">{{info.clientsList.length}}</span></h4>
+                <button type="button" class="btn btn-info pull-right btn-xs" ng-click="getInfo()">Refresh</button>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+              <form ng-hide="loading" class="form-horizontal">
+
+                  <div ng-repeat="client in info.clientsList" class="form-group">
+                      <span class="col-sm-4">{{client['hostname']}}</span>
+                      <span class="col-sm-4">
+                        <button type="button" class="btn btn-default btn-xs" ng-click="getMACInfo(client['mac'])" data-toggle="modal" data-target="#clientModal">{{client['mac']}}</button>
+                      </span>
+                      <span ng-show="client['ip'] == '-'" class="col-sm-4">{{client['ip']}}</span>
+                      <span ng-hide="client['ip'] == '-'" class="col-sm-4">
+                        <button type="button" class="btn btn-default btn-xs" ng-click="getPingInfo(client['ip'])" data-toggle="modal" data-target="#clientModal">{{client['ip']}}</button>
+                      </span>
+                  </div>
+
+              </form>
+              <span ng-show="(info.clientsList.length === 0 && !loading)">No DHCP Client...</span>
+              <span ng-show="loading">Loading...</span>
+            </div>
+      </div>
+
+      <div class="modal fade" id="clientModal" tabindex="-1" role="dialog" aria-labelledby="clientModal">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="clientModalLabel">{{title}}</h4>
+            </div>
+            <div class="modal-body">
+            <pre class="scrollable-pre log-pre">{{output}}</pre>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+  </div>
+
+</div>
+
+<div class="row">
+  <div class="col-md-6" ng-controller="Status_StorageController">
+      <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title pull-left">Storage</h4>
+                <button type="button" class="btn btn-info pull-right btn-xs" ng-click="getInfo()">Refresh</button>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+              <form ng-hide="loading" class="form-horizontal">
+
+                  <div ng-repeat="storage in info.storagesList" class="form-group">
+                      <span class="col-sm-2"><strong>{{storage['name']}}</strong></span>
+                      <span class="col-sm-2">{{storage['mount']}}</span>
+                      <div class="col-sm-5">
+                        <div class="progress" style="margin-bottom: 0px;">
+                          <div class="progress-bar" role="progressbar" style="min-width: 2em; width: {{storage['usedPourcentage']}};">
+                            {{storage['usedPourcentage']}}
+                          </div>
+                        </div>
+                      </div>
+                      <span class="col-sm-3">{{storage['used']}} / {{storage['total']}}</span>
+                  </div>
+
+              </form>
+              <span ng-show="(info.storagesList.length === 0 && !loading)">No storage...</span>
+              <span ng-show="loading">Loading...</span>
+            </div>
+      </div>
+  </div>
+
+  <div class="col-md-6" ng-controller="Status_InterfaceController">
+      <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title pull-left">Interfaces</h4>
+                <button type="button" class="btn btn-info pull-right btn-xs" ng-click="getInfo()">Refresh</button>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+
+              <div ng-hide="loading" class="panel panel-default" >
+                  <div class="panel-heading pointer" data-toggle="collapse" data-target="#wan">wan</div>
+                  <div id="wan" class="panel-collapse collapse">
+                    <div class="panel-body">
+                      <form class="form-horizontal">
+
+                        <div class="form-group">
+                            <span class="col-sm-3"><strong>IP Address</strong></span>
+                            <span ng-show="info.wanIpAddress == '-'" class="col-sm-5">{{info.wanIpAddress}}</span>
+                            <span ng-hide="info.wanIpAddress == '-'" class="col-sm-5">
+                              <button type="button" class="btn btn-default btn-xs" ng-click="getPingInfo(info.wanIpAddress)" data-toggle="modal" data-target="#interfaceModal">{{info.wanIpAddress}}</button>
+                            </span>
+                        </div>
+
+                        <div class="form-group">
+                            <span class="col-sm-3"><strong>Gateway</strong></span>
+                            <span ng-show="info.wanGateway == '-'" class="col-sm-5">{{info.wanGateway}}</span>
+                            <span ng-hide="info.wanGateway == '-'" class="col-sm-5">
+                              <button type="button" class="btn btn-default btn-xs" ng-click="getPingInfo(info.wanGateway)" data-toggle="modal" data-target="#interfaceModal">{{info.wanGateway}}</button>
+                            </span>
+                        </div>
+
+                        <div class="form-group" ng-repeat="dns in info.dnsList">
+                            <span class="col-sm-3"><strong>{{dns['name']}}</strong></span>
+                            <span ng-show="dns['ip'] == '-'" class="col-sm-5">{{dns['ip']}}</span>
+                            <span ng-hide="dns['ip'] == '-'" class="col-sm-5">
+                              <button type="button" class="btn btn-default btn-xs" ng-click="getPingInfo(dns['ip'])" data-toggle="modal" data-target="#interfaceModal">{{dns['ip']}}</button>
+                            </span>
+                        </div>
+
+                      </form>
+                    </div>
+                  </div>
+              </div>
+
+              <div ng-hide="loading" class="panel panel-default" ng-repeat="interface in info.interfacesList">
+                  <div class="panel-heading pointer" data-toggle="collapse" data-target="#{{interface['name']}}">{{interface['name']}}</div>
+                  <div id="{{interface['name']}}" class="panel-collapse collapse">
+                    <div class="panel-body">
+                      <form class="form-horizontal">
+
+                          <div class="form-group">
+                              <span class="col-sm-3"><strong>MAC Address</strong></span>
+                              <span class="col-sm-5">
+                                <button type="button" class="btn btn-default btn-xs" ng-click="getMACInfo(interface['mac'])" data-toggle="modal" data-target="#interfaceModal">{{interface['mac']}}</button>
+                              </span>
+                          </div>
+
+                          <div class="form-group">
+                              <span class="col-sm-3"><strong>IP Address</strong></span>
+                              <span ng-show="interface['ip'] == '-'" class="col-sm-5">{{interface['ip']}}</span>
+                              <span ng-hide="interface['ip'] == '-'" class="col-sm-5">
+                                <button type="button" class="btn btn-default btn-xs" ng-click="getPingInfo(interface['ip'])" data-toggle="modal" data-target="#interfaceModal">{{interface['ip']}}</button>
+                              </span>
+                          </div>
+
+                          <div class="form-group">
+                              <span class="col-sm-3"><strong>Subnet Mask</strong></span>
+                              <span class="col-sm-5">{{interface['subnet']}}</span>
+                          </div>
+
+                          <div class="form-group">
+                              <span class="col-sm-3"><strong>Gateway</strong></span>
+                              <span ng-show="interface['gateway'] == '-'" class="col-sm-5">{{interface['gateway']}}</span>
+                              <span ng-hide="interface['gateway'] == '-'" class="col-sm-5">
+                                <button type="button" class="btn btn-default btn-xs" ng-click="getPingInfo(interface['gateway'])" data-toggle="modal" data-target="#interfaceModal">{{interface['gateway']}}</button>
+                              </span>
+                          </div>
+
+                          <div class="form-group" ng-show="interface['mode'] != ''">
+                              <span class="col-sm-3"><strong>Mode</strong></span>
+                              <span class="col-sm-5">{{interface['mode']}}</span>
+                          </div>
+
+                          <div class="form-group" ng-show="interface['mode'] != ''">
+                              <span class="col-sm-3"><strong>TX Power</strong></span>
+                              <span class="col-sm-5">{{interface['txpower']}}</span>
+                          </div>
+
+                          <button type="button" class="btn btn-default btn-xs" data-toggle="modal" ng-click="getSrc(interface['name'])" data-target="#graphModal">Graph</button>
+
+                      </form>
+                    </div>
+                  </div>
+              </div>
+
+              <span ng-show="loading">Loading...</span>
+
+            </div>
+      </div>
+
+      <div class="modal fade" id="graphModal" tabindex="-1" role="dialog" aria-labelledby="graphModal">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" ng-click="setSrc()" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="graphModalLabel">{{interfaceName}} Monitoring</h4>
+            </div>
+            <div class="modal-body">
+              <iframe ng-src="{{src}}" width="100%" height="275" frameborder="0" type="image/svg+xml"></iframe>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-info" ng-click="setSrc()" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="interfaceModal" tabindex="-1" role="dialog" aria-labelledby="interfaceModal">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="interfaceModalLabel">{{title}}</h4>
+            </div>
+            <div class="modal-body">
+              <pre class="scrollable-pre log-pre">{{output}}</pre>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+  </div>
+
+</div>

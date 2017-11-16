@@ -1,0 +1,36 @@
+<h4 style="color:red">WARNING!</h4>
+<strong>Do not encrypt the private key in the set you will use for SSL on the Pineapple!  If you do nginx will require a password upon boot which you will not have the chance to enter thus forcing you to factory reset your Pineapple!</strong>
+<hr />
+
+<strong>Key Type</strong><br />
+Select the type of keys you want to build.
+<br /><br />
+
+<strong>Bit Size</strong><br />
+This is the key length.  The higher the value the harder it is to crack the key.  Higher values will take longer to build and longer to check when used in applications.  2048 is the recommended value for web applications.
+<br /><br />
+
+<strong>Key Pair Name</strong><br />
+This is the name of your keys when they are generated.  Single word names are best.
+<br /><br />
+
+<strong>Days Valid</strong><br />
+This value indicates how long the certificate will be valid.  A default value of 365 days is set for convenience.
+<br /></br >
+
+
+<strong>Signature Algorithm</strong><br />
+SHA-1 is considered to be too weak these days, or it will be soon enough, so SHA-256 is selected by default.
+<br /><br />
+
+
+<strong>Certificate Info (click to expand)</strong><br />
+These fields are self explanatory and provide information that gets embedded in the public key.  This can be left blank but if so the default settings will be used by OpenSSL.
+<br /><br />
+
+<strong>Encrypt Private Key</strong><br />
+Check this box if you want to require a password to view the private key.  You will have to select an algorithm (SHA-256 by default) and enter a password.
+<br /><br />
+
+<strong>Export keys to PKCS#12 container</strong><br />
+Check this box if you want to export both the private and public keys into an encrypted container.  This option will generate three files (.cer, .pem, .pfx).

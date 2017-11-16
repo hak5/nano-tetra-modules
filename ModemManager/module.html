@@ -1,0 +1,205 @@
+<div class="row">
+    <div class="col-md-7" ng-controller="USBController">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">USB & TTY
+                    <span class="pull-right" data-toggle="modal" data-target="#USBInfo">
+                        &#8505;
+                    </span>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="center-block" ng-hide="lsusb">
+                    <img class="center-block" src="img/throbber.gif">
+                </div>
+                <pre class="scrollable-pre" ng-show="lsusb">{{ lsusb }}</pre>
+
+                <div class="center-block" ng-hide="availableTTYs">
+                    <img class="center-block" src="img/throbber.gif">
+                </div>
+                <pre class="scrollable-pre" ng-show="availableTTYs">{{ availableTTYs }}</pre>
+                <div>
+                    <span class="pull-right">
+                        <button type="button" class="btn btn-default" style="padding: 0px 5px;" ng-click="installDepends();" ng-hide="installed">
+                            Install Dependencies
+                        </button>
+                        <button type="button" class="btn btn-default" style="padding: 0px 5px;" ng-click="removeDepends();" ng-show="installed">Remove Dependencies
+                        </button>
+                        <button type="button" class="btn btn-default" style="padding: 0px 5px;" ng-click="refresh();">
+                            Refresh
+                        </button>
+                        <img src="/img/throbber.gif" ng-show="installing">
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5" ng-controller="ConnectionController">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Mobile Connection</h3>
+            </div>
+            <div class="panel-body">
+                <span class="label label-success" ng-show="connected">Connected</span>
+                <span class="label label-warning" ng-show="connecting">Connecting</span>
+                <span class="label label-default" ng-show="disconnected">Not Connected</span>
+                <button class="btn btn-default btn-fixed-width pull-right" style="padding: 0px 5px;" ng-show="!connected" ng-click="setConnection();">Connect</button>
+                <button class="btn btn-danger btn-fixed-width pull-right" style="padding: 0px 5px;" ng-show="connected" ng-click="unsetConnection();">Disconnect</button>
+                <div ng-show="connected">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="panel panel-default" ng-controller="ModemController">
+            <div class="panel-heading">
+                <h3 class="panel-title">Modem Configuration
+                    <span class="pull-right" data-toggle="modal" data-target="#ModemInfo">
+                        &#8505;
+                    </span>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="well well-sm alert-danger" ng-show="loadConfigurationError">{{ loadConfigurationError }}</div>
+                <div class="well well-sm alert-danger" ng-show="saveConfigurationError">{{ saveConfigurationError }}</div>
+                <div class="well well-sm alert-danger" ng-show="resetConfigurationError">{{ resetConfigurationError }}</div>
+                <div class="well well-sm alert-success" ng-show="savedConfiguration">Configuration saved. You may need to reboot for changes to take place.</div>
+                <div class="well well-sm alert-success" ng-show="resetConfigurationSuccess">Configuration reset.</div>
+
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="interfaceName" class="col-sm-2 control-label">Interface Name</label>
+                        <div class="col-sm-10">
+                            <input type="textbox" class="form-control" id="interfaceName" placeholder="ppp0" ng-model="interface">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="protocol" class="col-sm-2 control-label">Protocol</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" ng-model="protocol">
+                                <option value="3g">3G/4G</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="service" class="col-sm-2 control-label">Service</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" ng-model="service">
+                                <option value="cdma">CDMA</option>
+                                <option value="evdo">EVDO</option>
+                                <option value="umts">UMTS</option>
+                                <option value="gprs">GPRS</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="vendorid" class="col-sm-2 control-label">VID:PID</label>
+                        <div class="col-sm-10">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="vendorid" placeholder="VID" ng-model="vendorid">
+                                <span class="input-group-addon">:</span>
+                                <input type="text" class="form-control" id="productid" placeholder="PID" ng-model="productid">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="device" class="col-sm-2 control-label">Device</label>
+                        <div class="col-sm-10">
+                            <input type="textbox" class="form-control" id="device" placeholder="/dev/ttyUSB0" ng-model="device">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="apn" class="col-sm-2 control-label">APN</label>
+                        <div class="col-sm-10">
+                            <input type="textbox" class="form-control" id="apn" placeholder="apn.vodafone.co.uk" ng-model="apn">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="username" class="col-sm-2 control-label">Username</label>
+                        <div class="col-sm-10">
+                            <input type="textbox" class="form-control" id="username" placeholder="Username" ng-model="username">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="col-sm-2 control-label">Password</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="password" placeholder="Password" ng-model="password">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="DNS" class="col-sm-2 control-label">DNS</label>
+                        <div class="col-sm-10">
+                            <input type="textbox" class="form-control" id="DNS" placeholder="8.8.8.8" ng-model="dns">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pppdOptions" class="col-sm-2 control-label">PPPd Options</label>
+                        <div class="col-sm-10">
+                            <input type="textbox" class="form-control" id="pppdOptions" placeholder="" ng-model="pppdoptions">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Other Options</label>
+                        <div class="col-sm-10">
+                            <label class="checkbox-inline"><input type="checkbox" ng-model="peerdns">Peer DNS</label>
+                            <label class="checkbox-inline"><input type="checkbox" ng-model="pppredial">PPP Redial</label>
+                            <label class="checkbox-inline"><input type="checkbox" ng-model="defaultroute">Default Route</label>
+                            <label class="checkbox-inline"><input type="checkbox" ng-model="keepalive">Keep Alive</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <span class="pull-right">
+                                <button class="btn btn-danger" ng-click="resetConfiguration();">Reset</button>
+                                <button class="btn btn-default" ng-click="saveConfiguration();">Save</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="USBInfo" tabindex="-1" role="dialog" aria-labelledby="USBInfoModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">USB & TTY Information</h4>
+            </div>
+            <div class="modal-body">
+                <h3>USB</h3>
+                <p>The USB information is displayed at the top. It will show the bus, device, <b>VID:PID</b> and its name.
+                 The important information is usually the <b>V</b>endor<b>ID</b> and <b>P</b>roduct<b>ID</b>. This Information
+                 is used to identify the USB device once inserted.</p>
+                 <h3>TTYs</h3>
+                 <p>Modems will produce one or more TTYs in the form of <b>ttyUSBX</b>, where X is a number from 0. These TTYs are used
+                     to communicate with the modem when dialing.</p>
+                     <p>You may not need the information in this section, but it is supplied just incase.</p>
+                 </div>
+             </div>
+         </div>
+     </div>
+
+     <div class="modal fade" id="ModemInfo" tabindex="-1" role="dialog" aria-labelledby="ModemInfoModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Modem Information</h4>
+                </div>
+                <div class="modal-body">
+                    <p>This help dialog provides enough information to configure your 3G/4G Modem and initiate a connection. For more information
+                     about 3G/4G devices and the WiFi Pineapple, please visit the <a href="https://wiki.wifipineapple.com/legacy/compatible_modems.md">WiFi Pineapple Wiki</a>
+                     and the <a href="https://wiki.openwrt.org/doc/recipes/3gdongle">OpenWRT article on modems</a>.
+                 </p>
+             </div>
+         </div>
+     </div>
+ </div>

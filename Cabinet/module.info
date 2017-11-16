@@ -1,0 +1,10 @@
+{
+    "author": "newbi3",
+    "description": "A file manager for the Web Interface",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "Cabinet",
+    "version": "1.0"
+}

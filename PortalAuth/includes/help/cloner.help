@@ -1,0 +1,27 @@
+<strong>Portal Name</strong><br />
+This will be the name of the cloned portal in your portal archive directory.  <strong>It must not contain any spaces!</strong>
+<br /><br />
+
+<strong>Injection Set</strong><br />
+The set of code you want to inject into the cloned portal.
+<br /><br />
+
+<strong>Payloads</strong><br />
+This option is only visible when the Payloader injection set is selected.<br />
+Select a payload to deliver to each type of system that connects to the captive portal.  If you don't select a payload then the target will 
+download the Default Payload.  For example, if you don't select a payload for OS X and your Default Payload is set to Windows, then when a 
+Mac connects to your captive portal it will download the payload you assigned to Windows.  If only one OS is assigned a payload it automatically 
+becomes the Default Payload.
+<br /><br />
+
+<strong>Strips and Injects</strong><br />
+Select these checkboxes to modify the cloned portal.<br /><br />
+
+<strong>Strip Links:</strong> Strips out links from the portal so the target can't click away from the page.<br />
+<strong>Strip Inline JS:</strong> Strips out any JavaScript embedded in the portal.<br />
+<strong>Strip Inline CSS:</strong> Strips out any CSS styles embedded in the portal.<br />
+<strong>Strip Forms:</strong> Strips out all form data from the portal.<br /><br />
+
+<strong>Inject JS:</strong> Injects the JavaScript from the selected Injection Set into the portal.<br />
+<strong>Inject CSS:</strong> Injects the CSS from the selected Injection Set into the portal.<br />
+<strong>Inject HTML:</strong> Injects the HTML from the selected Injection Set into the portal.<br />

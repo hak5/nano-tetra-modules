@@ -1,0 +1,10 @@
+{
+    "author": "Whistle Master",
+    "description": "Dump traffic on network using tcpdump",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "tcpdump",
+    "version": "1.4"
+}

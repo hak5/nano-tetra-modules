@@ -1,0 +1,7 @@
+April 6, 2016<br /><br />
+- Revamped cfgNginx.py to include support for adding, replacing, getting, and removing SSL keys.<br /><br />
+- cfgNginx.py now only selects the SSL keys associated with port 1471 instead of pulling all keys from the configuration file.<br /><br />
+- Removal of SSL keys is also targeted now.  In the previous version the whole /etc/nginx/ssl/ directory would be deleted but now only the keys you've selected for port 1471 will be removed.<br /><br />
+- Upon adding/replacing/removing SSL keys to Nginx the browser will now automatically redirect to the new protocol.<br /><br />
+- Updated the user interface<br /><br />
+- Fixed module.info to reflect current version of module.<br />

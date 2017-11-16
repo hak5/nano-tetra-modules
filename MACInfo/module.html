@@ -1,0 +1,42 @@
+<div class="row" ng-controller="MACInfo"> <!-- This special argument wires the HTML to your controller (in module.js) -->
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">MAC Information</h3>
+			</div>
+			<div class="panel-body">
+				<form class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-2 control-label">MAC Address</label>
+						<div class="col-sm-7">
+							<input type="text" class="form-control" ng-model="moduleMAC" placeholder="MAC Address" />
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-7 col-md-offset-2">
+							<button class="btn btn-success" ng-click="getMACInfo();">Lookup Information</button>
+						</div>
+					</div>
+				</form>
+				<table ng-show="isLookupSuccess" class="table table-condensed">
+					<tr>
+						<th class="text-right">Company</th><td>{{company}}</td>
+					</tr>
+					<tr>
+						<th class="text-right">MAC Prefix</th><td>{{macprefix}}</td>
+					</tr>
+					<tr>
+						<th class="text-right">Address</th><td>{{address}}</td>
+					</tr>
+					<tr>
+						<th class="text-right">Country</th><td>{{country}}</td>
+					</tr>
+					<tr>
+						<th class="text-right">Type</th><td>{{type}}</td>
+					</tr>
+				</table>
+				<p class="well well-sm alert-danger" ng-show="isLookupFailure">{{error}}</p>				
+			</div>
+		</div>
+	</div>
+</div>

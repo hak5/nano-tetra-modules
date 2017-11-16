@@ -1,0 +1,10 @@
+{
+    "author": "Whistle Master",
+    "description": "WiFi site survey",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "Site Survey",
+    "version": "1.2"
+}

@@ -1,0 +1,10 @@
+{
+    "author": "Foxtrot",
+    "description": "3G and 4G Modem Manager",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "Modem Manager",
+    "version": "1.1"
+}

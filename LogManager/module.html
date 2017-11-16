@@ -1,0 +1,71 @@
+<div class="panel panel-default" ng-controller="LogManager_Controller"><div class="panel-heading"><h4 class="panel-title pull-left">{{title}}</h4><span class="pull-right">{{version}}</span><div class="clearfix"></div></div></div>
+
+<div class="panel panel-default" ng-controller="LogManager_FilesController">
+    <div class="panel-heading">
+        <h4 class="panel-title">Files <span class="badge">{{files.length}}</span></h4>
+    </div>
+        <div class="panel-body">
+          <button class="btn btn-primary btn-sm pull-right" ng-click="refreshFilesList()">Refresh</button><div class="clearfix"></div>
+    			<div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover" ng-hide="(files.length == 0)">
+                <thead>
+                    <tr>
+                        <th>
+                          <div class="dropdown">
+                            <input type="checkbox" ng-model="selectedAll" ng-change="updateAllSelectedFiles()">
+                            <button ng-disabled="(selectedFilesArray.length === 0)" class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                              Actions
+                              <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                              <li ng-click="downloadFilesList()"><a>Download <span class="badge">{{selectedFilesArray.length}}</span></a></li>
+                              <li ng-click="deleteFilesList()"><a>Delete <span class="badge">{{selectedFilesArray.length}}</span></a></li>
+                            </ul>
+                          </div>
+                        </th>
+                        <th>Name</th>
+                        <th>Module</th>
+                        <th>Size</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="(fileName, file) in files">
+                        <td><input type="checkbox" ng-checked="selectedAll" ng-change="updateSelectedFiles()" ng-model="selectedFiles[file['path']]">
+                        <td>{{ file['file'] }}</td>
+                        <td>{{ file['title'] }}</td>
+                        <td>{{ file['size'] }}</td>
+                        <td>{{ file['date'] }}</td>
+                        <td>
+          								<div class="btn-group">
+          									<button type="button" class="btn btn-fixed-length btn-sm btn-default" data-toggle="modal" data-target="#fileModal" ng-click="viewFile(file['path'])">View</button>
+          									<button type="button" class="btn btn-sm btn-default" ng-click="downloadFile(file['path'])">Download</button>
+                            <button type="button" class="btn btn-fixed-length btn-sm btn-danger" ng-click="deleteFile(file['path'])">Delete</button>
+          								</div>
+          							</td>
+                    </tr>
+                </tbody>
+            </table>
+    	    </div>
+    			<div class="well" ng-show="(files.length === 0)">No file...</div>
+        </div>
+
+	<div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="fileModalLabel">
+	  <div class="modal-dialog modal-lg" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title" id="fileModalLabel">View {{fileName}} - {{fileDate}}</h4>
+	      </div>
+	      <div class="modal-body">
+	      <pre class="scrollable-pre log-pre">{{fileOutput}}</pre>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+</div>

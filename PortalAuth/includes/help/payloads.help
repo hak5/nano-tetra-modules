@@ -1,0 +1,17 @@
+<strong>Payload Templates</strong><br />
+Clicking each of these buttons will download starter files for building a payload that interacts with the Payloader injection set.
+<br /><br />
+
+<strong>Manage Payloads</strong><br />
+This section allows you to upload and delete payloads.  By default there is an upload limit in nginx that may cause your uploads to fail 
+if they are over a certain size.  Click the 'Configure Upload Limit' link to configure nginx to allow uploads up to 20M.  When payloads are 
+uploaded they are automatically stored in the proper location based on their filetype.
+<br /><br />
+<ul>
+<li>.exe => /www/download/windows/</li>
+<li>.zip => /www/download/osx/</li>
+<li>.ipk => /www/download/android/</li>
+<li>.ipa => /www/download/ios/</li>
+</ul>
+<br />
+* Keep in mind that .tar.gz files are seen as injection sets and stored as such.

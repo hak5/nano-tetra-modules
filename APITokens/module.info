@@ -1,0 +1,10 @@
+{
+    "author": "Tesla",
+    "description": "Create and delete API tokens on the WiFi Pineapple",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "APITokens",
+    "version": "1.2"
+}

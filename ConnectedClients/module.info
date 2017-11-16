@@ -1,0 +1,10 @@
+{
+    "author": "r3dfish",
+    "description": "Connected Clients is an infusion for the Wifi Pineapple that gives information about connected clients",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "ConnectedClients",
+    "version": "1.4"
+}

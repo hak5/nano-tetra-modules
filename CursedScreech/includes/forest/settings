@@ -1,0 +1,13 @@
+kuro_key=
+target_key=
+client_serial=File does not exist
+iface_name=br-lan
+iface_ip=172.16.42.1
+mcast_group=231.253.78.29
+mcast_port=19578
+target_list=/pineapple/modules/CursedScreech/includes/forest/targets.log
+activity_log=/pineapple/modules/CursedScreech/includes/forest/activity.log
+cmd_list=/pineapple/modules/CursedScreech/includes/forest/cmd.log
+hb_interval=5
+kuro_serial=File does not exist
+auth=1

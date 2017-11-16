@@ -1,0 +1,115 @@
+<div class="row">
+    <div class="col-md-6">
+        <div class="row">
+            <div class="col-md-12" ng-controller="DWallController">
+                <div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading pointer" data-toggle="collapse" data-target="#settings">
+                            <h3 class="panel-title">
+                                DWall Settings
+                            </h3>
+                        </div>
+                        <div id="settings" class="panel-collapse collapse in">
+                            <div class="panel-body">
+                                <p class="text-strong">
+                                    DWall is currently <span ng-if="running">running</span><span ng-if="!running">not running</span>.
+                                </p>
+                                <button class="btn btn-default btn-sm" ng-if="!running" ng-click="enableDWall()">Enable</button>
+                                <button class="btn btn-default btn-sm" ng-if="running" ng-click="disableDWall()">Disable</button>
+                                <button class="btn btn-default btn-sm" ng-if="running && !listening && !throbber" ng-click="startWS()">Start Listening</button>
+                                <button class="btn btn-default btn-sm" ng-if="running && listening" ng-click="stopWS()">Stop Listening</button>
+                                <img src="/img/throbber.gif" ng-if="throbber">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading pointer" data-toggle="collapse" data-target="#url">
+                            <h3 class="panel-title">
+                                URLs
+                            </h3>
+                        </div>
+                        <div id="url" class="panel-collapse collapse in table-responsive" style="max-height: 300px">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Client</th>
+                                        <th>URL</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="url_table"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading pointer" data-toggle="collapse" data-target="#cookie">
+                            <h3 class="panel-title">
+                                Cookies
+                            </h3>
+                        </div>
+                        <div id="cookie" class="panel-collapse collapse in table-responsive" style="max-height: 300px">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Client</th>
+                                        <th>Cookie</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cookie_table"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading pointer" data-toggle="collapse" data-target="#post">
+                            <h3 class="panel-title">
+                                Data
+                            </h3>
+                        </div>
+                        <div id="post" class="panel-collapse collapse in table-responsive" style="max-height: 300px">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Client</th>
+                                        <th>Data</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="post_table"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-heading pointer" data-toggle="collapse" data-target="#images">
+                    <h3 class="panel-title">
+                        Images
+                    </h3>
+                </div>
+                <div id="images" class="panel-collapse collapse in">
+                    <div class="panel-body" id="img_container" style="overflow-y: auto;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

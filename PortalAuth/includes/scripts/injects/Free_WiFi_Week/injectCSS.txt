@@ -1,0 +1,120 @@
+<style>
+.pa_form-container {
+   border: 1px solid #f2e3d2;
+   background:#F0F8FF;
+   -webkit-border-radius: 8px;
+   -moz-border-radius: 8px;
+   border-radius: 8px;
+   -webkit-box-shadow: rgba(000,000,000,0.9) 0 1px 2px;
+   -moz-box-shadow: rgba(000,000,000,0.9) 0 1px 2px;
+   box-shadow: rgba(000,000,000,0.9) 0 1px 2px;
+   font-family: 'Helvetica Neue',Helvetica,sans-serif;
+   text-align: center;
+   position: fixed;
+   width: 450px;
+   height: 370px;
+   padding: 20px;
+   top: 50%;
+   left: 50%;
+   margin-top: -230px;
+   margin-left: -225px;
+   z-index: 10;
+   display: none;
+}
+#pa_overlay-back {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,.7);
+	z-index: 5;
+	display: none;
+}
+.pa_form-field {
+   background: #fff;
+   color: #000;
+   font-size: 18px;
+   -webkit-box-shadow: rgba(255,255,255,0.4) 0 1px 0;
+   -moz-box-shadow: rgba(255,255,255,0.4) 0 1px 0;
+   box-shadow: rgba(255,255,255,0.4) 0 1px 0;
+   padding:8px;
+   margin-bottom:20px;
+   width:90%;
+}
+.pa_form-field:focus {
+   background: #fff;
+   color: #725129;
+}
+.pa_form-container h2 {
+   color: #6aa436;
+   font-size:18px;
+   margin: 0 0 10px 0;
+   font-weight:bold;
+   text-align: center;
+}
+.pa_form-container p {
+   text-align: center;
+   margin: 10px auto 10px auto;
+}
+.pa_form-container table {
+   width: 90%;
+   margin: 0 auto;
+}
+.pa_form-title {
+   margin-bottom:10px;
+   color: #725129;
+   font-size: 16px;
+   text-align: left;
+}
+.pa_submit-container {
+   margin:8px 0;
+   text-align:center;
+}
+.pa_submit-button {
+   border: 1px solid #447314;
+   background: #6aa436;
+   background: -webkit-gradient(linear, left top, left bottom, from(#8dc059), to(#6aa436));
+   background: -webkit-linear-gradient(top, #8dc059, #6aa436);
+   background: -moz-linear-gradient(top, #8dc059, #6aa436);
+   background: -ms-linear-gradient(top, #8dc059, #6aa436);
+   background: -o-linear-gradient(top, #8dc059, #6aa436);
+   background-image: -ms-linear-gradient(top, #8dc059 0%, #6aa436 100%);
+   -webkit-border-radius: 4px;
+   -moz-border-radius: 4px;
+   border-radius: 4px;
+   -webkit-box-shadow: rgba(255,255,255,0.4) 0 1px 0;
+   -moz-box-shadow: rgba(255,255,255,0.4) 0 1px 0;
+   box-shadow: rgba(255,255,255,0.4) 0 1px 0;
+   color: #31540c;
+   font-family: helvetica, serif;
+   padding: 8.5px 18px;
+   font-size: 14px;
+   text-decoration: none;
+   vertical-align: middle;
+   width: 200px;
+   cursor: pointer;
+}
+.pa_submit-button:hover {
+   border: 1px solid #447314;
+   background: #6aa436;
+   background: -webkit-gradient(linear, left top, left bottom, from(#8dc059), to(#6aa436));
+   background: -webkit-linear-gradient(top, #8dc059, #6aa436);
+   background: -moz-linear-gradient(top, #8dc059, #6aa436);
+   background: -ms-linear-gradient(top, #8dc059, #6aa436);
+   background: -o-linear-gradient(top, #8dc059, #6aa436);
+   background-image: -ms-linear-gradient(top, #8dc059 0%, #6aa436 100%);
+   color: #fff;
+}
+.pa_submit-button:active {
+   border: 1px solid #447314;
+   background: #8dc059;
+   background: -webkit-gradient(linear, left top, left bottom, from(#6aa436), to(#6aa436));
+   background: -webkit-linear-gradient(top, #6aa436, #8dc059);
+   background: -moz-linear-gradient(top, #6aa436, #8dc059);
+   background: -ms-linear-gradient(top, #6aa436, #8dc059);
+   background: -o-linear-gradient(top, #6aa436, #8dc059);
+   background-image: -ms-linear-gradient(top, #6aa436 0%, #8dc059 100%);
+   color: #fff;
+}
+</style>

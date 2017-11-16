@@ -1,0 +1,229 @@
+<div class="h4 well"> autossh </div>
+
+
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default" style="min-height:226.5px" ng-controller="autosshMainCtrl">
+
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          Control
+        </h3>
+      </div>
+
+      <div class="panel-body">
+        <table class="table">
+          <tbody>
+
+            <tr class="form-inline">
+              <td class="text-muted">autossh</td>
+              <td>
+                <div class="hidden-xs">
+                  <button ng-show="isRunning" type="button" class="btn btn-sm btn-danger pull-right" ng-click="stopAutossh()">Stop</button>
+                  <button ng-hide="isRunning" type="button" class="btn btn-sm btn-primary pull-right" ng-click="startAutossh()">Start</button>
+                </div>
+                <div class="visible-xs">
+                  <button ng-show="isRunning" type="button" class="btn btn-lg btn-danger pull-right" ng-click="stopAutossh()">Stop</button>
+                  <button ng-hide="isRunning" type="button" class="btn btn-lg btn-primary pull-right" ng-click="startAutossh()">Start</button>
+                </div>
+
+              </td>
+            </tr>
+
+            <tr>
+              <td class="text-muted">Autostart</td>
+              <td>
+                <div class="btn-group pull-right">
+                  <div class="hidden-xs">
+                    <button ng-click="enableAutossh()" ng-class="!isEnabled ? 'btn-default' : 'btn-success'" class="btn btn-sm">I</button>
+                    <button ng-click="disableAutossh()" ng-class="!isEnabled ? 'btn-danger' : 'btn-default'" class="btn btn-sm">0</button>
+                  </div>
+                  <div class="visible-xs">
+                    <button ng-click="enableAutossh()" ng-class="!isEnabled ? 'btn-default' : 'btn-success'" class="btn btn-lg">I</button>
+                    <button ng-click="disableAutossh()" ng-class="!isEnabled ? 'btn-danger' : 'btn-default'" class="btn btn-lg">0</button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <div class="panel panel-default" ng-controller="autosshConfCtrl">
+
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          Configure
+        </h3>
+      </div>
+
+      <div class="panel-body">
+
+        <form class="form-horizontal" ng-submit="writeConf()">
+          <div class="row" style="margin-bottom: 1.4em">
+
+            <div class="col-md-12">
+
+              <div class="col-md-3">
+                <label>User</label>
+                <input type="text" class="form-control" placeholder="Username" ng-model=formData.user>
+              </div>
+
+              <div class="col-md-6">
+                <label>Host</label>
+                <input type="text" class="form-control" placeholder="Hostname or IP" ng-model=formData.host>
+              </div>
+
+              <div class="col-md-3">
+                <label>Port</label>
+                <input type="text" class="form-control" placeholder="Remote SSH Port" ng-model=formData.port>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="row" style="margin-bottom: 1.4em">
+
+            <div class="col-md-12">
+              <div class="col-md-4">
+                <label>Remote Port</label>
+
+                <input type="text" class="form-control" placeholder="Remote Listening Port" ng-model=formData.rport>
+              </div>
+
+              <div class="col-md-4">
+                <label>Local Port</label>
+                <input type="text" class="form-control" placeholder="Local SSH Port" ng-model=formData.lport>
+              </div>
+
+              <div class="hidden-xs">
+
+                <div class="col-md-2" style="margin-top: 1.8em;">
+                  <button type="submit" class="btn btn-primary btn-block">
+                    Save
+                    <img ng-show="savingConf" src="img/throbber.gif" class="ng-hide">
+                  </button>
+
+                </div>
+                <div class="col-md-2" style="margin-top: 1.8em;">
+                  <button type="button" ng-click="resetConf()" class="btn btn-danger btn-block">Reset</button>
+                </div>
+              </div>
+              <div class="visible-xs">
+
+                <div class="col-md-2" style="margin-top: 1.8em;">
+                  <button type="submit" class="btn btn-primary btn-lg btn-block">
+                    Save
+                    <img ng-show="savingConf" src="img/throbber.gif" class="ng-hide">
+                  </button>
+
+                </div>
+                <div class="col-md-2" style="margin-top: 1.8em;">
+                  <button type="button" ng-click="resetConf()" class="btn btn-danger btn-lg btn-block">Reset</button>
+                </div>
+              </div>
+
+
+            </div>
+
+          </div>
+        </form>
+
+      </div>
+    </div>
+
+
+  </div>
+
+
+</div>
+
+
+<div class="form-group hidden-xs hidden-sm">
+  <samp class="input-group">
+      <span class="input-group-addon input-sm">Command that runs</span>
+      <input type="text" class="form-control input-sm" value="{{cmdThatRuns}}" disabled>
+    </samp>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default" ng-controller="firstRunCtrl">
+
+      <div class="panel-heading" data-toggle="collapse" data-target="#first-run" href="#first-run">
+        <h3 class="panel-title">
+        Additional Configuration
+      </h3>
+      </div>
+
+      <div class="panel-body collapse" id="first-run">
+
+        <div class="col-md-6">
+
+          <div class="key-pair" ng-hide="pubKey">
+            <div class="h4"> Generate Key Pairs </div>
+            <button ng-click="createSshKey()" type="button" class="btn btn-primary" ng-disabled="generatingKeys">
+              Generate
+            </button>
+            <img ng-show="generatingKeys" src="img/throbber.gif" class="ng-hide">
+          </div>
+
+          <div class="key-pair " ng-show="pubKey" ng-show="pubKey">
+            <div class="h4"> Your Public Key </div>
+            <pre style="white-space:normal;min-height: 165px">{{pubKey}}</pre>
+            <button type="button" class="btn btn-block btn-danger" ng-click="deleteKey()">Delete/Regenerate Keys</button>
+            <br>
+            <div class="hidden-xs hidden-sm">
+              <div class="h4"> Append it to your server </div>
+              <div class="h5"> SSH into the Nano and run this command </div>
+              <pre style="white-space:normal">
+                {{sshCopyCommand}}
+              </pre>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="col-md-6 hidden-xs hidden-sm">
+          <div class="h4"> Known Hosts </div>
+          <div class="h5" ng-hide="knownHosts"> Save a configuration above to append to known_hosts. Must have an internet connection. </div>
+          <pre id="hosts" ng-show="knownHosts" style="white-space:pre;min-height: 165px">{{knownHosts}}</pre>
+        </div>
+        <hr>
+
+        <div class="col-md-12 hidden-xs hidden-sm">
+          <hr>
+        </div>
+
+        <div class="col-md-12">
+          <div class="h4">
+            Additional Definitions
+          </div>
+          <dl class="col-md-12">
+            <dt>Hostname or IP</dt>
+            <dd>The URL or IP address of the SSH server you want to connect to</dd>
+            <br>
+            <dt>Port</dt>
+            <dd>The port that the Host above is using to listen for SSH connection requests on. 22 unless one's changed it in sshd on the Host</dd>
+            <br>
+            <dt>Remote (Listening) Port</dt>
+            <dd>The port on the Host that will lead back to the Pineapple's Local SSH Port</dd>
+            <br>
+            <dt>Local SSH Port</dt>
+            <dd>The Pineapples SSH Port. 22 unless one's changed it</dd>
+            <br>
+            <dt>Hostname or IP</dt>
+            <dd>The URL or IP address of the SSH server you want to connect to</dd>
+
+          </dl>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

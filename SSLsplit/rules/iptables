@@ -1,0 +1,17 @@
+##################################################################
+# Certain packets are redirected to the local port 8080 and 8443 #
+##################################################################
+
+## Plain text HTTP traffic (80) is redirected to port 8080
+iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
+
+## WhatsApp (5222) is redirected to port 8080
+iptables -t nat -A PREROUTING -p tcp --dport 5222 -j REDIRECT --to-ports 8080
+
+## SSL-based HTTPS traffic (443) is redirected to port 8443
+iptables -t nat -A PREROUTING -p tcp --dport 443 -j REDIRECT --to-ports 8443
+
+## IMAP over SSL (993), SMTP over SSL (465 and 587) is redirected to port 8443
+iptables -t nat -A PREROUTING -p tcp --dport 587 -j REDIRECT --to-ports 8443
+iptables -t nat -A PREROUTING -p tcp --dport 465 -j REDIRECT --to-ports 8443
+iptables -t nat -A PREROUTING -p tcp --dport 993 -j REDIRECT --to-ports 8443

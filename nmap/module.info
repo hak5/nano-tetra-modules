@@ -1,0 +1,10 @@
+{
+    "author": "Whistle Master",
+    "description": "GUI for security scanner nmap",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "nmap",
+    "version": "1.4"
+}

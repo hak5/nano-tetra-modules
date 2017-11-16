@@ -1,0 +1,219 @@
+<div ng-controller="HackRFController">
+	<div class="row">
+		<div class="col-md-5">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">HackRF 
+						<span class="pull-right" data-toggle="modal" data-target="#ModuleInfo">
+							&#8505;
+						</span>
+						<span style="padding-right: 10px;" class="pull-right" ng-click="hackrfInfo();">
+							&#x21bb;
+						</span>
+					</h3>
+				</div>
+				<div class="panel-body">
+					<span class="label label-success" data-toggle="modal" data-target="#HackRFInfo" ng-show="foundBoard">HackRF Found</span>
+					<span class="label label-danger" ng-show="!foundBoard" ng-hide="!installed">HackRF Not Found</span>
+					<span class="label label-warning" ng-hide="installed">Dependencies Not Met</span>
+					<div class="pull-right" style="display: inline-block;">
+						<button class="btn btn-sm btn-default" ng-disabled="installing" ng-hide="installed" ng-click="hackrfInstall();">Install Dependencies</button>
+						<img src="/img/throbber.gif" ng-show="installing">
+						<button class="btn btn-sm btn-default" ng-show="installed" ng-click="hackrfUninstall();">Remove Dependencies</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-8">
+			<div class="panel panel-default" ng-hide="!foundBoard" ng-controller="HackRFSettingsController">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						Settings
+						<span class="pull-right" data-toggle="modal" data-target="#ManageInfo">
+							&#8505;
+						</span>
+					</h3>
+				</div>
+				<div class="panel-body">
+					<div ng-show="sampleRateError" class="alert alert-danger">You did not specify a sample rate.</div>
+					<div ng-show="centerFreqError" class="alert alert-danger">You did not specify a center frequency</div>
+					<div ng-show="filenameError" class="alert alert-danger">You did not specify a filename.</div>
+
+
+					<form class="form-horizontal">
+						<div class="col-md-10">
+							<div class="form-group">
+								<label for="samplerate" class="col-sm-2">Sample Rate</label>
+								<div class="col-sm-10">
+									<input type="textbox" class="form-control" id="samplerate" ng-model="sampleRate" placeholder="10M">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="centerfreq" class="col-sm-2">Center Frequency</label>
+								<div class="col-sm-10">
+									<input type="textbox" class="form-control" id="centerfreq" ng-model="centerFreq" placeholder="900MHz">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="service" class="col-sm-2">Transceiver Mode</label>
+								<div class="col-sm-10">
+									<select class="form-control" ng-model="mode">
+										<option value="rx">RX</option>
+										<option value="tx">TX</option>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">	
+								<label for="filename" class="col-sm-2">File Name</label>
+								<div class="col-sm-10">
+									<input type="textbox" class="form-control" id="filename" placeholder="/sd/capture.cs8" ng-model="filename">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2">Other Options</label>
+								<div class="col-sm-10">
+									<label class="checkbox-inline"><input type="checkbox" ng-model="amp">Enable RF Amp</label>
+									<label class="checkbox-inline"><input type="checkbox" ng-model="antpower">Antenna Power</label>
+								</div>
+							</div>
+							<div class="form-group" ng-show="mode == 'tx'">
+								<label class="col-sm-2">TX Options</label>
+								<div class="col-sm-10">
+									<label class="checkbox-inline"><input type="checkbox" ng-model="txRepeat">Repeat Transmission</label>
+									<label class="checkbox-inline"><input type="checkbox" ng-model="txIfCheckbox">TX IF Gain</label>
+								</div>
+							</div>
+							<div class="form-group" ng-show="txIfCheckbox && mode == 'tx'">	
+								<label for="txIfGain" class="col-sm-2">TX IF Gain Amount</label>
+								<div class="col-sm-10">
+									<input type="textbox" class="form-control" id="txIfGain" ng-model="txIfGain">
+								</div>
+							</div>
+							<div class="form-group" ng-show="mode == 'rx'">
+								<label class="col-sm-2">RX Options</label>
+								<div class="col-sm-10">
+									<label class="checkbox-inline"><input type="checkbox" ng-model="rxBbCheckbox">RX BB Gain</label>
+									<label class="checkbox-inline"><input type="checkbox" ng-model="rxIfCheckbox">RX IF Gain</label>
+								</div>
+							</div>
+							<div class="form-group" ng-show="rxBbCheckbox && mode == 'rx'">	
+								<label for="rxBbGain" class="col-sm-2">RX BB Gain Amount</label>
+								<div class="col-sm-10">
+									<input type="textbox" class="form-control" id="rxBbGain" ng-model="rxBbGain">
+								</div>
+							</div>
+							<div class="form-group" ng-show="rxIfCheckbox && mode == 'rx'">	
+								<label for="rxIfGain" class="col-sm-2">RX IF Gain Amount</label>
+								<div class="col-sm-10">
+									<input type="textbox" class="form-control" id="rxIfGain" ng-model="rxIfGain">
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-offset-2 col-sm-10">
+									<button type="submit" ng-hide="running" class="btn btn-success" ng-click="hackrfTransfer();">Start</button>
+									<button type="submit" ng-show="running" class="btn btn-danger" ng-click="hackrfStop();">Stop</button>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-8">
+			<div class="panel panel-default" ng-hide="!foundBoard" ng-controller="HackRFLoggingController">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						Logging
+						<span style="padding-top: 2px; padding-left: 10px;" class="pull-right" ng-click="hackrfLog();">
+							&#x21bb;
+						</span>
+						<button class="btn btn-success btn-xs pull-right" style="width: 30px;" ng-show="autoRefresh" ng-click="disableAutoRefresh();">On</button>
+						<button class="btn btn-danger btn-xs pull-right" style="width: 30px;" ng-show="!autoRefresh" ng-click="enableAutoRefresh();">Off</button>
+						<span class="pull-right" style="font-size: 10px; padding-top: 5px; padding-right: 5px;">Auto-Refresh: </span>
+					</h3>
+				</div>
+				<div class="panel-body">
+					<pre>{{ log }}</pre>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="modal fade" id="ModuleInfo" tabindex="-1" role="dialog" aria-labelledBy="ModuleInfoModal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="myModalLabel">HackRF</h4>
+				</div>
+				<div class="modal-body">
+					<p>
+						<p style="text-align: center;">Version 1.4</p>
+						<p style="text-align: center;">Written by <a href="https://twitter.com/FoxtrotNull">Foxtrot</a></p>
+						<br/>
+						<p style="text-align: center;">"HackRF" is a trademark of Great Scott Gadgets.  Permission to use the trademark with attribution to Great Scott Gadgets is granted to all licensees of HackRF for the sole purpose of naming or describing copies or derived works.</p>
+						<p style="text-align: center;">HackRF is released under the <a href="https://github.com/mossmann/hackrf/blob/master/COPYING">GPL 2.0 License</a></p>
+
+						<p style="text-align: center;"><span style="color:red;">Warning:</span> The HackRF is a delicate device, and using some features such as the RF Amplifier incorrectly may result in damaging your HackRF. I am not responsible for any damage you do this. Be careful!</p>
+
+						<span class="help-block">Binaries & Lib: <span style="text-decoration: underline;">4eeddc0</span></span>
+						
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="HackRFInfo" tabindex="-1" role="dialog" aria-labelledBy="HackRFInfoModal" ng-controller="HackRFController">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="myModalLabel">HackRF Boards</h4>
+				</div>
+				<div class="modal-body">
+					<pre>{{ availableHackRFs }}</pre>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="ManageInfo" tabindex="-1" role="dialog" aria-labelledBy="ManageInfoModal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="myModalLabel">HackRF Settings</h4>
+				</div>
+				<div class="modal-body">
+					<h3>Sample Rate</h3>
+					<p>The sample rate is the amount of samples sent or receieved per second. Exceeding 10M samples may cause an unstable system due to computation limits.</p>
+
+					<h3>Center Frequency</h3>
+					<p>This is the frequency that the HackRF will tune to once started. Remember to keep the DC offset in mind!</p>
+
+					<h3>Transceiever Mode</h3>
+					<p>The HackRF One is half-duplex, thus you must specify whether you want the HackRF to transmit(TX) or receieve(RX).</p>
+
+					<h3>File Name</h3>
+					<p>This is the path to the file that you will record to, or transmit from. Linux special files such as /dev/null and /dev/zero can be used too.</p>
+
+					<h3>RF Amp & Antenna Power</h3>
+					<p>The <b>RF Amp</b> checkbox will enable or disable the RF amplifier. The <b>Antenna Power</b> checkbox will enable or disable power being delivered to the Antenna port (max. 50 mA at 3.3 V DC).</p>
+
+					<h3>RX IF Gain & RX BB Gain</h3>
+					<p><b>RX IF Gain</b> is controlled by supplying a value from <b>0dB</b> to <b>40dB</b>, with 8dB steps. <b>RX BB Gain</b> controls the baseband gain by supplying a value from <b>0dB</b> to <b>62dB</b>, with 2dB steps.</p>
+
+					<h3>Repeat Transmission & TX IF Gain</h3>
+					<p><b>Repeat Transmission</b> allows you to enable or disable replaying of the transfer. <b>TX IF Gain</b> is controlled by supplying a value from <b>0dB</b> to <b>47dB</b>, with 1dB steps.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,119 @@
+<div class="h4 well"> meterpreter </div>
+
+<div class="row" ng-controller="meterpreterCtrl">
+  <div class="col-md-4">
+    <div class="panel panel-default" style="min-height:226.5px">
+
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          Control
+        </h3>
+      </div>
+
+      <div class="panel-body">
+        <table class="table">
+          <tbody>
+
+            <tr class="form-inline">
+              <td class="text-muted">meterpreter</td>
+              <td>
+                <div class="hidden-xs">
+                  <button ng-show="running" type="button" class="btn btn-sm btn-danger pull-right" ng-click="stopMeterpreter()">Stop</button>
+                  <button ng-hide="running" type="button" class="btn btn-sm btn-primary pull-right" ng-click="startMeterpreter()">Start</button>
+                </div>
+                <div class="visible-xs">
+                  <button ng-show="running" type="button" class="btn btn-lg btn-danger pull-right" ng-click="stopMeterpreter()">Stop</button>
+                  <button ng-hide="running" type="button" class="btn btn-lg btn-primary pull-right" ng-click="startMeterpreter()">Start</button>
+                </div>
+
+              </td>
+            </tr>
+
+            <tr>
+              <td class="text-muted">Autostart</td>
+              <td>
+                <div class="btn-group pull-right">
+                  <div class="hidden-xs">
+                    <button ng-click="enableMeterpreter()" ng-class="!enabled ? 'btn-default' : 'btn-success'" class="btn btn-sm">I</button>
+                    <button ng-click="disableMeterpreter()" ng-class="!enabled ? 'btn-danger' : 'btn-default'" class="btn btn-sm">0</button>
+                  </div>
+                  <div class="visible-xs">
+                    <button ng-click="enableMeterpreter()" ng-class="!enabled ? 'btn-default' : 'btn-success'" class="btn btn-lg">I</button>
+                    <button ng-click="disableMeterpreter()" ng-class="!enabled ? 'btn-danger' : 'btn-default'" class="btn btn-lg">0</button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <div class="panel panel-default">
+
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          Configure
+        </h3>
+      </div>
+
+      <div class="panel-body">
+
+        <form class="form-horizontal" ng-submit="saveConfig()">
+          <div class="row" style="margin-bottom: 1.4em">
+
+            <div class="col-md-12">
+
+              <div class="col-md-9">
+                <label>Host</label>
+                <input type="text" class="form-control" placeholder="Hostname or IP" ng-model=config.host>
+              </div>
+
+              <div class="col-md-3">
+                <label>Port</label>
+                <input type="text" class="form-control" placeholder="Remote Port" ng-model=config.port>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="row" style="margin-bottom: 1.4em">
+              <div class="hidden-xs">
+
+                <div class="col-md-2" style="margin-top: 1.8em;">
+                  <button type="submit" class="btn btn-primary btn-block">
+                    Save
+                    <img ng-show="savingConf" src="img/throbber.gif" class="ng-hide">
+                  </button>
+
+                </div>
+              </div>
+              <div class="visible-xs">
+
+                <div class="col-md-2" style="margin-top: 1.8em;">
+                  <button type="submit" class="btn btn-primary btn-lg btn-block">
+                    Save
+                    <img ng-show="savingConf" src="img/throbber.gif" class="ng-hide">
+                  </button>
+
+                </div>
+              </div>
+
+
+            </div>
+
+          </div>
+        </form>
+
+      </div>
+    </div>
+
+
+  </div>
+
+
+</div>

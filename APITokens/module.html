@@ -1,0 +1,61 @@
+<style type="text/css">
+    .panel {
+        width: 90%;
+        float:right;
+        margin-right: 5%;
+    }
+    .table {
+      table-layout:fixed;
+  }
+  .table td {
+      white-space: nowrap;
+      overflow: scroll;
+      text-overflow: ellipsis
+  }
+</style>
+<div class="row" ng-controller="APITokenController">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                Manage API Tokens
+                <span class="pull-right"><button class="btn btn-primary" style="padding: 0px 5px;" ng-click="getApiTokens();">Refresh</button></span>
+            </h3>
+        </div>
+        <table class="table table-hover table-responsive table-condensed" ng-show="apiTokens.length">
+            <thead>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Token</th>
+            </thead>
+            <tbody>
+                <tr ng-repeat="apiToken in apiTokens">
+                    <td class="col-md-1">{{ apiToken.rowid }}</td>
+                    <td class="col-md-3">{{ apiToken.name }}</td>
+                    <td class="col-md-5 token" ng-click="selectOnClick($event);">{{ apiToken.token }}</td>
+                    <td class="col-md-3"><span class="pull-right"><button tokenid="{{ apiToken.rowid }}" class="btn btn-danger btn-sm" ng-click="revokeApiToken($event);">Revoke</button></span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="panel-body" ng-hide="apiTokens.length">
+            <center><i>No API Tokens</i></center>
+        </div>
+
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                Generate New Token
+            </h3>
+        </div>
+        <div class="panel-body">
+            <form class="form-inline" role="form" ng-submit="genApiToken()" novalidate>
+                <div class="form-group">
+                    <label for="tokenName">Token Name:</label>
+                    <input name="tokenName" type="text" class="form-control" id="tokenName" ng-model="newToken.name" autofocus>
+                </div>
+                <button type="submit" class="btn btn-success">Generate</button>
+            </form>
+        </div>
+    </div>
+</div>

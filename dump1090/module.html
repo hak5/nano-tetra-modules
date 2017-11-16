@@ -1,0 +1,253 @@
+<div class="panel panel-default" ng-controller="dump1090_Controller"><div class="panel-heading"><h4 class="panel-title pull-left">{{title}}</h4><span class="pull-right">{{version}}</span><div class="clearfix"></div></div></div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-default" ng-controller="dump1090_ControlsController">
+            <div class="panel-heading">
+				<h3 class="panel-title">Controls</h3>
+            </div>
+			<div class="panel-body">
+				<table style="width:100%">
+					<tr>
+						<td style="padding-bottom: .5em;" class="text-muted">Dependencies</td>
+            <td ng-hide="$root.status.installed" style="text-align:right;padding-bottom: .5em;"><button type="button" style="width: 90px;" class="btn btn-{{installLabel}} btn-xs" data-toggle="modal" data-target="#dependenciesInstallModal" ng-disabled="processing">{{install}}</button></td>
+            <td ng-show="$root.status.installed" style="text-align:right;padding-bottom: .5em;"><button type="button" style="width: 90px;" class="btn btn-{{installLabel}} btn-xs" data-toggle="modal" data-target="#dependenciesRemoveModal" ng-disabled="processing">{{install}}</button></td>
+					</tr>
+					<tr ng-show="$root.status.installed">
+						<td style="padding-bottom: .5em;" class="text-muted">dump1090</td>
+						<td style="text-align:right;padding-bottom: .5em;"><button type="button" style="width: 90px;" class="btn btn-{{statusLabel}} btn-xs" ng-disabled="starting" ng-click="toggledump1090()">{{status}}</button></td>
+					</tr>
+				</table>
+			</div>
+
+      <div class="modal fade" id="dependenciesInstallModal" tabindex="-1" role="dialog" aria-labelledby="dependenciesModalLabel">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="dependenciesInstallModalLabel">Install dependencies</h4>
+            </div>
+            <div class="modal-body">
+              All required dependencies have to be installed first. This may take a few minutes.<br /><br />
+              Please wait, do not leave or refresh this page. Once the install is complete, this page will refresh automatically.
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-info" ng-click="handleDependencies('internal')" data-dismiss="modal">Internal</button>
+              <button type="button" class="btn btn-info" ng-hide="device == 'tetra' || sdAvailable == false" ng-click="handleDependencies('sd')" data-dismiss="modal">SD Card</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="dependenciesRemoveModal" tabindex="-1" role="dialog" aria-labelledby="dependenciesModalLabel">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="dependenciesRemoveModalLabel">Remove dependencies</h4>
+            </div>
+            <div class="modal-body">
+              All required dependencies will be removed. This may take a few minutes.<br /><br />
+              Please wait, do not leave or refresh this page. Once the remove is complete, this page will refresh automatically.
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-info" ng-click="handleDependencies()" data-dismiss="modal">Confirm</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default" ng-show="$root.status.installed" ng-controller="dump1090_SettingsController">
+    <div class="panel-heading pointer" data-toggle="collapse" data-target="#Settings">
+        <h4 class="panel-title">Settings</h4>
+    </div>
+    <div id="Settings" class="panel-collapse collapse">
+	    <div class="panel-body">
+
+        <div class="form-group">
+            <div class="btn-group pull-right">
+              <button class="btn btn-{{saveSettingsLabel}} btn-sm" ng-disabled="saving" ng-click="setSettings()">{{saveSettings}}</button>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="form-group">
+              <div class="input-group">
+                  <span class="input-group-addon input-sm">Gain</span>
+                  <input type="text" class="form-control input-sm" ng-model="settings.gain" placeholder="Default: max gain. Use -100 for auto-gain">
+              </div>
+          </div>
+
+          <div class="form-group">
+              <div class="input-group">
+                  <span class="input-group-addon input-sm">Frequency</span>
+                  <input type="text" class="form-control input-sm" ng-model="settings.frequency" placeholder="Default: 1090 Mhz">
+              </div>
+          </div>
+
+          <div class="form-group">
+              <div class="input-group">
+                <div class="checkbox"><label><input type="checkbox" ng-model="settings.metrics"> Use metric units</label></div>
+                <div class="checkbox"><label><input type="checkbox" ng-model="settings.agc"> Enable the Automatic Gain Control</label></div>
+                <div class="checkbox"><label><input type="checkbox" ng-model="settings.aggressive"> Agressive. More CPU for mores messages (two bits fixes, ...)</label></div>
+              </div>
+          </div>
+
+          <div class="form-group">
+              <div class="input-group">
+                <div class="checkbox"><label><input type="checkbox" ng-model="settings.csv"> Log output to csv</label></div>
+              </div>
+          </div>
+
+	    </div>
+	</div>
+</div>
+
+<div class="panel panel-default" ng-show="$root.status.installed && $root.status.running" ng-controller="dump1090_MapController">
+    <div class="panel-heading pointer" data-toggle="collapse" data-target="#Map">
+        <h4 class="panel-title">Map</h4>
+    </div>
+    <div id="Map" class="panel-collapse collapse">
+      <div class="panel-body">
+          <iframe id="map" width="100%" style="min-height: 500px;" ng-src="{{getMapSrc()}}"></iframe>
+
+      </div>
+    </div>
+</div>
+
+<div class="panel panel-default" ng-show="$root.status.installed && $root.status.running" ng-controller="dump1090_ListController">
+    <div class="panel-heading pointer" data-toggle="collapse" data-target="#List">
+        <h4 class="panel-title">List <span class="badge">{{list.length}}</span></h4>
+    </div>
+    <div id="List" class="panel-collapse collapse">
+        <div class="panel-body">
+          <div class="pull-left">
+            Auto-refresh <div class="btn-group">
+            <button ng-click="toggleAutoRefresh()" class="btn btn-xs btn-{{refreshLabelON}}">ON</button>
+            <button ng-click="toggleAutoRefresh()" class="btn btn-xs btn-{{refreshLabelOFF}}">OFF</button>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm pull-right" ng-click="refreshList()">Refresh List</button><div class="clearfix"></div>
+			<div class="table-responsive">
+	            <table class="table table-striped table-bordered table-hover" ng-hide="(list.length == 0)">
+	                <thead>
+	                    <tr>
+	                        <th>Hex</th>
+	                        <th>Squawk</th>
+                          <th>Flight</th>
+                          <th>Lat</th>
+                          <th>Lon</th>
+                          <th>Valid Position</th>
+                          <th>Altitude</th>
+                          <th>Vert Rate</th>
+                          <th>Track</th>
+                          <th>Valid Track</th>
+                          <th>Speed</th>
+                          <th>Messages</th>
+                          <th>Seen</th>
+	                    </tr>
+	                </thead>
+	                <tbody>
+	                    <tr ng-repeat="entry in list" ng-if="entry != ''">
+	                        <td>{{entry['hex']}}</td>
+	                        <td>{{entry['squawk']}}</td>
+                          <td>{{entry['flight']}}</td>
+                          <td>{{entry['lat']}}</td>
+                          <td>{{entry['lon']}}</td>
+                          <td>{{entry['validposition']}}</td>
+                          <td>{{entry['altitude']}}</td>
+                          <td>{{entry['vert_rate']}}</td>
+                          <td>{{entry['track']}}</td>
+                          <td>{{entry['validtrack']}}</td>
+                          <td>{{entry['speed']}}</td>
+                          <td>{{entry['messages']}}</td>
+                          <td>{{entry['seen']}}</td>
+	                    </tr>
+	                </tbody>
+	            </table>
+	        </div>
+			<div class="well" ng-show="(list.length === 0)">No entry...</div>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="panel panel-default" ng-show="$root.status.installed" ng-controller="dump1090_OutputController">
+	<div class="panel-heading">
+        <h4 class="panel-title pull-left">Output</h4>
+		<div class="pull-right">
+			Auto-refresh <div class="btn-group">
+			<button ng-click="toggleAutoRefresh()" class="btn btn-xs btn-{{refreshLabelON}}">ON</button>
+			<button ng-click="toggleAutoRefresh()" class="btn btn-xs btn-{{refreshLabelOFF}}">OFF</button>
+			</div>
+		</div>
+		<div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="btn-group pull-right">
+          <button class="btn btn-primary btn-sm" ng-click="refreshOutput()">Refresh Log</button>
+          <button class="btn btn-danger btn-sm" ng-click="clearOutput()">Clear Log</button>
+        </div>
+        <div class="clearfix"></div>
+		<pre class="scrollable-pre log-pre">{{output}}</pre>
+    </div>
+</div>
+
+<div class="panel panel-default" ng-show="$root.status.installed" ng-controller="dump1090_HistoryController">
+    <div class="panel-heading pointer" data-toggle="collapse" data-target="#History">
+        <h4 class="panel-title">History <span class="badge">{{history.length}}</span></h4>
+    </div>
+    <div id="History" class="panel-collapse collapse">
+        <div class="panel-body">
+	        <button class="btn btn-primary btn-sm pull-right" ng-click="refreshHistory()">Refresh History</button><div class="clearfix"></div>
+			<div class="table-responsive">
+	            <table class="table table-striped table-bordered table-hover" ng-hide="(history.length == 0)">
+	                <thead>
+	                    <tr>
+	                        <th>Date</th>
+	                        <th>Action</th>
+	                    </tr>
+	                </thead>
+	                <tbody>
+	                    <tr ng-repeat="entry in history" ng-if="entry != ''">
+	                        <td>{{entry[0]}}</td>
+	                        <td>
+								<div class="btn-group">
+                  <button type="button" class="btn btn-fixed-length btn-sm btn-default" data-toggle="modal" data-target="#historyModal" ng-click="viewHistory(entry[1])">View</button>
+                  <button type="button" class="btn btn-sm btn-default" ng-click="downloadHistory(entry[1])">Download log</button>
+                  <button type="button" class="btn btn-sm btn-default" ng-show="entry[2] != ''" ng-click="downloadHistory(entry[2])">Download csv</button>
+									<button type="button" class="btn btn-fixed-length btn-sm btn-danger" ng-click="deleteHistory(entry[1])">Delete</button>
+								</div>
+							</td>
+	                    </tr>
+	                </tbody>
+	            </table>
+	        </div>
+			<div class="well" ng-show="(history.length === 0)">No history...</div>
+        </div>
+    </div>
+
+	<div class="modal fade" id="historyModal" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel">
+	  <div class="modal-dialog modal-lg" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title" id="historyModalLabel">View History - {{historyDate}}</h4>
+	      </div>
+	      <div class="modal-body">
+	      <pre class="scrollable-pre log-pre">{{historyOutput}}</pre>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+</div>
