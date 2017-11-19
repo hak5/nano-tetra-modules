@@ -1,0 +1,10 @@
+{
+    "title": "HTTP Proxy",
+    "description": "HTTP Proxy",
+    "version": "1.0",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "author": "Malduhaymi"
+}
