@@ -197,7 +197,7 @@ class OnlineHashCrack extends Module
 
 	private function getCapFiles()
 	{
-			exec("find /pineapple/modules/ -type f -name \"*.**cap\" 2>&1", $filesArray);
+			exec("find -L /pineapple/modules/ -type f -name \"*.**cap\" 2>&1", $filesArray);
 			$this->response = array("files" => $filesArray);
 	}
 
