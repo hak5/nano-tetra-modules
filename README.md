@@ -65,7 +65,7 @@ registerController("ExampleController", ['$api', '$scope', function($api, $scope
 This snippet makes use of our API to send a request to our PHP with the `getHello` action, and will set it a response into the `$scope.hello` variable.
 
 ### module.php
-The `php/module.php` file must be in the `pineapple` namespace, and contain a routing switch statement, for example:
+The `api/module.php` file must be in the `pineapple` namespace, and contain a routing switch statement, for example:
 
 ```
 <?php namespace pineapple;
