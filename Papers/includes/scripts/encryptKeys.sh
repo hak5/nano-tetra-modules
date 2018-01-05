@@ -90,7 +90,7 @@ done;
 
 # Generate a password on the private key
 if [ $ENCRYPT_KEYS = true ]; then
-	openssl rsa -$ALGO -in $ssl_store$KEY.pem -out $ssl_store$KEY.pem -passout pass:"$PASS";
+	openssl rsa -$ALGO -in $ssl_store$KEY.key -out $ssl_store$KEY.key -passout pass:"$PASS";
 fi
 
 # If a container type is present but not an algo or pass then use
@@ -104,7 +104,7 @@ if [ -n "$CONTAINER" ]; then
 	fi
 
 	# Generate a container for the public and private keys
-	openssl $CONTAINER -$CALGO -export -nodes -out $ssl_store$KEY.pfx -inkey $ssl_store$KEY.pem -in $ssl_store$KEY.cer -passin pass:"$PASS" -passout pass:"$CPASS";
+	openssl $CONTAINER -$CALGO -export -nodes -out $ssl_store$KEY.pfx -inkey $ssl_store$KEY.key -in $ssl_store$KEY.cer -passin pass:"$PASS" -passout pass:"$CPASS";
 fi
 
 echo "Complete"

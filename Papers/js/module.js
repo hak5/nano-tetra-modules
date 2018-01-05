@@ -5,6 +5,7 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 	$scope.certBitSize				= "2048";
 	$scope.certDaysValid			= "365";
 	$scope.certSigAlgo				= "sha256";
+	$scope.certSANs					= "";
 	$scope.certKeyName				= "";
 	$scope.modifyCertInfo			= false;
 	$scope.certInfoCountry			= "";
@@ -130,6 +131,9 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 			if ($scope.certDaysValid != ''){
 				params['days'] = $scope.certDaysValid;
 			}
+			if ($scope.certSANs != '') {
+				params['sans'] = $scope.certSANs;
+			}
 			if ($scope.certEncryptKeysBool === true) {
 				params['encrypt'] = "";
 				params['algo'] = $scope.certEncryptAlgo;
@@ -168,6 +172,7 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 			$scope.certDaysValid			= "365";
 	        $scope.certBitSize              = "2048";
 	        $scope.certSigAlgo              = "sha256";
+			$scope.certSANs					= "";
 	        $scope.certKeyName              = "";
 	        $scope.certInfoCountry          = "";
 	        $scope.certInfoState            = "";

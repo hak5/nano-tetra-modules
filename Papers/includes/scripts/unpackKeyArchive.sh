@@ -39,14 +39,14 @@ output=$(unzip $FILE.zip -d $DL_DIR);
 # keys are destined for the SSH directory
 if [[ $output == *".pub"* ]]; then
 	mv $FILE.pub /pineapple/modules/Papers/includes/ssh/
-	mv $FILE.pem /pineapple/modules/Papers/includes/ssh/
+	mv $FILE.key /pineapple/modules/Papers/includes/ssh/
 fi
 
 # If the archive contained a .cer these
 # keys are destined for the SSL directory
 if [[ $output == *".cer"* ]]; then
 	mv $FILE.cer /pineapple/modules/Papers/includes/ssl/
-	mv $FILE.pem /pineapple/modules/Papers/includes/ssl/
+	mv $FILE.key /pineapple/modules/Papers/includes/ssl/
 fi
 
 # Clear the download directory

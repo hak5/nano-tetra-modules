@@ -11,7 +11,7 @@ while read p; do
 			IN_SERVER_BLOCK=true;
 		fi
 	else
-		if [[ $p == *".cer;" || $p == *".pem;" ]]; then
+		if [[ $p == *".cer;" || $p == *".key;" ]]; then
 			echo $p | cut -d '/' -f 5 | tr -d ';';
 		fi
 	fi
