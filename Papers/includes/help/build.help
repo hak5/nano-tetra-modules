@@ -20,7 +20,12 @@ This value indicates how long the certificate will be valid.  A default value of
 
 
 <strong>Signature Algorithm</strong><br />
-SHA-1 is considered to be too weak these days, or it will be soon enough, so SHA-256 is selected by default.
+SHA-1 has officially been broken so SHA-256 is selected by default.
+<br /><br />
+
+
+<strong>Subject Alternative Names (SAN)</strong><br />
+A comma-delimited list of SANs.  These are alternative names that will be considered valid when verifying the certificate.  For example if you're spoofing multiple sites during a pentest you'll want to add SANs (*.company1.com, *.company2.com, *.com).
 <br /><br />
 
 

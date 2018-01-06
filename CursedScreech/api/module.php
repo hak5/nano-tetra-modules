@@ -422,7 +422,7 @@ class CursedScreech extends Module {
 		$files = scandir(__API_DL__);
 		$success = true;
 		foreach ($files as $file) {
-			if ($file == "." || $file == "..") {continue;}
+			if (substr($file, 0, 1) == ".") {continue;}
 			if (!unlink(__API_DL__ . $file)) {
 				$success = false;
 			}
@@ -449,7 +449,7 @@ class CursedScreech extends Module {
 		$files = [];
 		
 		foreach (scandir(__PAYLOADS__) as $file) {
-			if ($file == "." || $file == "..") {continue;}
+			if (substr($file, 0, 1) == ".") {continue;}
 			$files[$file] = __PAYLOADS__;
 		}
 		$this->respond(true, null, $files);
@@ -521,7 +521,7 @@ class CursedScreech extends Module {
 		$dir = ($type == "error") ? __LOGS__ : (($type == "targets") ? __TARGETLOGS__ : __CHANGELOGS__);
 		$contents = array();
 		foreach (scandir($dir) as $log) {
-			if ($log == "." || $log == "..") {continue;}
+			if (substr($log, 0, 1) == ".") {continue;}
 			array_push($contents, $log);
 		}
 		$this->respond(true, null, $contents);
@@ -575,7 +575,7 @@ class CursedScreech extends Module {
 		$keys = scandir($dir);
 		$certs = array();
 		foreach ($keys as $key) {
-			if ($key == "." || $key == "..") {continue;}
+			if (substr($key, 0, 1) == ".") {continue;}
 
 			$parts = explode(".", $key);
 			$fname = $parts[0];

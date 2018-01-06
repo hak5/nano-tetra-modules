@@ -23,7 +23,7 @@ help() {
 	echo -e '\t-o,--orgnaization:\t\tOrganization';
 	echo -e '\t-ou,--organizationalUnit:\tOrganizational Unit';
 	echo -e '\t-cn,--commonName:\t\tCommon Name';
-	echo -e '\t-email,--emailAddress:\t\tEmail Address';
+	echo -e '\t--config:\t\t\tOpenSSL config file';
 	echo '';
 }
 
@@ -41,37 +41,37 @@ while [ "$#" -gt 0 ]
 do
 
 if [[ "$1" == "-d" || "$1" == "--days" ]]; then
-        DAYS="$2";
+	DAYS="$2";
 fi
 if [[ "$1" == "-b" || "$1" == "--bitSize" ]]; then
-        BITSIZE="$2";
+	BITSIZE="$2";
 fi
 if [[ "$1" == "-k" || "$1" == "--keyName" ]]; then
-        KEYNAME="$2";
+	KEYNAME="$2";
 fi
 if [[ "$1" == "-sa" || "$1" == "--sigAlgo" ]]; then
-        SIGALGO="$2";
+	SIGALGO="$2";
 fi
 if [[ "$1" == "-c" || "$1" == "--country" ]]; then
 	COUNTRY="$2"
 fi
 if [[ "$1" == "-st" || "$1" == "--state" ]]; then
-        STATE="$2"
+	STATE="$2"
 fi
 if [[ "$1" == "-l" || "$1" == "--locality" ]]; then
-        LOCALITY="$2"
+	LOCALITY="$2"
 fi
 if [[ "$1" == "-o" || "$1" == "--organization" ]]; then
-        ORGANIZATION="$2"
+	ORGANIZATION="$2"
 fi
 if [[ "$1" == "-ou" || "$1" == "--organizationalUnit" ]]; then
-        OU="$2"
+	OU="$2"
 fi
 if [[ "$1" == "-cn" || "$1" == "--commonName" ]]; then
-        CN="$2"
+	CN="$2"
 fi
-if [[ "$1" == "-email" || "$1" == "--emailAddress" ]]; then
-        EMAIL="$2"
+if [[ "$1" == "--config" ]]; then
+	CONF="$2"
 fi
 
 shift
@@ -104,14 +104,11 @@ fi
 if [ -n "$CN" ]; then
 	subj="$subj/CN=$CN";
 fi
-if [ -n "$EMAIL" ]; then
-        subj="$subj/emailAddress=$EMAIL";
-fi
 
 if [ -n "$subj" ]; then
-	openssl req -x509 -nodes -batch -days $DAYS -newkey rsa:$BITSIZE -$SIGALGO -keyout $ssl_store$KEYNAME.pem -out $ssl_store$KEYNAME.cer -subj "$subj";
+	openssl req -x509 -nodes -batch -days $DAYS -newkey rsa:$BITSIZE -$SIGALGO -keyout $ssl_store$KEYNAME.key -out $ssl_store$KEYNAME.cer -subj "$subj";
 else
-	openssl req -x509 -nodes -batch -days $DAYS -newkey rsa:$BITSIZE -$SIGALGO -keyout $ssl_store$KEYNAME.pem -out $ssl_store$KEYNAME.cer;
+	openssl req -x509 -nodes -batch -days $DAYS -newkey rsa:$BITSIZE -$SIGALGO -keyout $ssl_store$KEYNAME.key -out $ssl_store$KEYNAME.cer -config $CONF;
 fi
 
 echo "Complete";

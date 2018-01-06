@@ -55,5 +55,5 @@ if [[ -z $KEYNAME ]]; then
         exit;
 fi
 
-ssh-keygen -q -b $BITSIZE -t rsa -N "$PASSWORD" -f $SSH_STORE$KEYNAME.pem -C $COMMENT
-mv $SSH_STORE$KEYNAME.pem.pub $SSH_STORE$KEYNAME.pub
+ssh-keygen -q -b $BITSIZE -t rsa -N "$PASSWORD" -f $SSH_STORE$KEYNAME.key -C $COMMENT
+mv $SSH_STORE$KEYNAME.key.pub $SSH_STORE$KEYNAME.pub

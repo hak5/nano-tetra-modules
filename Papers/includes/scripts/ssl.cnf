@@ -1,0 +1,17 @@
+[req]
+prompt				= no
+distinguished_name	= req_distinguished_name
+x509_extensions		= req_ext
+
+[req_distinguished_name]
+organizationName        = :ORG:
+organizationalUnitName  = :OU:
+localityName            = :LOC:
+stateOrProvinceName     = :ST:
+countryName             = :C:
+commonName              = :COM:
+
+[req_ext]
+subjectAltName = @alt_names
+
+[alt_names]
