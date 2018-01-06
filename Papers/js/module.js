@@ -256,7 +256,7 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 			params: {cert,type}
 		},function(response) {
 			$scope.showCertThrobber = false;
-			if (response.success === true) {
+			if (response.error === "HTTP Error") {
 				// Redirect if key type is TLS/SSL
 				if (type == "TLS/SSL") {
 					$scope.redirect("https");
@@ -302,7 +302,7 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 			$scope.showRemoveSSLButton = true;
 			$scope.refresh();
 			
-			if (response.success === true) {
+			if (response.error === "HTTP Error") {
 				$scope.redirect("http");
 			} else {
 			}
