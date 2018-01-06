@@ -640,7 +640,7 @@ registerController('PortalAuthController', ['$api', '$scope', '$sce', '$interval
 		$http.post("/modules/PortalAuth/api/module.php", fd, {
 			transformRequest: angular.identity,
 			headers: {'Content-Type': undefined}
-		}).success(function(response) {
+		}).then(function(response) {
 			for (var key in response) {
 				if (response.hasOwnProperty(key)) {
 					if (response.key == "Failed") {
