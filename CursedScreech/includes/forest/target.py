@@ -14,7 +14,7 @@ with open(settingsFile, "r") as sFile:
 		if params[0] == "activity_log":
 			activity_log = params[1]
 		elif params[0] == "kuro_key":
-			priv_key = params[1] + ".pem"
+			priv_key = params[1] + ".key"
 			pub_cer = params[1] + ".cer"
 		elif params[0] == "target_key":
 			client_key = params[1] + ".cer"

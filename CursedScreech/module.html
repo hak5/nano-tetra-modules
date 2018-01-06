@@ -234,14 +234,27 @@ $(document).on('mouseenter', '.cs_hoverDanger', function() {
 											<option value="" selected>Select...</option>
 										</select>
 										<br />
-										<div ng-show="showPayloadSelect">
+										<div ng-show="showPayloadSelect" ng-hide="!showPayloadSelect">
 											<select ng-disabled="kuroButton=='Start'" class="form-control" ng-model="selectedPayload" ng-options="payload.fileName for payload in payloads">
 												<option value="" disabled selected>Select Payload...</option>
 											</select>
 											<br />
 											<h4>Remote upload path</h4>
 										</div>
-										<input type="text" ng-model="targetCommand" class="form-control block" ng-disabled="kuroButton=='Start'" placeholder="Send command to target"><br />
+										<div ng-show="showCertSelect" ng-hide="!showCertSelect">
+											<div class="row form-group">
+												<div class="col-md-6">
+													<input type="text" ng-model="target_installKey" class="form-control" placeholder="Select Certificate...">
+												</div>
+												<div class="col-md-2">
+													<button type="button" class="btn btn-sm" data-toggle="modal" data-target="#cs_keyModal" ng-click="loadCertificates('install');">SSL Store</button>
+												</div>
+											</div>
+											<h4>Certificate Store</h4>
+											<select ng-disabled="kuroButton=='Start'" class="form-control" ng-model="selectedCertStore" ng-options="store.Name for store in certStores">
+											</select>
+										</div>
+										<input type="text" ng-model="targetCommand" class="form-control block" ng-show="!showCertSelect" ng-hide="showCertSelect" ng-disabled="kuroButton=='Start'" placeholder="Send command to target"><br />
 										<table style="width: 100%">
 											<tr><td>
 												<button type="button" class="btn btn-sm cs_hoverInfo" style="width: 100px;" ng-disabled="kuroButton=='Start'" ng-click="sendCommand();">Send</button>
@@ -397,7 +410,7 @@ $(document).on('mouseenter', '.cs_hoverDanger', function() {
 						<tbody>
 							<tr ng-repeat="(key, value) in ezcmds">
 								<td>
-									<button type="button" class="btn cs_hoverDanger" ng-disabled="key == 'Send File'" ng-click="deleteEZCmd(key);"><img src="/modules/CursedScreech/includes/icons/glyphicons-198-remove-circle.png"/></button>
+									<button type="button" class="btn cs_hoverDanger" ng-disabled="key == 'Send File' || key == 'Install Cert'" ng-click="deleteEZCmd(key);"><img src="/modules/CursedScreech/includes/icons/glyphicons-198-remove-circle.png"/></button>
 								</td>
 								<td style="width: 200px">
 									<label class="form-label">{{ key }}</label>

