@@ -683,7 +683,7 @@ registerController('CursedScreechController', ['$api', '$scope', '$sce', '$inter
 		$http.post("/modules/CursedScreech/api/module.php", fd, {
 			transformRequest: angular.identity,
 			headers: {'Content-Type': undefined}
-		}).success(function(response) {
+		}).then(function(response) {
 			for (var key in response) {
 				if (response.hasOwnProperty(key)) {
 					if (response.key == "Failed") {
@@ -758,6 +758,22 @@ registerController('CursedScreechController', ['$api', '$scope', '$sce', '$inter
 		$scope.stop = undefined;
 	});
 	
+	$scope.init = (function(){
+		$api.request({
+			module: 'CursedScreech',
+			action: 'init'
+		},function(response){
+			if (response.success == false) {
+				if (response.message != '') {
+					$scope.getLogs();
+				} else {
+					alert(response.message);
+				}
+			}
+		});
+	});
+	
+	$scope.init();
 	$scope.loadAvailableInterfaces();
 	$scope.loadSettings();
 	$scope.loadEZCmds();

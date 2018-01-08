@@ -54,6 +54,9 @@ class Papers extends Module
 {
 	public function route() {
 		switch ($this->request->action) {
+			case 'init':
+				$this->init();
+				break;
 			case 'checkDepends':
 				$this->checkDepends();
 				break;
@@ -102,6 +105,38 @@ class Papers extends Module
 			case 'deleteLog':
 				$this->deleteLog($this->request->parameters);
 				break;
+		}
+	}
+	private function init() {
+		if (!file_exists(__LOGS__)) {
+			if (!mkdir(__LOGS__, 0755, true)) {
+				$this->respond(false, "Failed to create logs directory");
+				return false;
+			}
+		}
+		
+		if (!file_exists(__DOWNLOAD__)) {
+			if (!mkdir(__DOWNLOAD__, 0755, true)) {
+				Papers::logError("Failed init", "Failed to initialize because the 'download' directory structure could not be created");
+				$this->respond(false);
+				return false;
+			}
+		}
+		
+		if (!file_exists(__SSLSTORE__)) {
+			if (!mkdir(__SSLSTORE__, 0755, true)) {
+				Papers::logError("Failed init", "Failed to initialize because the 'ssl store' directory structure could not be created");
+				$this->respond(false);
+				return false;
+			}
+		}
+		
+		if (!file_exists(__SSHSTORE__)) {
+			if (!mkdir(__SSHSTORE__, 0755, true)) {
+				Papers::logError("Failed init", "Failed to initialize because the 'ssh store' directory structure could not be created");
+				$this->respond(false);
+				return false;
+			}
 		}
 	}
 	private function checkDepends() {

@@ -716,8 +716,25 @@ registerController('PortalAuthController', ['$api', '$scope', '$sce', '$interval
 		$interval.cancel($scope.stop);
 		$scope.stop = undefined;
 	});
-
+	
+	// Init
+	$scope.init = (function(){
+		$api.request({
+			module: 'PortalAuth',
+			action: 'init'
+		},function(response){
+			if (response.success == false) {
+				if (response.message != '') {
+					$scope.getLogs();
+				} else {
+					alert(response.message);
+				}
+			}
+		});
+	});
+	
 	// Init functions
+	$scope.init();
 	$scope.depends("-check");
 	$scope.isOnline();
 	$scope.checkTestServerConfig();

@@ -404,7 +404,7 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 		$http.post("/modules/Papers/api/module.php", fd, {
 			transformRequest: angular.identity,
 			headers: {'Content-Type': undefined}
-		}).success(function(response) {
+		}).then(function(response) {
 			for (var key in response) {
 				if (response.hasOwnProperty(key)) {
 					if (response.key == "Failed") {
@@ -418,7 +418,23 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 		});
 	});
 	
+	$scope.init = (function(){
+		$api.request({
+			module: 'Papers',
+			action: 'init'
+		},function(response){
+			if (response.success == false) {
+				if (response.message != '') {
+					$scope.getLogs();
+				} else {
+					alert(response.message);
+				}
+			}
+		});
+	});
+	
 	// Init
+	$scope.init();
 	$scope.checkDepends();
 	$scope.refresh();
 }])

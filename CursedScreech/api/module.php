@@ -64,6 +64,9 @@ if (!empty($_FILES)) {
 class CursedScreech extends Module {
 	public function route() {
 		switch ($this->request->action) {
+			case 'init':
+				$this->init();
+				break;
 			case 'depends':
 				$this->depends($this->request->task);
 				break;
@@ -137,6 +140,27 @@ class CursedScreech extends Module {
 			case 'cfgUploadLimit':
 				$this->cfgUploadLimit();
 				break;
+		}
+	}
+	
+	/* ============================ */
+	/*        INIT FUNCTIONS        */
+	/* ============================ */
+	
+	private function init() {
+		if (!file_exists(__LOGS__)) {
+			if (!mkdir(__LOGS__, 0755, true)) {
+				$this->respond(false, "Failed to create logs directory");
+				return false;
+			}
+		}
+		
+		if (!file_exists(__API_DL__)) {
+			if (!mkdir(__API_DL__, 0755, true)) {
+				$this->logError("Failed init", "Failed to initialize because the API download directory structure could not be created.");
+				$this->respond(false);
+				return false;
+			}
 		}
 	}
 	
