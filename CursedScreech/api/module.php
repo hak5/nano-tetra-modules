@@ -64,6 +64,9 @@ if (!empty($_FILES)) {
 class CursedScreech extends Module {
 	public function route() {
 		switch ($this->request->action) {
+			case 'init':
+				$this->init();
+				break;
 			case 'depends':
 				$this->depends($this->request->task);
 				break;
@@ -137,6 +140,27 @@ class CursedScreech extends Module {
 			case 'cfgUploadLimit':
 				$this->cfgUploadLimit();
 				break;
+		}
+	}
+	
+	/* ============================ */
+	/*        INIT FUNCTIONS        */
+	/* ============================ */
+	
+	private function init() {
+		if (!file_exists(__LOGS__)) {
+			if (!mkdir(__LOGS__, 0755, true)) {
+				$this->respond(false, "Failed to create logs directory");
+				return false;
+			}
+		}
+		
+		if (!file_exists(__API_DL__)) {
+			if (!mkdir(__API_DL__, 0755, true)) {
+				$this->logError("Failed init", "Failed to initialize because the API download directory structure could not be created.");
+				$this->respond(false);
+				return false;
+			}
 		}
 	}
 	
@@ -422,7 +446,7 @@ class CursedScreech extends Module {
 		$files = scandir(__API_DL__);
 		$success = true;
 		foreach ($files as $file) {
-			if ($file == "." || $file == "..") {continue;}
+			if (substr($file, 0, 1) == ".") {continue;}
 			if (!unlink(__API_DL__ . $file)) {
 				$success = false;
 			}
@@ -449,7 +473,7 @@ class CursedScreech extends Module {
 		$files = [];
 		
 		foreach (scandir(__PAYLOADS__) as $file) {
-			if ($file == "." || $file == "..") {continue;}
+			if (substr($file, 0, 1) == ".") {continue;}
 			$files[$file] = __PAYLOADS__;
 		}
 		$this->respond(true, null, $files);
@@ -521,7 +545,7 @@ class CursedScreech extends Module {
 		$dir = ($type == "error") ? __LOGS__ : (($type == "targets") ? __TARGETLOGS__ : __CHANGELOGS__);
 		$contents = array();
 		foreach (scandir($dir) as $log) {
-			if ($log == "." || $log == "..") {continue;}
+			if (substr($log, 0, 1) == ".") {continue;}
 			array_push($contents, $log);
 		}
 		$this->respond(true, null, $contents);
@@ -575,7 +599,7 @@ class CursedScreech extends Module {
 		$keys = scandir($dir);
 		$certs = array();
 		foreach ($keys as $key) {
-			if ($key == "." || $key == "..") {continue;}
+			if (substr($key, 0, 1) == ".") {continue;}
 
 			$parts = explode(".", $key);
 			$fname = $parts[0];

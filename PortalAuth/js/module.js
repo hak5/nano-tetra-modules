@@ -640,7 +640,7 @@ registerController('PortalAuthController', ['$api', '$scope', '$sce', '$interval
 		$http.post("/modules/PortalAuth/api/module.php", fd, {
 			transformRequest: angular.identity,
 			headers: {'Content-Type': undefined}
-		}).success(function(response) {
+		}).then(function(response) {
 			for (var key in response) {
 				if (response.hasOwnProperty(key)) {
 					if (response.key == "Failed") {
@@ -716,8 +716,25 @@ registerController('PortalAuthController', ['$api', '$scope', '$sce', '$interval
 		$interval.cancel($scope.stop);
 		$scope.stop = undefined;
 	});
-
+	
+	// Init
+	$scope.init = (function(){
+		$api.request({
+			module: 'PortalAuth',
+			action: 'init'
+		},function(response){
+			if (response.success == false) {
+				if (response.message != '') {
+					$scope.getLogs();
+				} else {
+					alert(response.message);
+				}
+			}
+		});
+	});
+	
 	// Init functions
+	$scope.init();
 	$scope.depends("-check");
 	$scope.isOnline();
 	$scope.checkTestServerConfig();

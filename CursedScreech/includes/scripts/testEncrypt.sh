@@ -23,7 +23,7 @@ while [ "$#" -gt 0 ]
 do
 
 if [[ "$1" == "-k" ]]; then
-	KEY="$2.pem"
+	KEY="$2.key"
 fi
 if [[ "$1" == "-d" ]]; then
         KEYDIR="$2"

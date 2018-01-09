@@ -15,7 +15,7 @@ class ConfigHelper:
 		
 
 	def checkSSLCertsExist(self):
-		flags = [".pem", ".cer"]
+		flags = [".key", ".cer"]
 		if os.path.isdir(self.ssl_dir):
 			for file in os.listdir(self.ssl_dir):
 				for flag in flags:
@@ -64,7 +64,7 @@ class ConfigHelper:
 
 		index = 0
 		cert = keyName + ".cer"
-		key = keyName + ".pem"
+		key = keyName + ".key"
 
 		with open(self.nginxConf, "w") as out:
 			for line in self.lines:
@@ -84,7 +84,7 @@ class ConfigHelper:
 	
 	def replaceSSLConfig(self, newKey):
 		cert = newKey + ".cer"
-		key = newKey + ".pem"
+		key = newKey + ".key"
 		currentKey = self.currentSSLCerts[0].rsplit(".")[0]
 		index = 0
 
@@ -94,7 +94,7 @@ class ConfigHelper:
 					if (currentKey + ".cer") in line:
 						line = "\t\tssl_certificate /etc/nginx/ssl/" + cert + ";\n"
 					
-					if (currentKey + ".pem") in line:
+					if (currentKey + ".key") in line:
 						line = "\t\tssl_certificate_key /etc/nginx/ssl/" + key + ";\n"
 					
 				index = index + 1

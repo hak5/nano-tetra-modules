@@ -5,6 +5,7 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 	$scope.certBitSize				= "2048";
 	$scope.certDaysValid			= "365";
 	$scope.certSigAlgo				= "sha256";
+	$scope.certSANs					= "";
 	$scope.certKeyName				= "";
 	$scope.modifyCertInfo			= false;
 	$scope.certInfoCountry			= "";
@@ -130,6 +131,9 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 			if ($scope.certDaysValid != ''){
 				params['days'] = $scope.certDaysValid;
 			}
+			if ($scope.certSANs != '') {
+				params['sans'] = $scope.certSANs;
+			}
 			if ($scope.certEncryptKeysBool === true) {
 				params['encrypt'] = "";
 				params['algo'] = $scope.certEncryptAlgo;
@@ -168,6 +172,7 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 			$scope.certDaysValid			= "365";
 	        $scope.certBitSize              = "2048";
 	        $scope.certSigAlgo              = "sha256";
+			$scope.certSANs					= "";
 	        $scope.certKeyName              = "";
 	        $scope.certInfoCountry          = "";
 	        $scope.certInfoState            = "";
@@ -251,7 +256,7 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 			params: {cert,type}
 		},function(response) {
 			$scope.showCertThrobber = false;
-			if (response.success === true) {
+			if (response.error === "HTTP Error") {
 				// Redirect if key type is TLS/SSL
 				if (type == "TLS/SSL") {
 					$scope.redirect("https");
@@ -297,7 +302,7 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 			$scope.showRemoveSSLButton = true;
 			$scope.refresh();
 			
-			if (response.success === true) {
+			if (response.error === "HTTP Error") {
 				$scope.redirect("http");
 			} else {
 			}
@@ -399,7 +404,7 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 		$http.post("/modules/Papers/api/module.php", fd, {
 			transformRequest: angular.identity,
 			headers: {'Content-Type': undefined}
-		}).success(function(response) {
+		}).then(function(response) {
 			for (var key in response) {
 				if (response.hasOwnProperty(key)) {
 					if (response.key == "Failed") {
@@ -413,7 +418,23 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 		});
 	});
 	
+	$scope.init = (function(){
+		$api.request({
+			module: 'Papers',
+			action: 'init'
+		},function(response){
+			if (response.success == false) {
+				if (response.message != '') {
+					$scope.getLogs();
+				} else {
+					alert(response.message);
+				}
+			}
+		});
+	});
+	
 	// Init
+	$scope.init();
 	$scope.checkDepends();
 	$scope.refresh();
 }])

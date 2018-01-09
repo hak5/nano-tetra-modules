@@ -94,6 +94,9 @@ class PortalAuth extends Module
 {
 	public function route() {
 		switch($this->request->action) {
+			case 'init':
+				$this->init();
+				break;
 			case 'depends':
 				$this->depends($this->request->params);
 				break;
@@ -221,6 +224,19 @@ class PortalAuth extends Module
 			case 'clearDownloads':
 				$this->clearDownloads();
 				break;
+		}
+	}
+	
+	/* ============================ */
+	/*        INIT FUNCTIONS        */
+	/* ============================ */
+	
+	private function init() {
+		if (!file_exists(__LOGS__)) {
+			if (!mkdir(__LOGS__, 0755, true)) {
+				$this->respond(false, "Failed to create logs directory");
+				return false;
+			}
 		}
 	}
 	

