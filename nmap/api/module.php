@@ -61,6 +61,9 @@ class nmap extends Module
 
     private function handleDependencies()
     {
+    	if (!file_exists("/usr/lib/libpcap.so.1.3") && file_exists("/usr/lib/libpcap.so")) {
+            symlink("/usr/lib/libpcap.so", "/usr/lib/libpcap.so.1.3");
+        }
 		if(!$this->checkDependency("nmap"))
 		{
 	        $this->execBackground("/pineapple/modules/nmap/scripts/dependencies.sh install ".$this->request->destination);
