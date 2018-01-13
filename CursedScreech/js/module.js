@@ -684,12 +684,17 @@ registerController('CursedScreechController', ['$api', '$scope', '$sce', '$inter
 			transformRequest: angular.identity,
 			headers: {'Content-Type': undefined}
 		}).then(function(response) {
-			for (var key in response) {
-				if (response.hasOwnProperty(key)) {
-					if (response.key == "Failed") {
-						alert("Failed to upload " + key);
+			var errors = {};
+			for (var key in response.data) {
+				if (response.data[key].success == "Failed") {
+					var msg = response.data[key].message + '\n';
+					if (!errors.hasOwnProperty(msg)) {
+						errors[msg] = true;
 					}
 				}
+			}
+			if (Object.keys(errors).length > 0) {
+				alert(Object.keys(errors).join(''));
 			}
 			$scope.selectedFiles = [];
 			$scope.getPayloads();
