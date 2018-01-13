@@ -6,9 +6,5 @@
         "tetra"
     ],
     "title": "Portal Auth",
-<<<<<<< HEAD
     "version": "1.6"
-=======
-    "version": "1.5"
->>>>>>> upstream/master
 }

@@ -641,19 +641,12 @@ registerController('PortalAuthController', ['$api', '$scope', '$sce', '$interval
 			transformRequest: angular.identity,
 			headers: {'Content-Type': undefined}
 		}).then(function(response) {
-<<<<<<< HEAD
 			var errors = {};
 			for (var key in response.data) {
 				if (response.data[key].success == "Failed") {
 					var msg = response.data[key].message + '\n';
 					if (!errors.hasOwnProperty(msg)) {
 						errors[msg] = true;
-=======
-			for (var key in response) {
-				if (response.hasOwnProperty(key)) {
-					if (response.key == "Failed") {
-						alert("Failed to upload " + key);
->>>>>>> upstream/master
 					}
 				}
 			}
