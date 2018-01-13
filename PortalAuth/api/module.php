@@ -43,11 +43,14 @@ if (!empty($_FILES)) {
 	$response = [];
 	foreach ($_FILES as $file) {
 		$tempPath = $file[ 'tmp_name' ];
-		$name = $file['name'];
+		$name = pathinfo($file['name'], PATHINFO_FILENAME);
 		$type = pathinfo($file['name'], PATHINFO_EXTENSION);
 		
 		switch ($type) {
 			case 'exe':
+				$dest = __WINDL__;
+				break;
+			case 'bat':
 				$dest = __WINDL__;
 				break;
 			case 'zip':
@@ -63,26 +66,29 @@ if (!empty($_FILES)) {
 				$dest = __INJECTS__;
 				break;
 			default:
-				break;
+				$response[$name]['success'] = "Failed";
+				$response[$name]['message'] = "File type '" . $type . "' is not supported";
+				continue 2;
 		}
 		
 		// Ensure the upload directory exists
 		if (!file_exists($dest)) {
 			if (!mkdir($dest, 0755, true)) {
-				PortalAuth::logError("Failed Upload", "Failed to upload " . $file['name'] . " because the directory structure could not be created");
+				PortalAuth::logError("Failed Upload", "Failed to upload " . $name . "." . $type . " because the directory structure could not be created");
 			}
 		}
 		
-		$uploadPath = $dest . $name;
+		$uploadPath = $dest . $name . "." . $type;
 		$res = move_uploaded_file( $tempPath, $uploadPath );
 		
 		if ($res) {
 			if ($type == "gz") {
-				exec(__SCRIPTS__ . "unpackInjectionSet.sh " . $name);
+				exec(__SCRIPTS__ . "unpackInjectionSet.sh " . $name . "." . $type);
 			}
-			$response[$name] = "Success";
+			$response[$name]['success'] = "Success";
 		} else {
-			$response[$name] = "Failed";
+			$response[$name]['success'] = "Failed";
+			$response[$name]['message'] = "Failed to upload " . $name . "." . $type;
 		}
 	}
 	echo json_encode($response);
