@@ -37,24 +37,27 @@ if (!empty($_FILES)) {
 	$response = [];
 	foreach ($_FILES as $file) {
 		$tempPath = $file[ 'tmp_name' ];
-		$name = $file['name'];
+		$name = pathinfo($file['name'], PATHINFO_FILENAME);
+		$type = pathinfo($file['name'], PATHINFO_EXTENSION);
 		
 		// Ensure the upload directory exists
 		if (!file_exists(__PAYLOADS__)) {
 			if (!mkdir(__PAYLOADS__, 0755, true)) {
-				$response[$name] = "Failed";
+				$response[$name]['success'] = "Failed";
+				$response[$name]['message'] = "Failed to create payloads directory";
 				echo json_encode($response);
 				die();
 			}
 		}
 		
-		$uploadPath = __PAYLOADS__ . $name;
+		$uploadPath = __PAYLOADS__ . $name . "." . $type;
 		$res = move_uploaded_file($tempPath, $uploadPath);
 		
 		if ($res) {
-			$response[$name] = "Success";
+			$response[$name]['success'] = "Success";
 		} else {
-			$response[$name] = "Failed";
+			$response[$name]['success'] = "Failed";
+			$response[$name]['message'] = "Failed to upload payload '" . $name . "." . $type . "'";
 		}
 	}
 	echo json_encode($response);

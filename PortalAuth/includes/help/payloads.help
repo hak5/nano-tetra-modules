@@ -9,6 +9,7 @@ uploaded they are automatically stored in the proper location based on their fil
 <br /><br />
 <ul>
 <li>.exe => /www/download/windows/</li>
+<li>.bat => /www/download/windows/</li>
 <li>.zip => /www/download/osx/</li>
 <li>.ipk => /www/download/android/</li>
 <li>.ipa => /www/download/ios/</li>
