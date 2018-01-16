@@ -21,7 +21,7 @@ TMPBLACKLIST=${MYPATH}lists/blacklist.tmp
 
 if [ "$1" = "start" ]; then
 
-	killall -9 mkd3
+	killall -9 mdk3
 	rm ${TMPBLACKLIST}
 	rm ${TMPWHITELIST}
 	rm ${LOG}
