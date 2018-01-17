@@ -17,6 +17,7 @@ if [ "$1" = "install" ]; then
   elif [ "$2" = "sd" ]; then
     opkg update
     opkg install nmap --dest sd
+    ln -s /sd/usr/bin/nmap /usr/bin/nmap
   fi
 
   touch /etc/config/nmap
