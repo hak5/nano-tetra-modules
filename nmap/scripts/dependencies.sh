@@ -18,6 +18,8 @@ if [ "$1" = "install" ]; then
     opkg update
     opkg install nmap --dest sd
   fi
+  
+  ln -s /usr/lib/libpcap.so /usr/lib/libpcap.so.1.3
 
   touch /etc/config/nmap
   echo "config nmap 'module'" > /etc/config/nmap
