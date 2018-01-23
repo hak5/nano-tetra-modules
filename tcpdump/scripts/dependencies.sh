@@ -19,7 +19,9 @@ if [ "$1" = "install" ]; then
     opkg install tcpdump --dest sd
   fi
   
-  ln -s /usr/lib/libpcap.so /usr/lib/libpcap.so.1.3
+  if [ ! -f /usr/lib/libpcap.so ] && [ -f /usr/lib/libpcap.so.1.3 ]; then
+  	ln -s /usr/lib/libpcap.so /usr/lib/libpcap.so.1.3
+  fi
 
   touch /etc/config/tcpdump
   echo "config tcpdump 'module'" > /etc/config/tcpdump
