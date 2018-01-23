@@ -485,7 +485,7 @@ registerController('wps_OptionsController', ['$api', '$scope', '$rootScope', fun
 
 			angular.forEach($scope.reaverAdvancedOptions, function(value, key) {
 				if(value.check != false)
-					return_value += value.check + " " + value.val;
+					return_value += value.check + " " + value.val + " ";
 			});
 
 			return return_value;
@@ -507,7 +507,7 @@ registerController('wps_OptionsController', ['$api', '$scope', '$rootScope', fun
 
 			angular.forEach($scope.bullyAdvancedOptions, function(value, key) {
 				if(value.check != false)
-					return_value += value.check + " " + value.val;
+					return_value += value.check + " " + value.val + " ";
 			});
 
 			return return_value;
