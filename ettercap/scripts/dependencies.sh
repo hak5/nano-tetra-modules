@@ -14,13 +14,13 @@ if [ "$1" = "install" ]; then
   if [ "$2" = "internal" ]; then
     opkg install ettercap
 
-     sed -i "/redir_command_on = \"iptables/ s/# *//" /etc/ettercap/etter.conf
-     sed -i "/redir_command_off = \"iptables/ s/# *//" /etc/ettercap/etter.conf
+    sed -i "/redir_command_on = \"iptables/ s/# *//" /etc/ettercap/etter.conf
+    sed -i "/redir_command_off = \"iptables/ s/# *//" /etc/ettercap/etter.conf
 
-     sed -i 's/^\(ec_uid = \).*/\10/' /etc/ettercap/etter.conf
-     sed -i 's/^\(ec_gid = \).*/\10/' /etc/ettercap/etter.conf
+    sed -i 's/^\(ec_uid = \).*/\10/' /etc/ettercap/etter.conf
+    sed -i 's/^\(ec_gid = \).*/\10/' /etc/ettercap/etter.conf
 
-     echo 1 > /proc/sys/net/ipv4/ip_forward
+    echo 1 > /proc/sys/net/ipv4/ip_forward
 
   elif [ "$2" = "sd" ]; then
     opkg install ettercap --dest sd
@@ -34,6 +34,8 @@ if [ "$1" = "install" ]; then
     echo 1 > /proc/sys/net/ipv4/ip_forward
 
   fi
+  
+  ln -s /usr/lib/libpcap.so /usr/lib/libpcap.so.1.3
 
   touch /etc/config/ettercap
   echo "config ettercap 'module'" > /etc/config/ettercap

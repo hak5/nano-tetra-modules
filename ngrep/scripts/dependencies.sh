@@ -12,12 +12,14 @@ touch /tmp/ngrep.progress
 
 if [ "$1" = "install" ]; then
   if [ "$2" = "internal" ]; then
-	   opkg update
+	 opkg update
      opkg install ngrep
   elif [ "$2" = "sd" ]; then
     opkg update
     opkg install ngrep --dest sd
   fi
+  
+  ln -s /usr/lib/libpcap.so /usr/lib/libpcap.so.1.3
 
   touch /etc/config/ngrep
   echo "config ngrep 'module'" > /etc/config/ngrep

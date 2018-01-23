@@ -12,7 +12,7 @@ touch /tmp/wps.progress
 
 if [ "$1" = "install" ]; then
   if [ "$2" = "internal" ]; then
-	   opkg update
+	 opkg update
 
      opkg install reaver
      opkg install bully
@@ -24,6 +24,8 @@ if [ "$1" = "install" ]; then
     opkg install bully --dest sd
 
   fi
+  
+  ln -s /usr/lib/libpcap.so /usr/lib/libpcap.so.1.3
 
   touch /etc/config/wps
   echo "config wps 'module'" > /etc/config/wps
@@ -32,6 +34,8 @@ if [ "$1" = "install" ]; then
   uci commit wps.module.installed
 
 elif [ "$1" = "remove" ]; then
+    opkg remove reaver
+    opkg remove bully
     rm -rf /etc/config/wps
 fi
 

@@ -12,12 +12,14 @@ touch /tmp/tcpdump.progress
 
 if [ "$1" = "install" ]; then
   if [ "$2" = "internal" ]; then
-	   opkg update
+	 opkg update
      opkg install tcpdump
   elif [ "$2" = "sd" ]; then
     opkg update
     opkg install tcpdump --dest sd
   fi
+  
+  ln -s /usr/lib/libpcap.so /usr/lib/libpcap.so.1.3
 
   touch /etc/config/tcpdump
   echo "config tcpdump 'module'" > /etc/config/tcpdump

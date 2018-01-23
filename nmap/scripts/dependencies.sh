@@ -12,7 +12,7 @@ touch /tmp/nmap.progress
 
 if [ "$1" = "install" ]; then
   if [ "$2" = "internal" ]; then
-	   opkg update
+	 opkg update
      opkg install nmap
   elif [ "$2" = "sd" ]; then
     opkg update

@@ -11,6 +11,7 @@ killall sslsplit
 if [ "$1" = "start" ]; then
 
 	echo '1' > /proc/sys/net/ipv4/ip_forward
+	iptables-save > /pineapple/modules/SSLsplit/rules/saved
 	iptables -X
 	iptables -F
 	iptables -t nat -F
@@ -37,5 +38,6 @@ elif [ "$1" = "stop" ]; then
 	iptables -P INPUT ACCEPT
 	iptables -P FORWARD ACCEPT
 	iptables -P OUTPUT ACCEPT
-
+	
+	iptables-restore < /pineapple/modules/SSLsplit/rules/saved
 fi

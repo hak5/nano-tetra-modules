@@ -9,6 +9,7 @@ MYTIME=`date +%s`
 killall sslsplit
 
 echo '1' > /proc/sys/net/ipv4/ip_forward
+iptables-save > /pineapple/modules/SSLsplit/rules/saved
 iptables -X
 iptables -F
 iptables -t nat -F
