@@ -7,10 +7,10 @@ class nmap extends Module
 	public function route()
     {
         switch ($this->request->action) {
-						case 'refreshInfo':
-								$this->refreshInfo();
-								break;
-						case 'refreshOutput':
+			case 'refreshInfo':
+					$this->refreshInfo();
+					break;
+			case 'refreshOutput':
                 $this->refreshOutput();
                 break;
             case 'refreshStatus':
@@ -37,33 +37,30 @@ class nmap extends Module
             case 'deleteHistory':
                 $this->deleteHistory();
                 break;
-						case 'downloadHistory':
-								$this->downloadHistory();
-								break;
+			case 'downloadHistory':
+				$this->downloadHistory();
+				break;
         }
     }
 
-		protected function checkDependency($dependencyName)
-		{
-				return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("nmap.module.installed")));
-		}
+	protected function checkDependency($dependencyName)
+	{
+			return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("nmap.module.installed")));
+	}
 
-		protected function getDevice()
-		{
-				return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
-		}
+	protected function getDevice()
+	{
+			return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
+	}
 
-		protected function refreshInfo()
-		{
-			$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/nmap/module.info"));
-			$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
-		}
+	protected function refreshInfo()
+	{
+		$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/nmap/module.info"));
+		$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
+	}
 
     private function handleDependencies()
     {
-    	if (!file_exists("/usr/lib/libpcap.so.1.3") && file_exists("/usr/lib/libpcap.so")) {
-            symlink("/usr/lib/libpcap.so", "/usr/lib/libpcap.so.1.3");
-        }
 		if(!$this->checkDependency("nmap"))
 		{
 	        $this->execBackground("/pineapple/modules/nmap/scripts/dependencies.sh install ".$this->request->destination);
@@ -88,17 +85,17 @@ class nmap extends Module
         }
     }
 
-		private function scanStatus()
-		{
-				if (!$this->checkRunning("nmap"))
-		{
-						$this->response = array('success' => true);
-				}
-		else
-		{
-						$this->response = array('success' => false);
-				}
-		}
+	private function scanStatus()
+	{
+			if (!$this->checkRunning("nmap"))
+	{
+					$this->response = array('success' => true);
+			}
+	else
+	{
+					$this->response = array('success' => false);
+			}
+	}
 
     private function togglenmap()
     {
