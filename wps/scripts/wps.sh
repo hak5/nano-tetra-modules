@@ -6,6 +6,13 @@ export PATH=$PATH:/sd/usr/bin:/sd/usr/sbin
 
 MYTIME=`date +%s`
 MYCMD=`cat /tmp/wps.run`
+MODULEDIR=/pineapple/modules/wps
+LOGDIR=$MODULEDIR/log
+ 
+# ensure log directory is created
+if [ ! -d $LOGDIR ]; then
+	mkdir $LOGDIR
+fi
 
 if [ "$1" = "start" ]; then
 	eval ${MYCMD}
