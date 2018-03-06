@@ -6,45 +6,6 @@ namespace pineapple;
 // Upload Directory where we store vpn_configs
 define('__UPLOAD__', "/root/vpn_config/");
 
-// File upload form that the angular function makes a call to
-if (!empty($_FILES)) {
-	$response = [];
-	foreach ($_FILES as $file) {
-		$tempPath = $file[ 'tmp_name' ];
-		$name = $file['name'];
-		$type = pathinfo($file['name'], PATHINFO_EXTENSION);
-		
-		// Do not accept any file other than .ovpn
-		if ($type != "ovpn") {
-			continue;
-		}
-		
-		// Ensure the upload directory exists
-		if (!file_exists(__UPLOAD__)) {
-			if (!mkdir(__UPLOAD__, 0755, true)) {
-                $response[$name] = "Failed. Unable to upload because vpn_certs directory does not exist/could not be created!";
-                continue;
-			}
-		}
-		
-		$uploadPath = __UPLOAD__ . $name;
-		$res = move_uploaded_file( $tempPath, $uploadPath );
-		
-		if ($res) {
-			$response[$name] = "Success";
-		} else {
-			$response[$name] = "Failed";
-		}
-	}
-    echo json_encode($response);
-    
-    die();
-}
-
-
-
-
-
 /* Main module class for OpenVPNConnect */
 class OpenVPNConnect extends Module{
 
@@ -68,6 +29,8 @@ class OpenVPNConnect extends Module{
             case 'checkDependencies':
                 $this->checkDependencies();
                 break;
+            case 'uploadFile':
+                $this->uploadFile();
         }
     }
 
@@ -196,6 +159,50 @@ class OpenVPNConnect extends Module{
         $this->response = array("success" => true,
                                 "content" => "VPN Stopped...");
     }
+
+    // Uploads the .ovnp recieved from the service
+    private function uploadFile(){
+                   
+            $inputData = $this->request->file;
+
+            $fileName = $inputData[0];
+
+            $file = base64_decode($inputData[1]);
+
+            $response = [];
+                
+            $name = $fileName;
+            $type = pathinfo($fileName, PATHINFO_EXTENSION);
+                    
+            // Do not accept any file other than .ovpn
+            if ($type != "ovpn") {
+                $this->response = array("success" => false);
+                return;
+            }
+                    
+            // Ensure the upload directory exists
+            if (!file_exists(__UPLOAD__)) {
+                if (!mkdir(__UPLOAD__, 0755, true)) {
+                    $response[$name] = "Failed. Unable to upload because vpn_certs directory does not exist/could not be created!";
+                        $this->response = array("success" => false);
+                        return;
+                    }
+                }
+                    
+            $uploadPath = __UPLOAD__ . $name;
+            $res = file_put_contents( $uploadPath, $file );
+                    
+            if ($res) {
+                $response[$name] = true;
+            } else {
+                $response[$name] = false;
+            }
+        
+
+            $this->response = array("success" => $response[$name]);
+                
+    }
+    
 
   
 }

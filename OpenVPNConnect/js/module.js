@@ -153,37 +153,70 @@ registerController('openVPNConnectController', ['$api', '$scope', '$timeout', '$
 		}
     };
 
-    // Actual file upload function to upload the .ovpn certs
+    /* File upload function. Instaitates a FileReader object the makes a promise call to 
+       doUpload once the async reader call is complete on each iteration
+    */
     $scope.uploadFile = function(){
-		$scope.uploading = true;
+
+        $scope.uploading = true;
+
 		
-		var fd = new FormData();
 		for (x = 0; x < $scope.selectedFiles.length; x++) {
-			fd.append($scope.selectedFiles[x].name, $scope.selectedFiles[x]);
-		}
-		$http.post("/modules/OpenVPNConnect/api/module.php", fd, {
-			transformRequest: angular.identity,
-			headers: {'Content-Type': undefined}
-		}).then(function(response) {
-            var failCount = 0;
-			for (var key in response) {
-				if (response.hasOwnProperty(key)) {
-					if (response.key == "Failed") {
-                        failCount += 1;
-						alert("Failed to upload " + key);
-					}
-				}
+
+            var fileReader = new FileReader();
+
+            var fileName = $scope.selectedFiles[x].name;
+
+            var filesToUpload = $scope.selectedFiles.length;
+
+            readFile($scope.selectedFiles[x], fileName, filesToUpload);
+
             }
-            if(failCount > 0){
-                $scope.workspace.uploadstatusLabel = "One or more files failed to upload!";
-                $scope.workspace.uploadstatus = "danger";
-            }else{
+        };
+
+
+     // Read file function to handle a Promise for multiple file uploads using FilerReader
+     function readFile(file, file_name, files_to_upload){
+        return new Promise((resolve, reject) => {
+          var fr = new FileReader();  
+          fr.onload = () => {
+            final_file = fr.result.split(',')[1]
+            resolve(doUpload(file_name, final_file, files_to_upload - 1));
+          };
+          fr.readAsDataURL(file);
+        });
+      }
+
+
+      /* Actually performs the upload request to the API. Passes the file name and a base64 encoded
+         file to be uploaded by the service
+      */
+     var doUpload = function(file_name, file, files_to_upload){
+        
+        $api.request({
+            module: 'OpenVPNConnect', 
+            action: 'uploadFile',
+            file: [file_name,
+                   file
+                  ]
+        }, function(response) {
+            
+            if(response.success){
                 $scope.workspace.uploadstatusLabel = "Upload Success!";
                 $scope.workspace.uploadstatus = "success";
+            }else{
+                $scope.workspace.uploadstatusLabel = "One or more files failed to upload!";
+                $scope.workspace.uploadstatus = "danger";
             }
-			$scope.selectedFiles = [];
-			$scope.uploading = false;
-		});
+        
+            if(files_to_upload === 0){
+                $scope.selectedFiles = [];
+                $scope.uploading = false;
+            }
+
+            //console.log(response) //Log the response to the console, this is useful for debugging.
+        });
+
      };
     
 }]);
