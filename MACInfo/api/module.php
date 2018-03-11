@@ -17,7 +17,7 @@ class MACInfo extends Module
     private function getMACInfo($mac)
     {
         if($this->IsValidMAC($mac)){
-            $url = "http://macvendors.co/api/" . $mac . "/JSON";
+            $url = "https://macvendors.co/api/" . $mac . "/JSON";
             $retJSON = file_get_contents($url);
             if($retJSON != false){
                 $mInfo = json_decode($retJSON);
