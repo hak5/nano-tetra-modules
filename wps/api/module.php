@@ -349,7 +349,7 @@ class wps extends Module
 
 	private function getMACInfo()
 	{
-		$content = file_get_contents("http://api.macvendors.com/".$this->request->mac);
+		$content = file_get_contents("https://api.macvendors.com/".$this->request->mac);
 		$this->response = array('title' => $this->request->mac, "output" => $content);
 	}
 
