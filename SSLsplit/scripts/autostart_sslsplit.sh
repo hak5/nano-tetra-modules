@@ -20,5 +20,5 @@ iptables -P OUTPUT ACCEPT
 sh /pineapple/modules/SSLsplit/rules/iptables
 
 iptables -t nat -A POSTROUTING -j MASQUERADE
-
+echo "If this file exists, it means that the script succesfully detected the log directory! > /pineapple/modules/SSLsplit/log/islogthere || printf "WRN: Log directory at '/pineapple/modules/SSLsplit/' was not found! We are creating it now!\n" > /pineapple/modules/SSLsplit/connections.log && mkdir /pineapple/modules/SSLsplit/log/ && echo "Directory succesfully created!" > /pineapple/modules/SSLsplit/log/islogthere
 sslsplit -D -l /pineapple/modules/SSLsplit/connections.log -L /pineapple/modules/SSLsplit/log/output_${MYTIME}.log -k /pineapple/modules/SSLsplit/cert/certificate.key -c /pineapple/modules/SSLsplit/cert/certificate.crt ssl 0.0.0.0 8443 tcp 0.0.0.0 8080
