@@ -23,6 +23,15 @@ class tor extends Module
 			case 'toggletor':
 				$this->toggletor();
 				break;
+			case 'addHiddenService':
+				$this->addHiddenService();
+				break;
+			case 'removeHiddenService':
+				$this->removeHiddenService();
+			    break;
+			case 'rebindProxy':
+			    $this->rebindProxy();
+				break;
         }
     }
 
@@ -160,4 +169,11 @@ class tor extends Module
 
         $this->response = array("device" => $device, "sdAvailable" => $sdAvailable, "status" => $status, "statusLabel" => $statusLabel, "installed" => $installed, "install" => $install, "installLabel" => $installLabel, "bootLabelON" => $bootLabelON, "bootLabelOFF" => $bootLabelOFF, "processing" => $processing);
     }
+	private function addHiddenService() {
+
+	}
+	private function removeHiddenService() {
+	}
+	private function rebindProxy() {
+	}
 }
