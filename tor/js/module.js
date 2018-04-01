@@ -75,7 +75,7 @@ registerController('tor_DependenciesController', ['$api', '$scope', '$rootScope'
 		$api.request({
             module: 'tor',
             action: 'handleDependencies',
-						destination: param
+			destination: param
         }, function(response){
             if (response.success === true) {
 				$scope.installLabel = "warning";
@@ -100,4 +100,24 @@ registerController('tor_DependenciesController', ['$api', '$scope', '$rootScope'
 }]);
 
 registerController('tor_ConfigurationController', ['$api', '$scope', '$rootScope', '$interval', '$timeout', function($api, $scope, $rootScope, $interval, $timeout) {
+  $scope.refreshHiddenServices = (function() {
+	$api.request({
+		module: 'tor',
+		action: 'refreshHiddenServices'
+	}, function(response) {
+		$scope.hiddenServices = response.hiddenServices;
+	});
+  });
+
+  $scope.addHiddenService = (function() {
+	$api.request({
+		module: 'tor',
+		action: 'addHiddenService',
+		name: $scope.name
+	}, function(response){
+			$scope.hiddenServices = response.hiddenServices;
+			$scope.refreshHiddenServices();
+		});
+    });
+	$scope.refreshHiddenServices();
 }]);

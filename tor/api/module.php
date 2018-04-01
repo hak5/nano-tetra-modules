@@ -20,6 +20,9 @@ class tor extends Module
 			case 'toggletor':
 				$this->toggletor();
 				break;
+			case 'refreshHiddenServices':
+				$this->refreshHiddenServices();
+				break;
 			case 'addHiddenService':
 				$this->addHiddenService();
 				break;
@@ -140,9 +143,17 @@ class tor extends Module
 
         $this->response = array("device" => $device, "sdAvailable" => $sdAvailable, "status" => $status, "statusLabel" => $statusLabel, "installed" => $installed, "install" => $install, "installLabel" => $installLabel, "bootLabelON" => $bootLabelON, "bootLabelOFF" => $bootLabelOFF, "processing" => $processing);
     }
+
+	private function refreshHiddenServices() {
+		$hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
+		$this->response = array("hiddenServices" => $hiddenServices);
+	}
 	private function addHiddenService() {
-		$config = @json_decode(file_get_contents("/etc/config/tor/config"));
-		$this->response = array("config" => $config);
+		//Perform gate checks here...
+		$hiddenService = array("name" => $this->request->name, "forwards" => array() );
+		$hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
+		array_push($hiddenServices, $hiddenService);
+		file_put_contents("/etc/config/tor/config", json_encode($hiddenServices, JSON_PRETTY_PRINT));
 	}
 	private function removeHiddenService() {
 	}
