@@ -45,7 +45,7 @@ class tor extends Module
 
 	protected function checkRunning($processName)
 	{
-		return (exec("pgrep ^{$processName}$") != '');
+		return (exec("pgrep {$processName}") != '');
 	}
 
     private function handleDependencies()
@@ -141,7 +141,8 @@ class tor extends Module
         $this->response = array("device" => $device, "sdAvailable" => $sdAvailable, "status" => $status, "statusLabel" => $statusLabel, "installed" => $installed, "install" => $install, "installLabel" => $installLabel, "bootLabelON" => $bootLabelON, "bootLabelOFF" => $bootLabelOFF, "processing" => $processing);
     }
 	private function addHiddenService() {
-
+		$config = @json_decode(file_get_contents("/etc/config/tor/config"));
+		$this->response = array("config" => $config);
 	}
 	private function removeHiddenService() {
 	}
