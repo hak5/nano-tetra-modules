@@ -29,6 +29,12 @@ class tor extends Module
 			case 'removeHiddenService':
 				$this->removeHiddenService();
 			    break;
+			case 'addServiceForward':
+				$this->addServiceForward();
+				break;
+			case 'removeServiceForward':
+				$this->removeServiceForward();
+				break;
         }
     }
 
@@ -141,18 +147,81 @@ class tor extends Module
         $this->response = array("device" => $device, "sdAvailable" => $sdAvailable, "status" => $status, "statusLabel" => $statusLabel, "installed" => $installed, "install" => $install, "installLabel" => $installLabel, "bootLabelON" => $bootLabelON, "bootLabelOFF" => $bootLabelOFF, "processing" => $processing);
     }
 
+	private function generateConfig() {
+		$output = file_get_contents("/etc/config/tor/torrc");
+		$output .= "\n";
+		$hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
+		foreach($hiddenServices as $hiddenService) {
+			$output .= "HiddenServiceDir /var/lib/tor/services/{$hiddenService->name}\n";
+			$forwards = $hiddenService->forwards;
+			foreach($forwards as $forward) {
+				$output .= "HiddenServicePort {$forward->port} {$forward->redirect_to}\n";
+			}
+		}
+		file_put_contents("/etc/tor/torrc", $output);
+	}
+
+	private function reloadTor() {
+		$this->generateConfig(); 
+		if($this->checkRunning('tor')) {
+			// SIGHUP tor to reload config
+			exec("kill -SIGHUP $(pgrep tor)");
+		}
+	}
+
 	private function refreshHiddenServices() {
 		$hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
+		foreach($hiddenServices as $hiddenService) {
+			if(file_exists("/var/lib/tor/services/{$hiddenService->name}/hostname")) {
+				$hiddenService->hostname = trim(file_get_contents("/var/lib/tor/services/{$hiddenService->name}/hostname"));
+			}
+		}
 		$this->response = array("hiddenServices" => $hiddenServices);
 	}
+
 	private function addHiddenService() {
-		//Perform gate checks here...
+		//TODO: Perform gate checks here to verify sanity of data.
 		$hiddenService = array("name" => $this->request->name, "forwards" => array() );
-		$hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
+		$hiddenServices = array();
+		if(file_exists("/etc/config/tor/config")) {
+			$hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
+		}
 		array_push($hiddenServices, $hiddenService);
-		file_put_contents("/etc/config/tor/config", json_encode($hiddenServices, JSON_PRETTY_PRINT));
+		file_put_contents("/etc/config/tor/config", @json_encode($hiddenServices, JSON_PRETTY_PRINT));
+		$this->reloadTor();
 	}
+
 	private function removeHiddenService() {
 		$hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
+		foreach($hiddenServices as $key => $hiddenService) {
+			if($hiddenService->name == $this->request->name) {
+				unset($hiddenServices[$key]);
+			}
+		}
+		file_put_contents("/etc/config/tor/config", @json_encode($hiddenServices, JSON_PRETTY_PRINT));
+		$this->reloadTor();
 	}
+
+	private function removeServiceForward() {
+		$name = $this->request->name;
+		$port = $this->request->port;
+		$redirect_to = $this->request->redirect_to;
+
+		$hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
+		foreach($hiddenServices as $hiddenService) {
+			if($hiddenService->name == $name) {
+				$forwards = $hiddenService->forwards;
+				foreach($forwards as $key => $forward) {
+					if($forward->port == $port && $forward->redirect_to == $redirect_to) {
+						unset($forwards[$key]);
+					}
+				}
+				$hiddenService->forwards = $forwards;
+			}
+		}
+		file_put_contents("/etc/config/tor/config", @json_encode($hiddenServices, JSON_PRETTY_PRINT));
+
+		$this->reloadTor();
+	}
+
 }

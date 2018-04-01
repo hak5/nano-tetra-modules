@@ -66,17 +66,29 @@
 		<div class="panel panel-default" ng-controller="tor_ConfigurationController" ng-show="$root.status.installed">
 			<div class="panel-heading">
 				<h3 class="panel-title">Hidden Services</h3>
+				{{ config }}
 			</div>
 
 			<div class="panel-body">
 				<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addHiddenService" ng-disabled="processing">Add Service</button>
 				<div ng-repeat="service in hiddenServices">
-					{{ service.name }}
-					<button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#addServiceForward" ng-disabled="processing">Add Forward</button>
-					<div ng-repeat="forward in service.forwards">
-						<button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#removeServiceForward" ng-disabled="processing">Delete</button>
-						Forwarding {{ forward.port }} to {{ forward.redirect_to }}
-					</div><br/>
+					<h4>
+						{{ service.name }} <span ng-show="service.hostname">(<a href="http://{{service.hostname}}">{{service.hostname}}</a>)</span>
+						<button type="button" class="btn btn-danger btn-xs pull-right" data-toggle="modal" ng-click="removeHiddenService(service.name)" ng-disabled="processing">Remove Service</button>
+					</h4>
+					<div>
+						<table style="width: 100%">
+							<th>Port</th>
+							<th>Redirect to</th>
+							<th></th>
+							<tr ng-repeat="forward in service.forwards">
+								<td>{{ forward.port }}</td>
+								<td>{{ forward.redirect_to }}</td>
+								<td style="text-align:right;padding-bottom: .5em;"><button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#removeServiceForward" ng-click="removeServiceForward(service.name, forward.port, forward.redirect_to);" ng-disabled="processing" aria-label="Delete Forward">X</button></td>
+							</tr>
+						</table>
+						<button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#addServiceForward" ng-disabled="processing">Add Forward</button>
+					</div>
 				</div>
 			</div>
 
@@ -117,7 +129,7 @@
 									<td><input type="text" class="form-control" placeholder="80" ng-model="port"></td>
 								</tr>
 								<tr>
-									<td style="padding-bottom: .5em;" class="text-muted">Port:</td>
+									<td style="padding-bottom: .5em;" class="text-muted">Redirect to:</td>
 									<td><input type="text" class="form-control" placeholder="127.0.0.1:1471" ng-model="redirect_to"></td>
 								</tr>
 							</table>
