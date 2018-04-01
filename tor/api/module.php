@@ -29,9 +29,6 @@ class tor extends Module
 			case 'removeHiddenService':
 				$this->removeHiddenService();
 			    break;
-			case 'rebindProxy':
-			    $this->rebindProxy();
-				break;
         }
     }
 
@@ -156,7 +153,6 @@ class tor extends Module
 		file_put_contents("/etc/config/tor/config", json_encode($hiddenServices, JSON_PRETTY_PRINT));
 	}
 	private function removeHiddenService() {
-	}
-	private function rebindProxy() {
+		$hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
 	}
 }
