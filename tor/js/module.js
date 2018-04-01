@@ -53,13 +53,9 @@ registerController('tor_DependenciesController', ['$api', '$scope', '$rootScope'
 
 		$api.request({
             module: 'tor',
-            action: 'toggletor',
-						interface: $scope.selectedInterface
+            action: 'toggletor'
         }, function(response) {
             $timeout(function(){
-							$rootScope.status.refreshOutput = true;
-							$rootScope.status.refreshHistory = true;
-
 	            $scope.starting = false;
 							$scope.refreshStatus();
             }, 2000);
@@ -125,6 +121,18 @@ registerController('tor_ConfigurationController', ['$api', '$scope', '$rootScope
 		module: 'tor',
 		action: 'removeHiddenService',
 		name: name
+	}, function(response) {
+			$scope.refreshHiddenServices();
+		});
+	});
+
+  $scope.addServiceForward = (function() {
+	$api.request({
+		module: 'tor',
+		action: 'addServiceForward',
+		name: $scope.name,
+		port: $scope.port,
+		redirect_to: $scope.redirect_to
 	}, function(response) {
 			$scope.refreshHiddenServices();
 		});

@@ -163,10 +163,6 @@ class tor extends Module
 
 	private function reloadTor() {
 		$this->generateConfig(); 
-		if($this->checkRunning('tor')) {
-			// SIGHUP tor to reload config
-			exec("kill -SIGHUP $(pgrep tor)");
-		}
 	}
 
 	private function refreshHiddenServices() {
@@ -200,6 +196,25 @@ class tor extends Module
 		}
 		file_put_contents("/etc/config/tor/config", @json_encode($hiddenServices, JSON_PRETTY_PRINT));
 		$this->reloadTor();
+	}
+
+	private function addServiceForward() {
+		$name = $this->request->name;
+		$port = $this->request->port;
+		$redirect_to = $this->request->redirect_to;
+
+		$hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
+		foreach($hiddenServices as $key => $hiddenService) {
+			if($hiddenService->name == $name) {
+				$forwards = $hiddenService->forwards;
+				$forward = array("port" => $port, "redirect_to" => $redirect_to);
+				array_push($forwards, $forward);
+				$hiddenServices[$key]->forwards = $forwards;
+			}
+		}
+		file_put_contents("/etc/config/tor/config", @json_encode($hiddenServices, JSON_PRETTY_PRINT));
+
+		$this->reloadTor();	
 	}
 
 	private function removeServiceForward() {

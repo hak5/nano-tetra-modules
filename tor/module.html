@@ -71,6 +71,7 @@
 
 			<div class="panel-body">
 				<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addHiddenService" ng-disabled="processing">Add Service</button>
+				<button type="button" class="btn btn-info" data-toggle="modal" data-target="#addServiceForward" ng-disabled="processing">Add Forward</button>
 				<div ng-repeat="service in hiddenServices">
 					<h4>
 						{{ service.name }} <span ng-show="service.hostname">(<a href="http://{{service.hostname}}">{{service.hostname}}</a>)</span>
@@ -87,7 +88,6 @@
 								<td style="text-align:right;padding-bottom: .5em;"><button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#removeServiceForward" ng-click="removeServiceForward(service.name, forward.port, forward.redirect_to);" ng-disabled="processing" aria-label="Delete Forward">X</button></td>
 							</tr>
 						</table>
-						<button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#addServiceForward" ng-disabled="processing">Add Forward</button>
 					</div>
 				</div>
 			</div>
@@ -114,30 +114,36 @@
 					</div>
 				</div>
 			</div>
-
 			<div class="modal fade" id="addServiceForward" tabindex="-1" role="dialog" aria-labelledby="addServiceForwardLabel">
 				<div class="modal-dialog" role="document">
 					<div class="modal-content">
 						<div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-							<h4 class="modal-title" id="addServiceForwardRemoveModalLabel">Add Forward to Service</h4>
-						</div>
-						<div class="modal-body">
-							<table style="width: 100%">
-								<tr>
-									<td style="padding-bottom: .5em;" class="text-muted">Port:</td>
-									<td><input type="text" class="form-control" placeholder="80" ng-model="port"></td>
-								</tr>
-								<tr>
-									<td style="padding-bottom: .5em;" class="text-muted">Redirect to:</td>
-									<td><input type="text" class="form-control" placeholder="127.0.0.1:1471" ng-model="redirect_to"></td>
-								</tr>
-							</table>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-							<button type="button" class="btn btn-info" ng-click="addServiceForward()" data-dismiss="modal">Add Forward</button>
-						</div>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="addServiceForwardRemoveModalLabel">Add Forward to Service</h4>
+					</div>
+					<div class="modal-body">
+						<table style="width: 100%">
+							<tr>
+								<td>Service:</td>
+								<td style="padding-bottom: .5em">
+									<select ng-model="name">
+										<option ng-repeat="service in hiddenServices">{{service.name}}</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td style="padding-bottom: .5em;" class="text-muted">Port:</td>
+								<td><input type="text" class="form-control" placeholder="80" ng-model="port"></td>
+							</tr>
+							<tr>
+								<td style="padding-bottom: .5em;" class="text-muted">Redirect to:</td>
+								<td><input type="text" class="form-control" placeholder="127.0.0.1:1471" ng-model="redirect_to"></td>
+							</tr>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+						<button type="button" class="btn btn-info" ng-click="addServiceForward()" data-dismiss="modal">Add Forward</button>
 					</div>
 				</div>
 			</div>
