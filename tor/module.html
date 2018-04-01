@@ -21,15 +21,6 @@
 							<button type="button" style="width: 90px;" class="btn btn-{{statusLabel}} btn-xs" ng-disabled="starting" ng-click="toggletor()">{{status}}</button>
 						</td>
 					</tr>
-					<tr ng-show="$root.status.installed">
-						<td style="padding-bottom: .5em;" class="text-muted">Start on boot</td>
-						<td style="text-align:right;padding-bottom: .5em;">
-							<div class="btn-group">
-								<button ng-click="toggletorOnBoot()" class="btn btn-xs btn-{{bootLabelON}}">ON</button>
-								<button ng-click="toggletorOnBoot()" class="btn btn-xs btn-{{bootLabelOFF}}">OFF</button>
-							</div>
-						</td>
-					</tr>
 				</table>
 			</div>
 
@@ -45,7 +36,7 @@
 							Please wait, do not leave or refresh this page. Once the install is complete, this page will refresh automatically.
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-info" ng-click="handleDependencies('internal')" data-dismiss="modal">Internal</button>
+							<button type="button" class="btn btn-info" ng-hide="device == 'nano'" ng-click="handleDependencies('internal')" data-dismiss="modal">Internal</button>
 							<button type="button" class="btn btn-info" ng-hide="device == 'tetra' || sdAvailable == false" ng-click="handleDependencies('sd')" data-dismiss="modal">SD Card</button>
 						</div>
 					</div>
@@ -70,5 +61,13 @@
 				</div>
 			</div>
 		</div>
+	</div>
+	<div class="panel panel-default" ng-controller="tor_ConfigurationController" ng-show="$root.status.installed">
+		<div class="panel-heading">
+			<h3 class="panel-title">Configuration</h3>
+			<div class="panel-body">
+			{{ message }}
+			</div>
+		</div>		
 	</div>
 </div>

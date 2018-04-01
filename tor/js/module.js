@@ -66,26 +66,6 @@ registerController('tor_DependenciesController', ['$api', '$scope', '$rootScope'
         })
     });
 
-  $scope.toggletorOnBoot = (function() {
-    if($scope.bootLabelON == "default")
-		{
-			$scope.bootLabelON = "success";
-			$scope.bootLabelOFF = "default";
-		}
-		else
-		{
-			$scope.bootLabelON = "default";
-			$scope.bootLabelOFF = "danger";
-		}
-
-		$api.request({
-            module: 'tor',
-            action: 'toggletorOnBoot',
-        }, function(response) {
-			$scope.refreshStatus();
-        })
-    });
-
   $scope.handleDependencies = (function(param) {
     if(!$rootScope.status.installed)
 			$scope.install = "Installing...";
@@ -117,4 +97,7 @@ registerController('tor_DependenciesController', ['$api', '$scope', '$rootScope'
         });
     });
 	$scope.refreshStatus();
+}]);
+
+registerController('tor_ConfigurationController', ['$api', '$scope', '$rootScope', '$interval', '$timeout', function($api, $scope, $rootScope, $interval, $timeout) {
 }]);

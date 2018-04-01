@@ -17,9 +17,6 @@ class tor extends Module
             case 'handleDependenciesStatus':
                 $this->handleDependenciesStatus();
                 break;
-			case 'toggletorOnBoot':
-				$this->toggletorOnBoot();
-				break;
 			case 'toggletor':
 				$this->toggletor();
 				break;
@@ -73,26 +70,6 @@ class tor extends Module
         else
         {
             $this->response = array('success' => true);
-        }
-    }
-
-	private function checkAutoStart()
-	{
-		return (exec("cat /etc/rc.local | grep tor/scripts/autostart_tor.sh") != '');
-	}
-
-    private function toggletorOnBoot()
-    {
-        if($this->checkAutoStart())
-        {
-            exec("sed -i '/tor\/scripts\/autostart_tor.sh/d' /etc/rc.local");
-        }
-        else
-        {
-			exec("sed -i '/exit 0/d' /etc/rc.local");
-            exec("echo /pineapple/modules/tor/scripts/autostart_tor.sh >> /etc/rc.local");
-            exec("echo exit 0 >> /etc/rc.local");
-
         }
     }
 
@@ -159,12 +136,6 @@ class tor extends Module
         {
 			$status = "Stopped";
             $statusLabel = "danger";
-        }
-
-        if($this->checkAutoStart())
-        {
-            $bootLabelON = "success";
-            $bootLabelOFF = "default";
         }
 
         $this->response = array("device" => $device, "sdAvailable" => $sdAvailable, "status" => $status, "statusLabel" => $statusLabel, "installed" => $installed, "install" => $install, "installLabel" => $installLabel, "bootLabelON" => $bootLabelON, "bootLabelOFF" => $bootLabelOFF, "processing" => $processing);
