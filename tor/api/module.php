@@ -45,7 +45,7 @@ class tor extends Module
 
 	protected function checkRunning($processName)
 	{
-		return (exec("pgrep {$processName}") != '');
+		return (exec("pgrep ^{$processName}$") != '');
 	}
 
     private function handleDependencies()
