@@ -52,7 +52,7 @@
 						</div>
 						<div class="modal-body">
 							All required dependencies will be removed. This may take a few minutes.<br /><br />
-							<input type="text" class="form-control" placeholder="365">Please wait, do not leave or refresh this page. Once the remove is complete, this page will refresh automatically.
+							Please wait, do not leave or refresh this page. Once the remove is complete, this page will refresh automatically.
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -74,8 +74,11 @@
 				<button type="button" class="btn btn-info" data-toggle="modal" data-target="#addServiceForward" ng-disabled="processing">Add Forward</button>
 				<div ng-repeat="service in hiddenServices">
 					<h4>
-						{{ service.name }} <span ng-show="service.hostname">(<a href="http://{{service.hostname}}">{{service.hostname}}</a>)</span>
-						<button type="button" class="btn btn-danger btn-xs pull-right" data-toggle="modal" ng-click="removeHiddenService(service.name)" ng-disabled="processing">Remove Service</button>
+						<span class="col-md-4">{{ service.name }}</span>
+						<span class="col-md-4" ng-show="service.hostname">(<a href="http://{{service.hostname}}">{{service.hostname}}</a>)</span>
+						<span class="col-md-4">
+							<button type="button" class="btn btn-danger btn-xs pull-right" data-toggle="modal" ng-click="removeHiddenService(service.name)" ng-disabled="processing">Remove Service</button>
+						</span>
 					</h4>
 					<div>
 						<table style="width: 100%">

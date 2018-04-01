@@ -13,8 +13,8 @@ if [ "$1" = "install" ]; then
   fi
   mkdir -p /etc/config/tor/
   cp /pineapple/modules/tor/files/torrc /etc/config/tor
-  mkdir -p /var/lib/tor/services
-  chown tor:tor /var/lib/tor/services
+  mkdir -p /etc/config/tor/services
+  chown tor:tor /etc/config/tor/services
 elif [ "$1" = "remove" ]; then
     opkg remove tor
 	sed -i '/tor\/scripts\/autostart_tor.sh/d' /etc/rc.local

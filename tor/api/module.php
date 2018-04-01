@@ -152,7 +152,7 @@ class tor extends Module
 		$output .= "\n";
 		$hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
 		foreach($hiddenServices as $hiddenService) {
-			$output .= "HiddenServiceDir /var/lib/tor/services/{$hiddenService->name}\n";
+			$output .= "HiddenServiceDir /etc/config/tor/services/{$hiddenService->name}\n";
 			$forwards = $hiddenService->forwards;
 			foreach($forwards as $forward) {
 				$output .= "HiddenServicePort {$forward->port} {$forward->redirect_to}\n";
@@ -168,8 +168,8 @@ class tor extends Module
 	private function refreshHiddenServices() {
 		$hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
 		foreach($hiddenServices as $hiddenService) {
-			if(file_exists("/var/lib/tor/services/{$hiddenService->name}/hostname")) {
-				$hiddenService->hostname = trim(file_get_contents("/var/lib/tor/services/{$hiddenService->name}/hostname"));
+			if(file_exists("/etc/config/tor/services/{$hiddenService->name}/hostname")) {
+				$hiddenService->hostname = trim(file_get_contents("/etc/config/tor/services/{$hiddenService->name}/hostname"));
 			}
 		}
 		$this->response = array("hiddenServices" => $hiddenServices);
