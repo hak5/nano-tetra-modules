@@ -199,7 +199,6 @@ class tor extends Module
 			return;
 		}
 
-		file_put_contents('/tmp/name',$name);
 		$hiddenService = array("name" => $name, "forwards" => array() );
 		$hiddenServices = array();
 		if(file_exists("/etc/config/tor/config")) {
