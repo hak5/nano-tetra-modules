@@ -38,6 +38,18 @@ class tor extends Module
         }
     }
 
+	private function isValidName($name) {
+		return preg_match('/^[a-zA-Z0-9_]+$/', $name) === 1;
+	}
+
+	private function isValidPort($port) {
+		return preg_match('/^[0-9]+$/', $port) === 1;
+	}
+
+	private function isValidRedirectTo($redirect_to) {
+		return preg_match('/^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+$/', $redirect_to) === 1;
+	}
+
     protected function checkDependency($dependencyName)
     {
         return ((exec("which {$dependencyName}") == '' ? false : true) &&  !file_exists("/tmp/tor.progress"));
@@ -56,6 +68,11 @@ class tor extends Module
 
     private function handleDependencies()
     {
+		if(isset($this->request->destination) && $this->request->destination != "internal" && $this->request->destination != "sd") {
+			$this->response = array('error'=>'Invalid destination');
+			return;
+		}
+
         if(!$this->checkDependency("tor"))
         {
             $this->execBackground("/pineapple/modules/tor/scripts/dependencies.sh install " . $this->request->destination);
@@ -176,8 +193,14 @@ class tor extends Module
 	}
 
 	private function addHiddenService() {
-		//TODO: Perform gate checks here to verify sanity of data.
-		$hiddenService = array("name" => $this->request->name, "forwards" => array() );
+		$name = $this->request->name;
+		if(!$this->isValidName($name)) {
+			$this->response = array("error" => "Invalid name"); 
+			return;
+		}
+
+		file_put_contents('/tmp/name',$name);
+		$hiddenService = array("name" => $name, "forwards" => array() );
 		$hiddenServices = array();
 		if(file_exists("/etc/config/tor/config")) {
 			$hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
@@ -198,10 +221,24 @@ class tor extends Module
 		$this->reloadTor();
 	}
 
+
 	private function addServiceForward() {
 		$name = $this->request->name;
 		$port = $this->request->port;
 		$redirect_to = $this->request->redirect_to;
+
+		if(!$this->isValidName($name)) {
+			$this->response = array("error" => "Invalid name"); 
+			return;
+		}
+		if(!$this->isValidPort($port)) {
+			$this->response = array("error" => "Invalid port"); 
+			return;
+		}
+		if(!$this->isValidRedirectTo($redirect_to)) {
+			$this->response = array("error" => "Invalid redirect to"); 
+			return;
+		}
 
 		$hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
 		foreach($hiddenServices as $key => $hiddenService) {
@@ -221,6 +258,20 @@ class tor extends Module
 		$name = $this->request->name;
 		$port = $this->request->port;
 		$redirect_to = $this->request->redirect_to;
+
+		if(!$this->isValidName($name)) {
+			$this->response = array("error" => "Invalid name"); 
+			return;
+		}
+		if(!$this->isValidPort($port)) {
+			$this->response = array("error" => "Invalid port"); 
+			return;
+		}
+		if(!$this->isValidRedirectTo($redirect_to)) {
+			$this->response = array("error" => "Invalid redirect to"); 
+			return;
+		}
+
 
 		$hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
 		foreach($hiddenServices as $hiddenService) {

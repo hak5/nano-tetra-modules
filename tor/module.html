@@ -71,7 +71,7 @@
 
 			<div class="panel-body">
 				<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addHiddenService" ng-disabled="processing">Add Service</button>
-				<button type="button" class="btn btn-info" data-toggle="modal" data-target="#addServiceForward" ng-disabled="processing">Add Forward</button>
+				<button type="button" class="btn btn-info" ng-show="hiddenServices.length > 0" data-toggle="modal" data-target="#addServiceForward" ng-disabled="processing">Add Forward</button>
 				<div ng-repeat="service in hiddenServices">
 					<h4>
 						<span class="col-md-4">{{ service.name }}</span>
