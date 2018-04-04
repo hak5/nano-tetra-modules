@@ -62,7 +62,10 @@
 				</div>
 			</div>
 		</div>
-
+        </div>
+</div>
+<div class="row">
+	<div class="col-md-8">
 		<div class="panel panel-default" ng-controller="tor_ConfigurationController" ng-show="$root.status.installed">
 			<div class="panel-heading">
 				<h3 class="panel-title">Hidden Services</h3>
@@ -74,9 +77,9 @@
 				<button type="button" class="btn btn-info" ng-show="hiddenServices.length > 0" data-toggle="modal" data-target="#addServiceForward" ng-disabled="processing">Add Forward</button>
 				<div ng-repeat="service in hiddenServices">
 					<h4>
-						<span class="col-md-4">{{ service.name }}</span>
-						<span class="col-md-4" ng-show="service.hostname">(<a href="http://{{service.hostname}}">{{service.hostname}}</a>)</span>
-						<span class="col-md-4">
+						<span>{{ service.name }}</span>
+						<span ng-show="service.hostname">(<a href="http://{{service.hostname}}">{{service.hostname}}</a>)</span>
+						<span>
 							<button type="button" class="btn btn-danger btn-xs pull-right" data-toggle="modal" ng-click="removeHiddenService(service.name)" ng-disabled="processing">Remove Service</button>
 						</span>
 					</h4>
