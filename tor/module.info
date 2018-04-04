@@ -1,7 +1,7 @@
 {
     "author":"catatonicprime",
     "description":"Connect device to tor network, manage hidden services, etc.",
-    "devices": [ "tetra" ],
+    "devices": [ "nano", "tetra" ],
     "title":"tor",
     "version":"1.0"
 }
