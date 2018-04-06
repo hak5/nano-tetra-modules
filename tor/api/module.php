@@ -149,8 +149,7 @@ class Tor extends Module
 
             $status = "Not running";
             $statusLabel = self::DANGER;
-        }
-        else if (!$this->checkDependency("tor")) {
+        } elseif (!$this->checkDependency("tor")) {
             // TOR is not installed, please install.
             $installLabel = self::DANGER;
 
