@@ -199,6 +199,8 @@ class Tor extends Module
     private function reloadTor()
     {
         $this->generateConfig();
+        //Sending SIGHUP to tor process cause config reload.
+        exec("pkill -sighup tor$");
     }
 
     private function refreshHiddenServices()

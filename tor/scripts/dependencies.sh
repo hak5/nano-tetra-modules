@@ -18,6 +18,8 @@ if [ "$1" = "install" ]; then
   cp /pineapple/modules/tor/files/torrc /etc/config/tor
   mkdir -p /etc/config/tor/services
   chown tor:tor /etc/config/tor/services
+  chown root:tor /etc/tor/torrc
+  chmod g+r /etc/tor/torrc
 elif [ "$1" = "remove" ]; then
     opkg remove tor-geoip tor
     sed -i '/tor\/scripts\/autostart_tor.sh/d' /etc/rc.local
