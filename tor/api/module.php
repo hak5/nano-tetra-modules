@@ -281,19 +281,6 @@ class Tor extends Module
         $port = $this->request->port;
         $redirect_to = $this->request->redirect_to;
 
-        if (!$this->isValidName($name)) {
-            $this->error(self::INVALID_NAME);
-            return;
-        }
-        if (!$this->isValidPort($port)) {
-            $this->error(self::INVALID_PORT);
-            return;
-        }
-        if (!$this->isValidRedirectTo($redirect_to)) {
-            $this->error(self::INVALID_DESTINATION);
-            return;
-        }
-
         $hiddenServices = @json_decode(file_get_contents($this->moduleConfigFile));
         foreach ($hiddenServices as $hiddenService) {
             if ($hiddenService->name == $name) {
