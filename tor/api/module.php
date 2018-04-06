@@ -137,28 +137,29 @@ class Tor extends Module
 
         $device = $this->getDevice();
         $sdAvailable = $this->isSDAvailable();
-        $installed = true;
-        $install = "Installed";
+        $installed = false;
+        $install = "Not Installed";
         $processing = false;
 
         if (file_exists($this->progressFile)) {
             // TOR Is installing, please wait.
             $install = "Installing...";
-            $installed = false;
             $installLabel = self::WARNING;
             $processing = true;
 
             $status = "Not running";
             $statusLabel = self::DANGER;
-        } elseif (!$this->checkDependency("tor")) {
+        }
+        else if (!$this->checkDependency("tor")) {
             // TOR is not installed, please install.
-            $install = "Not installed";
             $installLabel = self::DANGER;
 
             $status = "Start";
-            $statusLabel = self::SUCCESS;
+            $statusLabel = self::DANGER;
         } else {
             // TOR is installed, please configure.
+            $installed = true;
+            $install = "Installed";
             $installLabel = self::SUCCESS;
 
             if ($this->checkRunning("tor")) {
