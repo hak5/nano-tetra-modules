@@ -4,6 +4,7 @@ class Tor extends Module
 {
     private $progressFile = '/tmp/tor.progress';
     private $moduleConfigFile = '/etc/config/tor/config';
+    private $dependenciesScriptFile = '/pineapple/modules/tor/scripts/dependencies.sh';
 
     // Error Constants
     const INVALID_NAME = 'Invalid name';
@@ -105,9 +106,9 @@ class Tor extends Module
         }
 
         if (!$this->checkDependency("tor")) {
-            $this->execBackground("/pineapple/modules/tor/scripts/dependencies.sh install " . $destination);
+            $this->execBackground($this->dependenciesScriptFile . " install " . $destination);
         } else {
-            $this->execBackground("/pineapple/modules/tor/scripts/dependencies.sh remove");
+            $this->execBackground($this->dependenciesScriptFile . " remove");
         }
         $this->success(true);
     }
