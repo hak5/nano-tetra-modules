@@ -2,6 +2,9 @@
 
 class Tor extends Module
 {
+    private $progressFile = '/tmp/tor.progress';
+    private $moduleConfigFile = '/etc/config/tor/config';
+
     public function route()
     {
         switch ($this->request->action) {
@@ -35,6 +38,8 @@ class Tor extends Module
             case 'removeServiceForward':
                 $this->removeServiceForward();
                 break;
+            default:
+                break;
         }
     }
 
@@ -55,7 +60,7 @@ class Tor extends Module
 
     protected function checkDependency($dependencyName)
     {
-        return ((exec("which {$dependencyName}") == '' ? false : true) &&  !file_exists("/tmp/tor.progress"));
+        return (exec("which {$dependencyName}") != '' &&  !file_exists($this->progressFile));
     }
 
     protected function refreshInfo()
@@ -90,7 +95,7 @@ class Tor extends Module
 
     private function handleDependenciesStatus()
     {
-        if (file_exists('/tmp/tor.progress')) {
+        if (file_exists($this->progressFile)) {
             $this->response = array('success' => false);
         } else {
             $this->response = array('success' => true);
@@ -116,7 +121,7 @@ class Tor extends Module
         $bootLabelOFF = "danger";
         $processing = false;
 
-        if (file_exists('/tmp/tor.progress')) {
+        if (file_exists($this->progressFile)) {
             // TOR Is installing, please wait.
             $install = "Installing...";
             $installLabel = "warning";
@@ -188,7 +193,7 @@ class Tor extends Module
     {
         $output = file_get_contents("/etc/config/tor/torrc");
         $output .= "\n";
-        $hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
+        $hiddenServices = @json_decode(file_get_contents($this->moduleConfigFile));
         foreach ($hiddenServices as $hiddenService) {
             $output .= "HiddenServiceDir /etc/config/tor/services/{$hiddenService->name}\n";
             $forwards = $hiddenService->forwards;
@@ -206,7 +211,7 @@ class Tor extends Module
 
     private function refreshHiddenServices()
     {
-        $hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
+        $hiddenServices = @json_decode(file_get_contents($this->moduleConfigFile));
         foreach ($hiddenServices as $hiddenService) {
             if (file_exists("/etc/config/tor/services/{$hiddenService->name}/hostname")) {
                 $hostname = file_get_contents("/etc/config/tor/services/{$hiddenService->name}/hostname");
@@ -226,23 +231,23 @@ class Tor extends Module
 
         $hiddenService = array("name" => $name, "forwards" => array() );
         $hiddenServices = array();
-        if (file_exists("/etc/config/tor/config")) {
-            $hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
+        if (file_exists($this->moduleConfigFile)) {
+            $hiddenServices = @json_decode(file_get_contents($this->moduleConfigFile));
         }
         array_push($hiddenServices, $hiddenService);
-        file_put_contents("/etc/config/tor/config", @json_encode($hiddenServices, JSON_PRETTY_PRINT));
+        file_put_contents($this->moduleConfigFile, @json_encode($hiddenServices, JSON_PRETTY_PRINT));
         $this->reloadTor();
     }
 
     private function removeHiddenService()
     {
-        $hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
+        $hiddenServices = @json_decode(file_get_contents($this->moduleConfigFile));
         foreach ($hiddenServices as $key => $hiddenService) {
             if ($hiddenService->name == $this->request->name) {
                 unset($hiddenServices[$key]);
             }
         }
-        file_put_contents("/etc/config/tor/config", @json_encode($hiddenServices, JSON_PRETTY_PRINT));
+        file_put_contents($this->moduleConfigFile, @json_encode($hiddenServices, JSON_PRETTY_PRINT));
         $this->reloadTor();
     }
 
@@ -266,7 +271,7 @@ class Tor extends Module
             return;
         }
 
-        $hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
+        $hiddenServices = @json_decode(file_get_contents($this->moduleConfigFile));
         foreach ($hiddenServices as $key => $hiddenService) {
             if ($hiddenService->name == $name) {
                 $forwards = $hiddenService->forwards;
@@ -275,7 +280,7 @@ class Tor extends Module
                 $hiddenServices[$key]->forwards = $forwards;
             }
         }
-        file_put_contents("/etc/config/tor/config", @json_encode($hiddenServices, JSON_PRETTY_PRINT));
+        file_put_contents($this->moduleConfigFile, @json_encode($hiddenServices, JSON_PRETTY_PRINT));
 
         $this->reloadTor();
     }
@@ -300,7 +305,7 @@ class Tor extends Module
         }
 
 
-        $hiddenServices = @json_decode(file_get_contents("/etc/config/tor/config"));
+        $hiddenServices = @json_decode(file_get_contents($this->moduleConfigFile));
         foreach ($hiddenServices as $hiddenService) {
             if ($hiddenService->name == $name) {
                 $forwards = $hiddenService->forwards;
@@ -312,7 +317,7 @@ class Tor extends Module
                 $hiddenService->forwards = $forwards;
             }
         }
-        file_put_contents("/etc/config/tor/config", @json_encode($hiddenServices, JSON_PRETTY_PRINT));
+        file_put_contents($this->moduleConfigFile, @json_encode($hiddenServices, JSON_PRETTY_PRINT));
 
         $this->reloadTor();
     }
