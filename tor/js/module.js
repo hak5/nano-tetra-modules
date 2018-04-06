@@ -51,7 +51,7 @@ registerController('tor_DependenciesController', ['$api', '$scope', '$rootScope'
         }, function(response) {
             $timeout(function(){
 	            $scope.starting = false;
-							$scope.refreshStatus();
+				$scope.refreshStatus();
             }, 2000);
         })
     });
@@ -106,7 +106,7 @@ registerController('tor_ConfigurationController', ['$api', '$scope', '$rootScope
 		action: 'addHiddenService',
 		name: $scope.name
 	}, function(response){
-			$scope.refreshHiddenServices();
+		    $scope.refreshHiddenServices();
 		});
     });
 
@@ -116,7 +116,7 @@ registerController('tor_ConfigurationController', ['$api', '$scope', '$rootScope
 		action: 'removeHiddenService',
 		name: name
 	}, function(response) {
-			$scope.refreshHiddenServices();
+		    $scope.refreshHiddenServices();
 		});
 	});
 
@@ -128,7 +128,11 @@ registerController('tor_ConfigurationController', ['$api', '$scope', '$rootScope
 		port: $scope.port,
 		redirect_to: $scope.redirect_to
 	}, function(response) {
-			$scope.refreshHiddenServices();
+            $scope.hiddenServicesLoad = '(reloading...)';
+            $timeout(function() {
+                $scope.hiddenServicesLoad = '';
+		        $scope.refreshHiddenServices();
+            }, 2000);
 		});
 	});
 
@@ -140,7 +144,11 @@ registerController('tor_ConfigurationController', ['$api', '$scope', '$rootScope
 		port: port,
 		redirect_to: redirect_to
 	}, function(response) {
-			$scope.refreshHiddenServices();
+            $scope.hiddenServicesLoad = '(reloading...)';
+            $timeout(function() {
+                $scope.hiddenServicesLoad = '';
+			    $scope.refreshHiddenServices();
+            }, 2000);
 		});
 	});
 
