@@ -5,6 +5,15 @@ class Tor extends Module
     private $progressFile = '/tmp/tor.progress';
     private $moduleConfigFile = '/etc/config/tor/config';
 
+    // Error Constants
+    const INVALID_NAME = 'Invalid name';
+    const INVALID_PORT = 'Invalid port';
+    const INVALID_DESTINATION = 'Invalid destination';
+
+    // Display Constants
+    const DANGER = 'danger';
+    const SUCCESS = 'success';
+
     public function route()
     {
         switch ($this->request->action) {
@@ -41,6 +50,16 @@ class Tor extends Module
             default:
                 break;
         }
+    }
+
+    private function success($value)
+    {
+        $this->response = array('success' => $value);
+    }
+
+    private function error($message)
+    {
+        $this->response = array('error' => $message);
     }
 
     private function isValidName($name)
@@ -80,7 +99,7 @@ class Tor extends Module
         if (isset($this->request->destination)) {
             $destination = $this->request->destination;
             if ($destination != "internal" && $destination != "sd") {
-                $this->response = array('error'=>'Invalid destination');
+                $this->error(self::INVALID_DESTINATION);
                 return;
             }
         }
@@ -90,15 +109,15 @@ class Tor extends Module
         } else {
             $this->execBackground("/pineapple/modules/tor/scripts/dependencies.sh remove");
         }
-        $this->response = array('success' => true);
+        $this->success(true);
     }
 
     private function handleDependenciesStatus()
     {
         if (file_exists($this->progressFile)) {
-            $this->response = array('success' => false);
+            $this->success(false);
         } else {
-            $this->response = array('success' => true);
+            $this->success(true);
         }
     }
 
@@ -118,7 +137,7 @@ class Tor extends Module
         $sdAvailable = $this->isSDAvailable();
         $installed = false;
         $bootLabelON = "default";
-        $bootLabelOFF = "danger";
+        $bootLabelOFF = self::DANGER;
         $processing = false;
 
         if (file_exists($this->progressFile)) {
@@ -128,7 +147,7 @@ class Tor extends Module
             $processing = true;
 
             $status = "Not running";
-            $statusLabel = "danger";
+            $statusLabel = self::DANGER;
 
             $this->response = array("device" => $device,
                                     "sdAvailable" => $sdAvailable,
@@ -146,10 +165,10 @@ class Tor extends Module
         if (!$this->checkDependency("tor")) {
             // TOR is not installed, please install.
             $install = "Not installed";
-            $installLabel = "danger";
+            $installLabel = self::DANGER;
 
             $status = "Start";
-            $statusLabel = "success";
+            $statusLabel = self::SUCCESS;
 
             $this->response = array("device" => $device,
                                     "sdAvailable" => $sdAvailable,
@@ -167,14 +186,14 @@ class Tor extends Module
         // TOR is installed, please configure.
         $installed = true;
         $install = "Installed";
-        $installLabel = "success";
+        $installLabel = self::SUCCESS;
 
         if ($this->checkRunning("tor")) {
             $status = "Started";
-            $statusLabel = "success";
+            $statusLabel = self::SUCCESS;
         } else {
             $status = "Stopped";
-            $statusLabel = "danger";
+            $statusLabel = self::DANGER;
         }
 
         $this->response = array("device" => $device,
@@ -225,7 +244,7 @@ class Tor extends Module
     {
         $name = $this->request->name;
         if (!$this->isValidName($name)) {
-            $this->response = array("error" => "Invalid name");
+            $this->error(self::INVALID_NAME);
             return;
         }
 
@@ -251,7 +270,6 @@ class Tor extends Module
         $this->reloadTor();
     }
 
-
     private function addServiceForward()
     {
         $name = $this->request->name;
@@ -259,15 +277,15 @@ class Tor extends Module
         $redirect_to = $this->request->redirect_to;
 
         if (!$this->isValidName($name)) {
-            $this->response = array("error" => "Invalid name");
+            $this->error(self::INVALID_NAME);
             return;
         }
         if (!$this->isValidPort($port)) {
-            $this->response = array("error" => "Invalid port");
+            $this->error(self::INVALID_PORT);
             return;
         }
         if (!$this->isValidRedirectTo($redirect_to)) {
-            $this->response = array("error" => "Invalid redirect to");
+            $this->error(self::INVALID_DESTINATION);
             return;
         }
 
@@ -292,18 +310,17 @@ class Tor extends Module
         $redirect_to = $this->request->redirect_to;
 
         if (!$this->isValidName($name)) {
-            $this->response = array("error" => "Invalid name");
+            $this->error(self::INVALID_NAME);
             return;
         }
         if (!$this->isValidPort($port)) {
-            $this->response = array("error" => "Invalid port");
+            $this->error(self::INVALID_PORT);
             return;
         }
         if (!$this->isValidRedirectTo($redirect_to)) {
-            $this->response = array("error" => "Invalid redirect to");
+            $this->error(self::INVALID_DESTINATION);
             return;
         }
-
 
         $hiddenServices = @json_decode(file_get_contents($this->moduleConfigFile));
         foreach ($hiddenServices as $hiddenService) {
