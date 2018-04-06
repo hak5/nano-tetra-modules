@@ -13,6 +13,7 @@ class Tor extends Module
 
     // Display Constants
     const DANGER = 'danger';
+    const WARNING = 'warning';
     const SUCCESS = 'success';
 
     public function route()
@@ -136,65 +137,38 @@ class Tor extends Module
 
         $device = $this->getDevice();
         $sdAvailable = $this->isSDAvailable();
-        $installed = false;
-        $bootLabelON = "default";
-        $bootLabelOFF = self::DANGER;
+        $installed = true;
+        $install = "Installed";
         $processing = false;
 
         if (file_exists($this->progressFile)) {
             // TOR Is installing, please wait.
             $install = "Installing...";
-            $installLabel = "warning";
+            $installed = false;
+            $installLabel = self::WARNING;
             $processing = true;
 
             $status = "Not running";
             $statusLabel = self::DANGER;
-
-            $this->response = array("device" => $device,
-                                    "sdAvailable" => $sdAvailable,
-                                    "status" => $status,
-                                    "statusLabel" => $statusLabel,
-                                    "installed" => $installed,
-                                    "install" => $install,
-                                    "installLabel" => $installLabel,
-                                    "bootLabelON" => $bootLabelON,
-                                    "bootLabelOFF" => $bootLabelOFF,
-                                    "processing" => $processing);
-            return;
         }
-
-        if (!$this->checkDependency("tor")) {
+        else if (!$this->checkDependency("tor")) {
             // TOR is not installed, please install.
             $install = "Not installed";
             $installLabel = self::DANGER;
 
             $status = "Start";
             $statusLabel = self::SUCCESS;
-
-            $this->response = array("device" => $device,
-                                    "sdAvailable" => $sdAvailable,
-                                    "status" => $status,
-                                    "statusLabel" => $statusLabel,
-                                    "installed" => $installed,
-                                    "install" => $install,
-                                    "installLabel" => $installLabel,
-                                    "bootLabelON" => $bootLabelON,
-                                    "bootLabelOFF" => $bootLabelOFF,
-                                    "processing" => $processing);
-            return;
-        }
-
-        // TOR is installed, please configure.
-        $installed = true;
-        $install = "Installed";
-        $installLabel = self::SUCCESS;
-
-        if ($this->checkRunning("tor")) {
-            $status = "Started";
-            $statusLabel = self::SUCCESS;
         } else {
-            $status = "Stopped";
-            $statusLabel = self::DANGER;
+            // TOR is installed, please configure.
+            $installLabel = self::SUCCESS;
+
+            if ($this->checkRunning("tor")) {
+                $status = "Started";
+                $statusLabel = self::SUCCESS;
+            } else {
+                $status = "Stopped";
+                $statusLabel = self::DANGER;
+            }
         }
 
         $this->response = array("device" => $device,
@@ -204,8 +178,6 @@ class Tor extends Module
                                 "installed" => $installed,
                                 "install" => $install,
                                 "installLabel" => $installLabel,
-                                "bootLabelON" => $bootLabelON,
-                                "bootLabelOFF" => $bootLabelOFF,
                                 "processing" => $processing);
     }
 

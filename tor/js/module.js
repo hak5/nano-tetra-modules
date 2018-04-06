@@ -7,9 +7,6 @@ registerController('tor_DependenciesController', ['$api', '$scope', '$rootScope'
 	$scope.installLabel = "default";
 	$scope.processing = false;
 
-	$scope.bootLabelON = "default";
-	$scope.bootLabelOFF = "default";
-
 	$scope.saveSettingsLabel = "default";
 
 	$scope.device = '';
@@ -33,9 +30,6 @@ registerController('tor_DependenciesController', ['$api', '$scope', '$rootScope'
 			if(response.processing) $scope.processing = true;
 			$scope.install = response.install;
 			$scope.installLabel = response.installLabel;
-
-			$scope.bootLabelON = response.bootLabelON;
-			$scope.bootLabelOFF = response.bootLabelOFF;
         })
     });
 
