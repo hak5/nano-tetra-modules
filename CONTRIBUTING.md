@@ -1,8 +1,8 @@
 Contributing
 ============
 
-To ease code reviews please follow the [PSR-1](http://www.php-fig.org/psr/1/) and
-[PSR-2](http://www.php-fig.org/psr/2/). Take a few minutes to actually read them,
+To ease code reviews please follow the [PSR-1](https://www.php-fig.org/psr/psr-1/) and
+[PSR-2](https://www.php-fig.org/psr/psr-2/). Take a few minutes to actually read them,
 they're not all that bad. To jump right in use the [PHP-CS-Fixer
 tool](http://cs.sensiolabs.org/). Or install PHP_CodeSniffer and use it like so:
 
