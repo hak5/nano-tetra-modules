@@ -89,7 +89,7 @@ private function hello()
 {
     $this->response = array('text' => "Hello World");
 }
-```.
+```
 
 **Note:** You should never use the closing `?>` PHP tag in your `module.php` file.
 
