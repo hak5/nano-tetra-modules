@@ -4,34 +4,31 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
     getCurrentTheme();
     backupFiles();
 
-    $scope.debug = true;
-
-    $scope.themes = [];
-    $scope.themeToDelete = null;
+    $scope.debug                 = false;
+    $scope.themes                = [];
+    $scope.themeToDelete         = null;
     $scope.themeDeleteValidation = '';
-    $scope.messages = [];
-    $scope.newThemeName = '';
-    $scope.throbber = true;
-    $scope.running = false;
-    $scope.current = '';
-    $scope.library = true;
-    $scope.editor = true;
-    $scope.workshopTheme = {themeName: "", file: "", code: "", title: ""};
-    $scope.editThemeFile = {themeName: "", file: "", code: ""};
-    $scope.colors = ['dark', 'light', 'red', 'blue', 'green', 'purple', 'orange', 'yellow', 'pink'];
-    $scope.brightness = ['light', 'normal', 'dark'];
-    $scope.working = false;
-
+    $scope.messages              = [];
+    $scope.newThemeName          = '';
+    $scope.throbber              = true;
+    $scope.running               = false;
+    $scope.current               = '';
+    $scope.library               = true;
+    $scope.editor                = true;
+    $scope.workshopTheme         = {themeName: "", file: "", code: "", title: ""};
+    $scope.editThemeFile         = {themeName: "", file: "", code: ""};
+    $scope.colors                = ['dark', 'light', 'red', 'blue', 'green', 'purple', 'orange', 'yellow', 'pink'];
+    $scope.brightness            = ['light', 'normal', 'dark'];
+    $scope.working               = false;
     // Dark and White
-    $scope.throbbercontrast = true; // true == light -> false == dark
-    $scope.logocontrast = true;
-    $scope.faviconcontrast = true;
-    $scope.reconcontrast = true;
-    $scope.logocontrastText = 'light';
-    $scope.faviconcontrastText = 'light';
+    $scope.throbbercontrast     = true; // true == light -> false == dark
+    $scope.logocontrast         = true;
+    $scope.faviconcontrast      = true;
+    $scope.reconcontrast        = true;
+    $scope.logocontrastText     = 'light';
+    $scope.faviconcontrastText  = 'light';
     $scope.throbbercontrastText = 'light';
-    
-    // Collor and brightness
+    // Color and brightness
     $scope.allcontrastText                 = 'light';
     $scope.allcontrastBrightness           = 'normal';
     $scope.dashboardcontrastText           = 'light';
@@ -51,8 +48,8 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
     $scope.trackingcontrastText            = 'light';
     $scope.trackingcontrastBrightness      = 'normal';
     $scope.loggingcontrastText             = 'light';
-    $scope.loggingcontrastBrightness        = 'normal';
-    $scope.reportingcontrastText            = 'light';
+    $scope.loggingcontrastBrightness       = 'normal';
+    $scope.reportingcontrastText           = 'light';
     $scope.reportingcontrastBrightness     = 'normal';
     $scope.networkingcontrastText          = 'light';
     $scope.networkingcontrastBrightness    = 'normal';
@@ -60,9 +57,8 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
     $scope.configurationcontrastBrightness = 'normal';
     $scope.advancedcontrastText            = 'light';
     $scope.advancedcontrastBrightness      = 'normal';
-    $scope.helpcontrastText            = 'light';
-    $scope.helpcontrastBrightness      = 'normal';
-    
+    $scope.helpcontrastText                = 'light';
+    $scope.helpcontrastBrightness          = 'normal';
     $scope.switchOn = {
       "position" : "relative",
       "display" : "block",
@@ -73,7 +69,6 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
       "background-color" : "darkgray",
       "border-radius" : "40px"
     }
-
     $scope.switchOff = {
       "position" : "relative",
       "display" : "block",
@@ -109,9 +104,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
 	    }, function(response) {
             $scope.sendMessage("Throbber", "set to " + $scope.throbbercontrastText);
             log("changeThrobber", response.message);
+            $window.location.reload();
 	    });
     };
-
     $scope.changeLogo = function(){
     	$scope.logocontrast = !$scope.logocontrast;
 	    $scope.logocontrastText = 'light';
@@ -126,6 +121,7 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
     	}, function(response) {
             $scope.sendMessage("Logo", "set to " + $scope.logocontrastText);
             log("changeLogo", response.message);
+            $window.location.reload();
     	});
     };
 
@@ -143,6 +139,7 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
 	    }, function(response) {
             $scope.sendMessage("Icon", "set to " + $scope.faviconcontrastText);
             log("changeFavicon", response.message);
+            $window.location.reload();
 	    });
     };
     $scope.changeAllIcons = function(){
@@ -154,9 +151,11 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
             brightness: $scope.allcontrastBrightness
         }, function(response) {
             for (msg in response) {
-                $scope.sendMessage("All Icons", "set to " + $scope.allcontrastText + "(" + allcontrastBrightness + ")");
+                $scope.sendMessage("All Icons", "set to " + $scope.allcontrastText + "(" + $scope.allcontrastBrightness + ")");
                 log("changeAllIcons", "Success? " + response.success + " " + response.message);
             }
+            $route.reload();
+            $window.location.reload();
         });
     };
     $scope.changeDashboard = function(){
@@ -169,6 +168,7 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Dashboard Icon", "set to " + $scope.dashboardcontrastText + " (" + $scope.dashboardcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
+            $window.location.reload();
         });
     };
     $scope.changeRecon = function(){
@@ -181,6 +181,7 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Recon Icon", "set to " + $scope.reconcontrastText + " (" + $scope.reconcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
+            $window.location.reload();
         });
     };
     $scope.changeProfiling = function(){
@@ -193,6 +194,7 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Profiling Icon", "set to " + $scope.profilingcontrastText + " (" + $scope.profilingcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
+            $window.location.reload();
         });
     };
     $scope.changeClients = function(){
@@ -205,6 +207,7 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Clients Icon", "set to " + $scope.clientscontrastText + " (" + $scope.clientscontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
+            $window.location.reload();
         });
     };
     $scope.changeModules = function(){
@@ -217,6 +220,7 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("ModuleManager Icon", "set to " + $scope.modulescontrastText + " (" + $scope.modulescontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
+            $window.location.reload();
         });
     };
     $scope.changeFilters = function(){
@@ -229,6 +233,7 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Filters Icon", "set to " + $scope.filterscontrastText + " (" + $scope.filterscontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
+            $window.location.reload();
         });
     };
     $scope.changePineap = function(){
@@ -241,6 +246,7 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Filters Icon", "set to " + $scope.pineapcontrastText + " (" + $scope.pineapcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
+            $window.location.reload();
         });
     };
     $scope.changeTracking = function(){
@@ -253,6 +259,7 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Tracking Icon", "set to " + $scope.trackingcontrastText + " (" + $scope.trackingcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
+            $window.location.reload();
         });
     };
     $scope.changeLogging = function(){
@@ -265,6 +272,7 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Logging Icon", "set to " + $scope.loggingcontrastText + " (" + $scope.loggingcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
+            $window.location.reload();
         });
     };
     $scope.changeReporting = function(){
@@ -277,6 +285,7 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Reporting Icon", "set to " + $scope.reportingcontrastText + " (" + $scope.reportingcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
+            $window.location.reload();
         });
     };
     $scope.changeNetworking = function(){
@@ -289,6 +298,7 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Networking Icon", "set to " + $scope.networkingcontrastText + " (" + $scope.networkingcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
+            $window.location.reload();
         });
     };
     $scope.changeConfiguration = function(){
@@ -301,6 +311,7 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Configuration Icon", "set to " + $scope.configurationcontrastText + " (" + $scope.configurationcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
+            $window.location.reload();
         });
     };
     $scope.changeAdvanced = function(){
@@ -313,6 +324,7 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Advanced Icon", "set to " + $scope.advancedcontrastText + " (" + $scope.advancedcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
+            $window.location.reload();
         });
     };
     $scope.changeHelp = function(){
@@ -325,6 +337,7 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Help Icon", "set to " + $scope.helpcontrastText + " (" + $scope.helpcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
+            $window.location.reload();
         });
     };
     function log(fn, message) {
@@ -334,84 +347,83 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
     };
     function backupFiles() {
     	$api.request({
-	    module: "Themes",
-        action: "backupFiles"
-	}, function(response) {
-        log('backupFiles', response.message);
-        for (i=0; i<response.modules.length; i++) {
-            log('backupFiles', response.modules[i]);            
-        }
-	});
+	        module: "Themes",
+            action: "backupFiles"
+	    }, function(response) {
+            log('backupFiles', response.message);
+            for (i=0; i<response.modules.length; i++) {
+                log('backupFiles', response.modules[i]);            
+            }
+	    });
     };
     function getCurrentTheme() {
     	$api.request({
-	    module: "Themes",
+	        module: "Themes",
             action: "getCurrentTheme"
-	}, function(response) {
-	    $scope.current                         = response.current;
-	    $scope.logocontrastText                = response.logo;
-        $scope.faviconcontrastText             = response.icon;
-        $scope.throbbercontrastText            = response.throbber;
-        $scope.dashboardcontrastText           = response.dashboard;
-        $scope.dashboardcontrastBrightness     = response.dashboardbrightness;
-        $scope.reconcontrastText               = response.recon;
-        $scope.reconcontrastBrightness         = response.reconbrightness;
-        $scope.profilingcontrastText           = response.profiling;
-        $scope.profilingcontrastBrightness     = response.profilingbrightness;
-        $scope.clientscontrastText             = response.clients;
-        $scope.clientscontrastBrightness       = response.clientsbrightness;
-        $scope.modulescontrastText             = response.modulemanager;
-        $scope.modulescontrastBrightness       = response.modulemanagerbrightness;
-        $scope.filterscontrastText             = response.filters;
-        $scope.filterscontrastBrightness       = response.filtersbrightness;
-        $scope.pineapcontrastText              = response.pineap;
-        $scope.pineapcontrastBrightness        = response.pineapbrightness;
-        $scope.trackingcontrastText            = response.tracking;
-        $scope.trackingcontrastBrightness      = response.trackingbrightness;
-        $scope.loggingcontrastText             = response.logging;
-        $scope.loggingcontrastBrightness       = response.loggingbrightness;
-        $scope.reportingcontrastText           = response.reporting;
-        $scope.reportingcontrastBrightness     = response.reportingbrightness;
-        $scope.networkingcontrastText          = response.networking;
-        $scope.networkingcontrastBrightness    = response.networkingbrightness;
-        $scope.configurationcontrastText       = response.configuration;
-        $scope.configurationcontrastBrightness = response.configurationbrightness;
-        $scope.advancedcontrastText            = response.advanced;
-        $scope.advancedcontrastBrightness      = response.advancedbrightness;
-        $scope.helpcontrastText                = response.help;
-        $scope.helpcontrastBrightness          = response.helpbrightness;
-	    $scope.throbbercontrast      = true;
-        $scope.faviconcontrast       = true;
-        $scope.logocontrast          = true;
-	    if (response.throbber === 'dark') {
-		    $scope.throbbercontrast = false;
-	    }
-	    if (response.icon === 'dark') {
-		    $scope.faviconcontrast = false;
-        }
-	    if (response.logo === 'dark') {
-	    	$scope.logocontrast = false;
-        }
-	    log("getCurrentTheme", "Current theme is " + $scope.current);
-	    log("getCurrentTheme", "Current throbber is " + response.throbber);
-	    log("getCurrentTheme", "Current icon is " + response.icon);
-        log("getCurrentTheme", "Current logo is " + response.logo);
-        log("getCurrentTheme", "Current Dashboard is " + response.dashboard);
-	});
+	    }, function(response) {
+            $scope.current                         = response.current;
+            $scope.logocontrastText                = response.logo;
+            $scope.faviconcontrastText             = response.icon;
+            $scope.throbbercontrastText            = response.throbber;
+            $scope.dashboardcontrastText           = response.dashboard;
+            $scope.dashboardcontrastBrightness     = response.dashboardbrightness;
+            $scope.reconcontrastText               = response.recon;
+            $scope.reconcontrastBrightness         = response.reconbrightness;
+            $scope.profilingcontrastText           = response.profiling;
+            $scope.profilingcontrastBrightness     = response.profilingbrightness;
+            $scope.clientscontrastText             = response.clients;
+            $scope.clientscontrastBrightness       = response.clientsbrightness;
+            $scope.modulescontrastText             = response.modulemanager;
+            $scope.modulescontrastBrightness       = response.modulemanagerbrightness;
+            $scope.filterscontrastText             = response.filters;
+            $scope.filterscontrastBrightness       = response.filtersbrightness;
+            $scope.pineapcontrastText              = response.pineap;
+            $scope.pineapcontrastBrightness        = response.pineapbrightness;
+            $scope.trackingcontrastText            = response.tracking;
+            $scope.trackingcontrastBrightness      = response.trackingbrightness;
+            $scope.loggingcontrastText             = response.logging;
+            $scope.loggingcontrastBrightness       = response.loggingbrightness;
+            $scope.reportingcontrastText           = response.reporting;
+            $scope.reportingcontrastBrightness     = response.reportingbrightness;
+            $scope.networkingcontrastText          = response.networking;
+            $scope.networkingcontrastBrightness    = response.networkingbrightness;
+            $scope.configurationcontrastText       = response.configuration;
+            $scope.configurationcontrastBrightness = response.configurationbrightness;
+            $scope.advancedcontrastText            = response.advanced;
+            $scope.advancedcontrastBrightness      = response.advancedbrightness;
+            $scope.helpcontrastText                = response.help;
+            $scope.helpcontrastBrightness          = response.helpbrightness;
+            $scope.throbbercontrast      = true;
+            $scope.faviconcontrast       = true;
+            $scope.logocontrast          = true;
+            if (response.throbber === 'dark') {
+                $scope.throbbercontrast = false;
+            }
+            if (response.icon === 'dark') {
+                $scope.faviconcontrast = false;
+            }
+            if (response.logo === 'dark') {
+                $scope.logocontrast = false;
+            }
+            log("getCurrentTheme", "Current theme is " + $scope.current);
+            log("getCurrentTheme", "Current throbber is " + response.throbber);
+            log("getCurrentTheme", "Current icon is " + response.icon);
+            log("getCurrentTheme", "Current logo is " + response.logo);
+            log("getCurrentTheme", "Current Dashboard is " + response.dashboard);
+	    });
     };
     $scope.file_changed = function(element) {
         $scope.$apply(function(scope) {
             var photofile = element.files[0];
-	    var reader = new FileReader();
+	        var reader = new FileReader();
     	    reader.onload = function(e) {
-	      $scope.$apply(function() {
-	      	$scope.prev_img = e.target.result;
-	      });
-	    };
-  	    reader.readAsDataURL(photofile);
-	});
+	            $scope.$apply(function() {
+	      	        $scope.prev_img = e.target.result;
+	            });
+	        };
+  	        reader.readAsDataURL(photofile);
+	    });
     };
-
     $scope.restoreDefault = function() {
         $scope.working = "Working..";
 	    console.log("Restore Default Function Called");
@@ -427,24 +439,20 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
                 $scope.working = "Done!";
             });
     };
-
     $scope.sendMessage = function (t, m) {
         // Add a new message to the top of the list
         $scope.messages.unshift({title: t, msg: m});
 	    log("sendMessage", m);
-
         // if there are 4 items in the list remove the 4th item
         if ($scope.messages.length == 4) {
             $scope.dismissMessage(3);
         }
     };
-
     $scope.dismissMessage = function ($index) {
         //var index = $scope.messages.indexOf(message);
         $scope.messages.splice($index, 1);
-	log("dismissMessage", "message at index " + $index + " dismissed" );
+	    log("dismissMessage", "message at index " + $index + " dismissed" );
     };
-
     $scope.createNewTheme = function () {
         $api.request({
             module: "Themes",
@@ -461,7 +469,6 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
             }
         });
     };
-
     $scope.deleteTheme = function (theme) {
         $api.request({
             module: "Themes",
@@ -471,9 +478,8 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
             $scope.sendMessage("Delete", response.message);
             getThemes();
         });
-	log('deleteTheme', 'Deleting Theme: ' + theme.title );
+	    log('deleteTheme', 'Deleting Theme: ' + theme.title );
     };
-
     $scope.activateTheme = function (theme) {
         $api.request({
             module: "Themes",
@@ -482,15 +488,15 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function (response) {
 	    if (response.return === true) {
 	    	$scope.currentTheme = theme.title;
-		getThemes();
-                $scope.sendMessage("Activated", response.message);
+		    getThemes();
+            $scope.sendMessage("Activated", response.message);
+            $window.location.reload();
 	    }
         });
     };
-
     $scope.editTheme = function (theme) {
-	console.log("action: edit " + theme.name);
-	$api.request({
+	    console.log("action: edit " + theme.name);
+	    $api.request({
             module: "Themes",
             action: "getThemeCode",
             name: theme.name
@@ -500,32 +506,31 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
             $scope.editThemeFile.themeName = theme.name;
         });
     };
-
     $scope.saveThemeCode = function (editFile) {
-	console.log("action: save " + editFile.themeName);
-	$api.request({
+	    console.log("action: save " + editFile.themeName);
+	    $api.request({
             module: "Themes",
             action: "submitThemeCode",
             themeCode: editFile.code,
             name: editFile.themeName,
             fileName: editFile.file
         }, function (response) {
-	    $scope.sendMessage("Saved", editFile.themeName);
-	});
-	if ($scope.current === editFile.themeName)
-	{
-	    $api.request({
-	        module: "Themes",
-	        action: "activateTheme",
-	        name: editFile.themeName
-	    }, function (response) {
-	        if (response.return === true) {
-	    	    $scope.currentTheme = editFile.themeName;
-		    $scope.sendMessage("Activated", response.message);
-		}
+	        $scope.sendMessage("Saved", editFile.themeName);
 	    });
-	    log('saveThemeCode', "Theme code saved, also current so set to inactive");
-	}
+	    if ($scope.current === editFile.themeName)
+	    {
+	        $api.request({
+    	        module: "Themes",
+	            action: "activateTheme",
+	            name: editFile.themeName
+	        }, function (response) {
+    	        if (response.return === true) {
+	    	        $scope.currentTheme = editFile.themeName;
+		            $scope.sendMessage("Activated", response.message);
+		        }
+	        });
+	        log('saveThemeCode', "Theme code saved, also current so set to inactive");
+	    }
     };
     $scope.getThemeFields = function (theme) {
         $api.request({
@@ -536,8 +541,8 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
             $scope.workshopTheme.themeName = theme.title;
             $scope.workshopTheme.title     = theme.title;
             $scope.workshopTheme.code      = response.code;
-	    console.log(response);
-	    $scope.library = false;
+	        console.log(response);
+	        $scope.library = false;
         });
     };
     function getThemes() {

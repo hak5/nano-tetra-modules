@@ -248,9 +248,9 @@ class Themes extends Module
         return true;
     }
     /*
-    * searchAndReplaceFile
-    * $s -> substring to find
-    * return: true or false showing succcessful string replacement
+    *  searchAndReplaceFile
+    *  $s -> substring to find
+    *  return: true or false showing succcessful string replacement
     */
     public function searchAndReplaceFile($f, $s) 
     {
@@ -258,8 +258,8 @@ class Themes extends Module
         return (exec("sed -i 's/fill:\(.*\);/fill:#{$s};/g' $f") == 0);
     }
     /*
-    * setCurrentTheme
-    * $theme -> modify CURRENT_CSS file with new theme
+    *  setCurrentTheme
+    *  $theme -> modify CURRENT_CSS file with new theme
     */
     public function setCurrentTheme($theme)
     {
@@ -267,8 +267,8 @@ class Themes extends Module
 	    exec('echo '.$theme.' > /pineapple/modules/Themes/css/CURRENT_CSS');
     }
     /*
-    * getCurrentTheme
-    * return current theme, and all parameters for icon colors/brightness
+    *  getCurrentTheme
+    *  return current theme, and all parameters for icon colors/brightness
     */
     public function getCurrentTheme() 
     {
