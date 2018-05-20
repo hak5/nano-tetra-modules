@@ -20,6 +20,7 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
     $scope.colors                = ['dark', 'light', 'red', 'blue', 'green', 'purple', 'orange', 'yellow', 'pink'];
     $scope.brightness            = ['light', 'normal', 'dark'];
     $scope.working               = false;
+    $scope.autoRefresh           = true;
     // Dark and White
     $scope.throbbercontrast     = true; // true == light -> false == dark
     $scope.logocontrast         = true;
@@ -104,7 +105,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
 	    }, function(response) {
             $scope.sendMessage("Throbber", "set to " + $scope.throbbercontrastText);
             log("changeThrobber", response.message);
-            $window.location.reload();
+            if ($scope.autoRefresh) {
+                $window.location.reload();
+            }
 	    });
     };
     $scope.changeLogo = function(){
@@ -121,7 +124,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
     	}, function(response) {
             $scope.sendMessage("Logo", "set to " + $scope.logocontrastText);
             log("changeLogo", response.message);
-            $window.location.reload();
+            if ($scope.autoRefresh) {
+                $window.location.reload();
+            }
     	});
     };
 
@@ -139,8 +144,10 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
 	    }, function(response) {
             $scope.sendMessage("Icon", "set to " + $scope.faviconcontrastText);
             log("changeFavicon", response.message);
-            $window.location.reload();
-	    });
+            if ($scope.autoRefresh) {
+                $window.location.reload();
+            }
+        });
     };
     $scope.changeAllIcons = function(){
         $api.request({
@@ -154,8 +161,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
                 $scope.sendMessage("All Icons", "set to " + $scope.allcontrastText + "(" + $scope.allcontrastBrightness + ")");
                 log("changeAllIcons", "Success? " + response.success + " " + response.message);
             }
-            $route.reload();
-            $window.location.reload();
+            if ($scope.autoRefresh) {
+                $window.location.reload();
+            }
         });
     };
     $scope.changeDashboard = function(){
@@ -168,7 +176,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Dashboard Icon", "set to " + $scope.dashboardcontrastText + " (" + $scope.dashboardcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
-            $window.location.reload();
+            if ($scope.autoRefresh) {
+                $window.location.reload();
+            }
         });
     };
     $scope.changeRecon = function(){
@@ -181,7 +191,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Recon Icon", "set to " + $scope.reconcontrastText + " (" + $scope.reconcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
-            $window.location.reload();
+            if ($scope.autoRefresh) {
+                $window.location.reload();
+            }
         });
     };
     $scope.changeProfiling = function(){
@@ -194,7 +206,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Profiling Icon", "set to " + $scope.profilingcontrastText + " (" + $scope.profilingcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
-            $window.location.reload();
+            if ($scope.autoRefresh) {
+                $window.location.reload();
+            }
         });
     };
     $scope.changeClients = function(){
@@ -207,7 +221,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Clients Icon", "set to " + $scope.clientscontrastText + " (" + $scope.clientscontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
-            $window.location.reload();
+            if ($scope.autoRefresh) {
+                $window.location.reload();
+            }
         });
     };
     $scope.changeModules = function(){
@@ -220,7 +236,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("ModuleManager Icon", "set to " + $scope.modulescontrastText + " (" + $scope.modulescontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
-            $window.location.reload();
+            if ($scope.autoRefresh) {
+                $window.location.reload();
+            }
         });
     };
     $scope.changeFilters = function(){
@@ -233,7 +251,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Filters Icon", "set to " + $scope.filterscontrastText + " (" + $scope.filterscontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
-            $window.location.reload();
+            if ($scope.autoRefresh) {
+                $window.location.reload();
+            }
         });
     };
     $scope.changePineap = function(){
@@ -246,7 +266,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Filters Icon", "set to " + $scope.pineapcontrastText + " (" + $scope.pineapcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
-            $window.location.reload();
+            if ($scope.autoRefresh) {
+                $window.location.reload();
+            }
         });
     };
     $scope.changeTracking = function(){
@@ -259,7 +281,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Tracking Icon", "set to " + $scope.trackingcontrastText + " (" + $scope.trackingcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
-            $window.location.reload();
+            if ($scope.autoRefresh) {
+                $window.location.reload();
+            }
         });
     };
     $scope.changeLogging = function(){
@@ -272,7 +296,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Logging Icon", "set to " + $scope.loggingcontrastText + " (" + $scope.loggingcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
-            $window.location.reload();
+            if ($scope.autoRefresh) {
+                $window.location.reload();
+            }
         });
     };
     $scope.changeReporting = function(){
@@ -285,7 +311,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Reporting Icon", "set to " + $scope.reportingcontrastText + " (" + $scope.reportingcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
-            $window.location.reload();
+            if ($scope.autoRefresh) {
+                $window.location.reload();
+            }
         });
     };
     $scope.changeNetworking = function(){
@@ -298,7 +326,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Networking Icon", "set to " + $scope.networkingcontrastText + " (" + $scope.networkingcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
-            $window.location.reload();
+            if ($scope.autoRefresh) {
+                $window.location.reload();
+            }
         });
     };
     $scope.changeConfiguration = function(){
@@ -311,7 +341,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Configuration Icon", "set to " + $scope.configurationcontrastText + " (" + $scope.configurationcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
-            $window.location.reload();
+            if ($scope.autoRefresh) {
+                $window.location.reload();
+            }
         });
     };
     $scope.changeAdvanced = function(){
@@ -324,7 +356,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Advanced Icon", "set to " + $scope.advancedcontrastText + " (" + $scope.advancedcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
-            $window.location.reload();
+            if ($scope.autoRefresh) {
+                $window.location.reload();
+            }
         });
     };
     $scope.changeHelp = function(){
@@ -337,7 +371,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
         }, function(response) {
             $scope.sendMessage("Help Icon", "set to " + $scope.helpcontrastText + " (" + $scope.helpcontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
-            $window.location.reload();
+            if ($scope.autoRefresh) {
+                $window.location.reload();
+            }
         });
     };
     function log(fn, message) {
@@ -437,7 +473,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
                 $scope.throbber = false;
                 log("restoreDefault", "Successful? "+ response.success + ". " + response.message);
                 $scope.working = "Done!";
-                $window.location.reload();
+                if ($scope.autoRefresh) {
+                    $window.location.reload();
+                }
             });
     };
     $scope.sendMessage = function (t, m) {
@@ -491,7 +529,9 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
 	    	$scope.currentTheme = theme.title;
 		    getThemes();
             $scope.sendMessage("Activated", response.message);
-            $window.location.reload();
+            if ($scope.autoRefresh) {
+                $window.location.reload();
+            }
 	    }
         });
     };
