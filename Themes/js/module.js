@@ -437,6 +437,7 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
                 $scope.throbber = false;
                 log("restoreDefault", "Successful? "+ response.success + ". " + response.message);
                 $scope.working = "Done!";
+                $window.location.reload();
             });
     };
     $scope.sendMessage = function (t, m) {

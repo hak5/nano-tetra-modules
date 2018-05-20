@@ -8,20 +8,25 @@
             </div>
             <div id="collapseControls" class="panel-collapse collapse in">
                 <div class="panel-body">
-                    <table style="width:100%">
+                        <table style="width:100%">
                         <td style="padding-bottom: .5em;" class="text-muted">{{ control.title }}</td>
-                        <td style="text-align:left;padding-bottom: .5em;">
-                            <h5>Current Theme: {{ current }}</h5>
-	        		    </td>
+                        <tr>
                         <td style="text-align:right;padding-bottom: .5em;">
-				            <a href="javascript:history.go(0)">Refresh</a> <br/> <br/>
-		                    <button class="btn btn-default" data-toggle="modal" data-target="#loadingModal" type="button" ng-click="restoreDefault()">Restore Default</button>
-
+                            <button class="btn btn-default" 
+                                data-toggle="modal" 
+                                data-target="#loadingModal" 
+                                type="button" 
+                                ng-click="restoreDefault()">Restore Default</button>
+                        </td>
+                        </tr>
                             <img src="/img/throbber.gif" ng-show="control.throbber"/>
+                            <td style="text-align:left;padding-right: .5em;">
+                                <h5>Current Theme: {{ current }}</h5>
+                            </td>
 			            </td>
                         </table>
-                    </div>
-             </div>
+                </div>
+            </div>
         </div>
         <div class="panel panel-default">
                 <div class="panel-heading">
@@ -211,9 +216,6 @@
 					                ng-click="changeThrobber()">
 					            </div>
                             </td>
-                            <td></td>
-                            <td></td>
-
 				        </tr>
 				        <tr>
 					        <td>
@@ -238,11 +240,7 @@
 					                ng-click="changeLogo()">
                                 </div>
                             </td>
-                            <td></td>
-                            <td></td>
-
                         </tr>
-                    
 				        <tr>
                             <td>
     	    					<b>Icon</b>
@@ -266,9 +264,6 @@
 					                ng-click="changeFavicon()">
 					            </div>
                             </td>
-                            <td></td>
-                            <td></td>
-
                         </tr>
                     </tbody>
                 </table>
@@ -296,7 +291,6 @@
                                         ng-options="x for x in colors"
                                         ng-value="{{ allcontrastText }}"
                                         >
-                                    {{ () }}
                                 </select>
                             </td>
                             <td>
@@ -305,7 +299,6 @@
                                         ng-options="x for x in brightness"
                                         ng-value="{{ allcontrastBrightness }}"
                                         >
-                                    {{ () }}
                                 </select>
                             </td>
                             <td>
@@ -329,7 +322,6 @@
                                         ng-options="x for x in colors"
                                         ng-value="{{ dashboardcontrastText }}"
                                         >
-                                    {{ () }}
                                 </select>
                             </td>
                             <td>
@@ -338,7 +330,6 @@
                                         ng-options="x for x in brightness"
                                         ng-value="{{ dashboardcontrastBrightness }}"
                                         >
-                                    {{ () }}
                                 </select>
                             </td>
                             <td>
@@ -357,7 +348,6 @@
                                             ng-options="x for x in colors"
                                             ng-value="{{ reconcontrastText }}"
                                             >
-                                        {{ () }}
                                     </select>
                                 </td>
                                 <td><select ng-model="reconcontrastBrightness"
@@ -365,7 +355,6 @@
                                             ng-options="x for x in brightness"
                                             ng-value="{{ reconcontrastBrightness }}"
                                             >
-                                        {{ () }}
                                     </select>
                                 </td>
                                 <td><button class="btn btn-default" 
@@ -382,15 +371,14 @@
                                         ng-options="x for x in colors"
                                         ng-value="{{ profilingcontrastText }}"
                                         >
-                                    {{ () }}
                                 </select>
                             </td>
                             <td><select ng-model="profilingcontrastBrightness"
                                         ng-style="selectOptions" 
                                         ng-options="x for x in brightness"
+                                        
                                         ng-value="{{ profilingcontrastBrightness }}"
                                         >
-                                    {{ () }}
                                 </select>
                             </td>
                             <td><button class="btn btn-default" 
@@ -408,7 +396,6 @@
                                     ng-options="x for x in colors"
                                     ng-value="{{ clientscontrastText }}"
                                     >
-                                {{ () }}
                             </select>
                         </td>
                         <td><select ng-model="clientscontrastBrightness"
@@ -416,7 +403,6 @@
                                     ng-options="x for x in brightness"
                                     ng-value="{{ clientscontrastBrightness }}"
                                     >
-                                {{ () }}
                             </select>
                         </td>
                         <td><button class="btn btn-default" 
@@ -434,7 +420,6 @@
                                 ng-options="x for x in colors"
                                 ng-value="{{ modulescontrastText }}"
                                 >
-                            {{ () }}
                         </select>
                     </td>
                     <td><select ng-model="modulescontrastBrightness"
@@ -442,7 +427,6 @@
                                 ng-options="x for x in brightness"
                                 ng-value="{{ modulescontrastBrightness }}"
                                 >
-                            {{ () }}
                         </select>
                     </td>
                     <td><button class="btn btn-default" 
