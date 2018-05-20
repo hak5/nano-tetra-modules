@@ -464,7 +464,7 @@ td {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ccc;
+    background-color: darkgray;
     -webkit-transition: .4s;
     transition: .4s;
 }
@@ -475,15 +475,15 @@ td {
     width: 12px;
     left: 4px;
     bottom: 4px;
-    background-color: white;
+    background-color: black;
     -webkit-transition: .4s;
     transition: .4s;
  }
 input:checked + .slider {
-  background-color: #2196F3;
+  background-color: lime;
 }
 input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+  box-shadow: 0 0 1px lime;
 }
 input:checked + .slider:before {
   -webkit-transform: translateX(26px);
