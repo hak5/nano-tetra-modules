@@ -55,6 +55,11 @@ if [ "$1" = "start" ]; then
 
   echo ${BSSID} > ${LOCK}
 
+  # make sure the folder exists
+  if [ ! -d /pineapple/modules/SiteSurvey/capture ]; then
+    mkdir /pineapple/modules/SiteSurvey/capture
+  fi
+
   airodump-ng -c ${CHANNEL} --bssid ${BSSID} -w /pineapple/modules/SiteSurvey/capture/capture_${MYTIME} ${MYMONITOR} &> /dev/null &
 
   echo -e "Capture is running..." >> ${LOG}
