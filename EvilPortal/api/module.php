@@ -6,325 +6,534 @@ class EvilPortal extends Module
     // CONSTANTS
     private $CLIENTS_FILE = '/tmp/EVILPORTAL_CLIENTS.txt';
     private $ALLOWED_FILE = '/pineapple/modules/EvilPortal/data/allowed.txt';
-
+    private $STORAGE_LOCATIONS = array("sd" => "/sd/portals/", "internal" => "/root/portals/");
+    private $BASE_EP_COMMAND = 'module EvilPortal';
     // CONSTANTS
 
+    /**
+     * An implementation of the route method from Module.
+     * This method routes the request to the method that handles it.
+     */
     public function route()
     {
+        $this->createPortalFolders();  // if the portal folders (/root/portals | /sd/portals) do not exist create them.
+
         switch ($this->request->action) {
-            case 'getControlValues':
-                $this->getControlValues();
+
+            case 'status':
+                $this->response = array(
+                    "running" => $this->checkEvilPortalRunning(),
+                    "startOnBoot" => $this->checkAutoStart(),
+                    "sdAvailable" => $this->isSDAvailable()
+                );
                 break;
 
-            case 'startStop':
-                $this->handleRunning();
-                break;
-
-            case 'enableDisable':
-                $this->handleEnable();
-                break;
-
-            case 'portalList':
-                $this->handleGetPortalList();
-                break;
-
-            case 'portalFiles':
-                $this->getPortalFiles();
+            case 'writeFileContent':
+                $this->response = $this->writeFileContents($this->request->filePath, $this->request->content, $this->request->append);
                 break;
 
             case 'deletePortal':
-                $this->handleDeletePortal();
+            case 'deleteDirectory':
+            case 'deleteFile':
+                $this->response = $this->deleteFileOrDirectory($this->request->filePath);
                 break;
 
-            case 'deletePortalFile':
-                $this->deletePortalFile();
+            case 'getDirectoryContent':
+            case 'getFileContent':
+                $this->response =  $this->getFileOrDirectoryContents($this->request->filePath);
                 break;
 
-            case 'activatePortal':
-                $this->activatePortal();
-                break;
-
-            case 'deactivatePortal':
-                $this->deactivatePortal();
-                break;
-
-            case 'getPortalCode':
-                $this->getPortalCode();
-                break;
-
-            case 'submitPortalCode':
-                $this->submitPortalCode();
-                break;
-
-            case 'getList':
-                $this->getList();
-                break;
-
-            case 'addToList':
-                $this->addToList();
-                break;
-
-            case 'removeFromList':
-                $this->removeFromList();
+            case 'listAvailablePortals':
+                $this->response = $this->getListOfPortals();
                 break;
 
             case 'createNewPortal':
-                $this->handleCreateNewPortal();
+                $this->response = $this->createNewPortal($this->request->name, $this->request->type, $this->request->storage);
+                break;
+
+            case 'movePortal':
+                $this->response = $this->movePortal($this->request->name, $this->request->storage);
+                break;
+
+            case 'activatePortal':
+                $this->response = $this->activatePortal($this->request->name, $this->request->storage);
+                break;
+
+            case 'deactivatePortal':
+                $this->response = $this->deactivatePortal($this->request->name, $this->request->storage);
+                break;
+
+            case 'getRules':
+                $this->response = $this->getPortalRules($this->request->name, $this->request->storage);
+                break;
+
+            case 'saveRules':
+                $this->response = $this->savePortalRules($this->request->name, $this->request->storage, $this->request->rules);
+                break;
+
+            case 'toggleOnBoot':
+                $this->response = $this->autoStartEvilPortal();
+                break;
+
+            case 'toggleCaptivePortal':
+                $this->response = $this->toggleCaptivePortal();
+                break;
+
+            case 'removeClientFromList':
+                $this->response = $this->removeFromList($this->request->clientIP, $this->request->listName);
+                break;
+
+            case 'authorizeClient':
+                $this->authorizeClient($this->request->clientIP);
+                $this->response = array("success" => true);
                 break;
         }
     }
 
-    public function getPortalCode()
+    /**
+     * Create the folders that portals are stored in if they don't exist
+     */
+    private function createPortalFolders()
     {
-        $portalName = $this->request->name;
-        $portalFile = $this->request->portalFile;
-        $storage = $this->request->storage;
-
-        if ($storage != "active") {
-            $dir = ($storage == "sd" ? "/sd/portals/" : "/root/portals/");
-        } else {
-            $dir = "/etc/nodogsplash/htdocs/";
+        if (!is_dir($this->STORAGE_LOCATIONS["internal"])) {
+            mkdir($this->STORAGE_LOCATIONS["internal"]);
         }
 
-        $message = "";
-        $code = "";
-
-        if (file_exists($dir . $portalName . "/" . $portalFile)) {
-            $code = file_get_contents($dir . $portalName . "/" . $portalFile);
-            $message = $portalFile . " is ready for editting.";
-        } else {
-            $message = "Error finding " . $dir . $portalName . "/" . $portalFile . ".";
+        if (!is_dir($this->STORAGE_LOCATIONS["sd"]) and $this->isSDAvailable()) {
+            mkdir($this->STORAGE_LOCATIONS["sd"]);
         }
-
-        $this->response = array("message" => $message, "code" => $code);
-
     }
 
-    public function getPortalFiles()
+    /**
+     * Decide if a file for a given portal is "deletable" or not.
+     * If it is not then the UI should not display a delete option for the file.
+     * @param $file: The name of the file
+     * @return bool: Is the file deletable or not
+     */
+    private function isFileDeletable($file)
     {
-        $portalName = $this->request->name;
-        $storage = $this->request->storage;
+        if (substr($file, -strlen(".ep")) == ".ep")
+            return false;
+        return !in_array($file, array("MyPortal.php", "default.php", "helper.php", "index.php"));
+    }
 
-        $dir = ($storage == "sd" ? "/sd/portals/" : "/root/portals/");
-        $allFiles = array();
-        if (file_exists($dir . $portalName)) {
-            $portal_files = scandir($dir . $portalName);
-            foreach ($portal_files as $file) {
-                if (is_file($dir . $portalName . "/" . $file) && !$this->endsWith($file, ".ep")) {
-                    array_push($allFiles, $file);
-                }
+    /**
+     * Get the contents of a specified file or directory
+     *
+     * If this method is being called as the result of an HTTP request, make sure that "file" is specified as a
+     * parameter of the request and includes the full path to the file that should have its contents returned.
+     *
+     * @param $file : The file or directory to get contents of
+     * @return array
+     */
+    private function getFileOrDirectoryContents($file)
+    {
+
+        if (!file_exists($file)) {
+            $message = "No such file or directory {$file}.";
+            $contents = null;
+            $success = false;
+        } else if (is_file($file)) {
+            $message = "Found file {$file} and retrieved contents";
+            $contents = array(
+                "name" => basename($file),
+                "path" => $file,
+                "size" => filesize($file),
+                "fileContent" => file_get_contents($file)
+            );
+            $success = true;
+        } else if (is_dir($file)) {
+            $contents = array();
+            $message = "Returning directory contents for {$file}";
+            foreach (preg_grep('/^([^.])/', scandir($file)) as $object) {
+                // skip .ep files because they shouldn't be edited directly.
+                if (substr($object, -strlen(".ep")) == ".ep")
+                    continue;
+
+                $obj = array("name" => $object, "directory" => is_dir("{$file}/{$object}"),
+                    "path" => realpath("{$file}/{$object}"),
+                    "permissions" => substr(sprintf('%o', fileperms("{$file}/{$object}")), -4),
+                    "size" => filesize("{$file}/{$object}"),
+                    "deletable" => $this->isFileDeletable($object));
+                array_push($contents, $obj);
+            }
+            $success = true;
+        } else {
+            $contents = null;
+            $success = false;
+            $message = "Unknown case. This should never happen.";
+        }
+        return array("success" => $success, "message" => $message, "content" => $contents);
+    }
+
+    /**
+     * Write given content to a given file.
+     * @param $file : The file to write content to
+     * @param $content : The content to write to the file
+     * @param $append : Should the data be appended to the end of the file (true) or over-write the file (false)
+     * @return array
+     */
+    private function writeFileContents($file, $content, $append)
+    {
+        if ($append)
+            file_put_contents($file, $content, FILE_APPEND);
+        else
+            file_put_contents($file, $content);
+        return array("success" => true, "message" => null);
+    }
+
+    /**
+     * Delete a given file or directory and check if it has been deleted.
+     * If the file was deleted the success will be true otherwise success is false
+     * @param $filePath
+     * @return array
+     */
+    private function deleteFileOrDirectory($filePath)
+    {
+        if ($this->isFileDeletable(basename($filePath))) {
+            exec(escapeshellcmd("rm -rf {$filePath}"));
+
+            $success = (!file_exists($filePath));
+            $message = (file_exists($filePath)) ? "Error deleting file {$filePath}." : "{$filePath} has been deleted.";
+        } else {
+            $success = false;
+            $message = "{$filePath} can not be deleted!";
+        }
+        return array("success" => $success, "message" => $message);
+    }
+
+    /**
+     * Get a list of portals found on internal and sd storage.
+     */
+    private function getListOfPortals()
+    {
+
+        // an array of all of the portals found
+        $portals = array();
+        $availableMediums = array("internal");
+
+        // if the sd card is available add it to the availableMediums
+        if ($this->isSDAvailable()) {
+            array_push($availableMediums, "sd");
+        }
+
+        foreach($availableMediums as $medium) {
+            $storageLocation = $this->STORAGE_LOCATIONS[$medium];
+            foreach (preg_grep('/^([^.])/', scandir($storageLocation)) as $object) {
+                if (!is_dir($storageLocation . $object))  // skip the object if it is not a directory.
+                    continue;
+
+                $portal = array(
+                    "title" => $object,
+                    "portalType" => $this->getValueFromJSONFile(array("type"), "{$storageLocation}{$object}/{$object}.ep")["type"],
+                    "location" => "{$storageLocation}{$object}",
+                    "storage" => $medium,
+                    "active" => (file_exists("/www/{$object}.ep"))
+                );
+                // push the portal object to the array of portals found
+                array_push($portals, $portal);
             }
         }
-        $this->response = array("portalFiles" => $allFiles);
+
+        return array("success" => true, "portals" => $portals);
     }
 
-    public function deletePortalFile()
+    /**
+     * Create a new Portal with a given name of a given type on a given storage medium.
+     * @param $name : The name of the new portal
+     * @param $type : The type of portal to create (targeted or basic)
+     * @param $storage : The storage medium to save the portal to (sd or internal)
+     * @return array
+     */
+    private function createNewPortal($name, $type, $storage)
     {
-        $portalName = $this->request->name;
-        $storage = $this->request->stroage;
-        $fileName = $this->request->portalFile;
+        // force the name of the portal to be lower cased and replace spaces with underscores
+        $name = strtolower(str_replace(' ', '_', $name));
 
-        $dir = ($storage == "sd" ? "/sd/portals/" : "/root/portals/");
-        $message = "Unable to delete file.";
-        if (file_exists($dir . $portalName . "/" . $fileName)) {
-            unlink($dir . $portalName . "/" . $fileName);
-            $message = "Successfully deleted " . $dir . $portalName . "/" . $fileName;
+        // $storage should be equal to "sd" or "internal". If its anything else just make it "internal"
+        $storage = ($storage == "sd" or $storage == "internal") ? $storage : "internal";
+
+        // the path to store the portal
+        $portalPath = $this->STORAGE_LOCATIONS[$storage];
+
+        // verify that no portal with the same name already exists
+        if (file_exists("{$this->STORAGE_LOCATIONS["internal"]}{$name}") or
+            (file_exists("{$this->STORAGE_LOCATIONS["sd"]}{$name}") and $this->isSDAvailable())) {
+            return array("success" => false, "message" => "A portal named {$name} already exists!");
         }
 
-        $this->response = array("deleteMessage" => $message);
+        // if the portal is supposed to be stored on the SD card, make sure that it is indeed available first.
+        if ($storage == "sd" and !$this->isSDAvailable()) {
+            return array("success" => false, "message" => "There is no SD card available!");
+        }
+
+        // create the directory for the portal
+        mkdir($portalPath . $name);
+
+        // handle the portal types. If anything other than "targeted" is specified then it will create a basic portal
+        switch ($type) {
+            case 'targeted':
+                exec("cp /pineapple/modules/EvilPortal/includes/targeted_skeleton/* {$portalPath}{$name}/");
+                exec("cp /pineapple/modules/EvilPortal/includes/targeted_skeleton/.* {$portalPath}{$name}/");
+                exec("mv {$portalPath}{$name}/portalinfo.json {$portalPath}{$name}/{$name}.ep");
+                $this->updateJSONFile(array("name" => $name, "type" => "targeted"), "{$portalPath}{$name}/{$name}.ep");
+                exec("sed -i 's/\"portal_name_here\"/\"{$name}\"/g' {$portalPath}{$name}/index.php");
+                break;
+
+            default:
+                exec("cp /pineapple/modules/EvilPortal/includes/skeleton/* {$portalPath}{$name}/");
+                exec("cp /pineapple/modules/EvilPortal/includes/skeleton/.* {$portalPath}{$name}/");
+                exec("mv {$portalPath}{$name}/portalinfo.json {$portalPath}{$name}/{$name}.ep");
+                $this->updateJSONFile(array("name" => $name, "type" => "basic"), "{$portalPath}{$name}/{$name}.ep");
+                break;
+        }
+
+        // make these scripts executable
+        exec("chmod +x {$portalPath}{$name}/.enable");
+        exec("chmod +x {$portalPath}{$name}/.disable");
+
+        return array("success" => true, "message" => "Created {$type} portal {$name}!");
+    }
+
+    /**
+     * Move a portal between one storage medium to another.
+     *
+     * If the current medium is "internal" then the portal will be moved to "sd" and visa-versa
+     *
+     * @param $name : The name of the portal to move
+     * @param $storage : The current storage medium
+     * @return array
+     */
+    private function movePortal($name, $storage)
+    {
+        $storage = ($storage == "internal" || $storage == "sd") ? $storage : "internal";
+        $newMedium = ($storage == "internal") ? "sd" : "internal";
+        $newStorage = $this->STORAGE_LOCATIONS[$newMedium];
+
+        // active portals should not be moved so check if the portal is currently active
+        if (file_exists("/www/{$name}.ep")) {
+            return array("success" => false, "message" => "You can not move an active portal!");
+        } else
+
+        // make sure that an SD card is inserted if it is going to be needed
+        if (($storage == "sd" || $newMedium == "sd") && !$this->isSDAvailable()) {
+            return array("success" => false, "message" => "Please insert a SD card to preform this action.");
+        }
+
+        // if the portal doesn't exist then return an error
+        if (!file_exists($this->STORAGE_LOCATIONS[$storage] . $name)) {
+            return array("success" => false, "message" => "Could not find portal named {$name} on {$storage} storage");
+        }
+
+        // verify that a portal with the same name doesn't already exist in the new location.
+        if (file_exists($newStorage . $name)) {
+            return array("success" => false, "message" => "A portal named {$name} already exists on {$newMedium} storage");
+        }
+
+        // all of the above conditions should have passed so lets move the damn portal.
+        exec(escapeshellcmd("mv {$this->STORAGE_LOCATIONS[$storage]}{$name} {$newStorage}{$name}"));
+
+        // verify that the directory was moved
+        if (file_exists($newStorage . $name)) {
+            return array("success" => true, "message" => "{$name} was moved to {$newMedium} storage!");
+        } else {
+            return array("success" => false, "message" => "An error occurred moving {$name} to {$newMedium} storage");
+        }
 
     }
 
-    public function activatePortal()
+    /**
+     * Set a given portal to "active".
+     * This means to move the portals contents to /www so it can be access via HTTP port 80.
+     *
+     * If any file with the same name as one of the files being copied to /www already exists in /www
+     * then that file will be renamed to {file_name}.ep_backup and restored when the portal is deactivated.
+     *
+     * If any portals are currently active when this method is called they will be deactivated.
+     *
+     * @param $name: The name of the portal to activate
+     * @param $storage: The storage medium the portal is on
+     * @return array
+     */
+    private function activatePortal($name, $storage)
     {
-        $portalName = $this->request->name;
-        $storage = $this->request->storage;
+        $dir = $this->STORAGE_LOCATIONS[$storage];
 
-        $dir = ($storage == "sd" ? "/sd/portals/" : "/root/portals/");
+        // check if there is a currently activate portal and deactivate it.
+        foreach(scandir("/www") as $file) {
+            if (substr($file, strlen($file) - strlen(".ep")) === ".ep") {  // deactivate a portal if needed
+                $portalName = rtrim($file, ".ep");
+                $realPath = realpath("/www/{$file}");
+                $storage = ($realPath == "{$this->STORAGE_LOCATIONS['internal']}{$portalName}/{$portalName}.ep") ? "internal": "sd";
+                $this->deactivatePortal($portalName, $storage);
+                break;
+            }
+        }
 
-        $message = "";
-        $portalPath = escapeshellarg($dir . $portalName);
-        if (file_exists($dir . $portalName)) {
+        $success = false;
+        $portalPath = escapeshellarg($dir . $name);
+        if (file_exists($dir . $name)) {
             exec("ln -s /pineapple/modules/EvilPortal/includes/api /www/captiveportal");
-            $portal_files = scandir($dir . $portalName);
+            $portal_files = scandir($dir . $name);
             foreach ($portal_files as $file) {
                 if (file_exists("/www/{$file}")) {
                     rename("/www/{$file}", "/www/{$file}.ep_backup");
                 }
                 exec("ln -s {$portalPath}/{$file} /www/{$file}");
+                $success = true;
             }
-            $message = $portalName . " is now active.";
+            // holding off on toggle commands until a future release.
+            // exec("echo {$portalPath}/.enable | at now");
+            $message = "{$name} is now active.";
         } else {
-            $message = "Couldn't find " . $portalPath . ".";
+            $message = "Couldn't find {$portalPath}.";
         }
 
-        $this->response = array("message" => $message);
-
+        return array("message" => $message, "success" => $success);
     }
 
-    public function deactivatePortal()
+    /**
+     * Deactivate a given portal.
+     *
+     * To do this we remove all files associated with the given portal from /www
+     * This method also renames any files with the extension ".ep_backup" to their original name
+     *
+     * @param $name: The name of the portal to deactivate
+     * @param $storage: The storage medium the portal is on
+     * @return array
+     */
+    private function deactivatePortal($name, $storage)
     {
-        $portalName = $this->request->name;
-        $storage = $this->request->storage;
+        $storage = ($storage == "internal" || $storage == "sd") ? $storage : "internal";
+        $dir = $this->STORAGE_LOCATIONS[$storage];
 
-        $dir = ($storage == "sd" ? "/sd/portals/" : "/root/portals/");
-
-        $message = "Couldn't find " . $portalName;
-        $deactivateSuccess = false;
-        if (file_exists($dir . $portalName)) {
-            $portal_files = scandir($dir . $portalName);
-            foreach ($portal_files as $file) {
-                unlink("/www/{$file}");
-            }
-            $www_files = scandir("/www/");
-            foreach ($www_files as $file) {
-                if ($this->endsWith($file, ".ep_backup")) {
-                    rename("/www/{$file}", "/www/" . str_replace(".ep_backup", "", $file));
-                }
-            }
-            $message = "Deactivated {$portalName}.";
-            $deactivateSuccess = true;
+        // if the portal is not active then return an error
+        if (!(file_exists("/www/{$name}.ep"))) {
+            return array("success" => false, "message" => "{$name} is not currently active.");
         }
 
-        $this->response = array("message" => $message, "deactivateSuccess" => $deactivateSuccess);
-
-    }
-
-    /* Credits to SteveRusin at http://php.net/manual/en/ref.strings.php */
-    private function endsWith($str, $sub)
-    {
-        return (substr($str, strlen($str) - strlen($sub)) === $sub);
-    }
-
-    public function handleDeletePortal()
-    {
-        $portalName = $this->request->name;
-        $storage = $this->request->storage;
-
-        $dir = ($storage == "sd" ? "/sd/portals/" : "/root/portals/");
-
-        exec("rm -rf " . escapeshellarg($dir . $portalName));
-
-        $message = "";
-
-        if (!file_exists($dir . $portalName)) {
-            $message = "Deleted " . $portalName;
-        } else {
-            $message = "Error deleting " . $portalName;
+        // if the portal does not exist then return an error
+        if (!file_exists($dir . $name)) {
+            return array("success" => false, "message" => "Unable to find the portal {$name}.");
         }
 
-        $this->response = array("message" => $message);
-
-    }
-
-    public function submitPortalCode()
-    {
-        $code = $this->request->portalCode;
-        $storage = $this->request->storage;
-        $portalName = $this->request->name;
-        $fileName = $this->request->fileName;
-
-        $dir = ($storage == "sd" ? "/sd/portals/" : "/root/portals/");
-
-        file_put_contents($dir . $portalName . "/" . $fileName, $code);
-        $message = (!file_exists($dir . $portalName . "/" . $fileName)) ? "Created " . $portalName : "Updated " . $portalName;
-        
-        $this->response = array(
-            "message" => $message
-        );
-
-    }
-
-    public function handleGetPortalList()
-    {
-        if (!file_exists("/root/portals")) {
-            mkdir("/root/portals");
+        // remove portal files from /www
+        foreach(scandir($dir. $name) as $file) {
+            unlink("/www/{$file}");
         }
 
-        $all_portals = array();
-        $root_portals = preg_grep('/^([^.])/', scandir("/root/portals"));
-
-        foreach ($root_portals as $portal) {
-            if (!is_file($portal)) {
-                $active = (file_exists("/www/{$portal}.ep"));
-                $obj = array("title" => $portal, "location" => "internal", "active" => $active);
-                array_push($all_portals, $obj);
+        // rename any files that may have been renamed back to their original name
+        foreach(scandir("/www/") as $file) {
+            if (substr($file, strlen($file) - strlen(".ep_backup")) === ".ep_backup") {
+                $oldName = str_replace(".ep_backup", "", $file);
+                rename("/www/{$file}", "www/{$oldName}");
             }
         }
 
-        //$active = array("title" => "splash.html", "location" => "active");
-        //$active = array();
-        //array_push($all_portals, $active);
+        // holding off on toggle commands until a future release.
+        // exec("echo {$dir}{$name}/.disable | at now");
 
-        $this->response = $all_portals;
+        return array("success" => true, "message" => "Deactivated {$name}.");
     }
 
-    public function handleCreateNewPortal()
+    /**
+     * Attempt to get rules for a targeted portal
+     * @param $name: The name of the portal
+     * @param $storage: The storage medium of the portal
+     * @return array
+     */
+    private function getPortalRules($name, $storage)
     {
-        $portalName = str_replace(' ', '_', $this->request->portalName);
-        $portalPath = "/root/portals/";
-        if (!file_exists($portalPath)) {
-            mkdir($portalPath);
-        }
+        $storage = ($storage == "internal" || $storage == "sd") ? $storage : "internal";
+        $path = $this->STORAGE_LOCATIONS[$storage];
 
-        if (file_exists($portalPath . $portalName)) {
-            $this->response = array("create_success" => false, "create_message" => "A portal named {$portalName} already exists.");
-            return;
-        }
 
-        mkdir($portalPath . $portalName);
-        exec("cp /pineapple/modules/EvilPortal/includes/skeleton/* {$portalPath}{$portalName}/");
-        file_put_contents($portalPath . $portalName . "/" . $portalName . ".ep", "DO NOT DELETE THIS");
-
-        $this->response = array("create_success" => true, "create_message" => "Created {$portalName}");
-
-    }
-
-    public function handleEnable()
-    {
-        $response_array = array();
-        if (!$this->checkAutoStart()) {
-            //exec("/etc/init.d/firewall disable");
-            //exec("/etc/init.d/nodogsplash enable");
-            copy("/pineapple/modules/EvilPortal/includes/evilportal.sh", "/etc/init.d/evilportal");
-            chmod("/etc/init.d/evilportal", 0755);
-            exec("/etc/init.d/evilportal enable");
-            $enabled = $this->checkAutoStart();
-            $message = "EvilPortal is now enabled on startup.";
-            if (!$enabled) {
-                $message = "Error enabling EvilPortal on startup.";
-            }
-
-            $response_array = array(
-                "control_success" => $enabled,
-                "control_message" => $message
+        if (is_file("{$path}{$name}/{$name}.ep")) {
+            $rules = $this->getValueFromJSONFile(array("targeted_rules"), "{$path}{$name}/{$name}.ep")["targeted_rules"];
+            return array(
+                "message" => "Found portal rules",
+                "data" => $rules,
+                "success" => true
             );
-
         } else {
-            exec("/etc/init.d/evilportal disable");
-            //exec("/etc/init.d/firewall enable");
-            $enabled = !$this->checkAutoStart();
-            $message = "EvilPortal now disabled on startup.";
-            if (!$enabled) {
-                $message = "Error disabling EvilPortal on startup.";
-            }
-
-            $response_array = array(
-                "control_success" => $enabled,
-                "control_message" => $message
-            );
+            return array("message" => "Unable to find portal.", "success" => false);
         }
-        $this->response = $response_array;
+
     }
 
-    public function checkCaptivePortalRunning()
+    /**
+     * Save rules to a targeted portal
+     * @param $name : The name of the portal
+     * @param $storage : The storage medium of the portal
+     * @param $rules : The rules to save
+     * @return array
+     */
+    private function savePortalRules($name, $storage, $rules)
     {
-        return exec("iptables -t nat -L PREROUTING | grep 172.16.42.1") == '' ? false : true;
+        $storage = ($storage == "internal" || $storage == "sd") ? $storage : "internal";
+        $path = $this->STORAGE_LOCATIONS[$storage];
+
+        if (is_file("{$path}{$name}/{$name}.ep")) {
+            $this->updateJSONFile(array("targeted_rules" => json_decode($rules)), "{$path}{$name}/{$name}.ep")["targeted_rules"];
+            return array(
+                "message" => "Saved portal rules",
+                "success" => true
+            );
+        } else {
+            return array("message" => "Unable to find portal {$name}.", "success" => false);
+        }
+
     }
 
-    public function startCaptivePortal()
+    /**
+     * Check if Evil Portal is currently running or not be checking iptables.
+     * @return bool
+     */
+    private function checkEvilPortalRunning()
     {
+        return exec("iptables -t nat -L PREROUTING | grep 172.16.42.1") != '';
+    }
 
+    /**
+     * Check if EvilPortal is running when the Pineapple starts or not
+     * @return bool
+     */
+    public function checkAutoStart()
+    {
+        return !(exec("ls /etc/rc.d/ | grep evilportal") == '');
+    }
+
+    /**
+     * Grant a client access to the internet and stop blocking them with the captive portal
+     * @param $client: The IP address of the client to authorize
+     */
+    private function authorizeClient($client)
+    {
+        exec("iptables -t nat -I PREROUTING -s {$client} -j ACCEPT");
+//        exec("{$this->BASE_EP_COMMAND} add {$client}");
+        $this->writeFileContents($this->CLIENTS_FILE, "{$client}", true);
+    }
+
+    /**
+     * Revoke a clients access to the internet and start blocking them with the captive portal
+     * @param $client: The IP address of the client to revoke
+     */
+    private function revokeClient($client)
+    {
+//        exec("{$this->BASE_EP_COMMAND} remove {$client}");
+        exec("iptables -t nat -D PREROUTING -s {$client}");
+        exec("iptables -t nat -D PREROUTING -s {$client} -j ACCEPT");
+    }
+
+    /**
+     * Start the captive portal portion of Evil Portal
+     *
+     * All clients in the White List should be automatically authorized when Evil Portal starts.
+     *
+     * @return array
+     */
+    private function startEvilPortal()
+    {
         // Delete client tracking file if it exists
         if (file_exists($this->CLIENTS_FILE)) {
             unlink($this->CLIENTS_FILE);
@@ -338,199 +547,176 @@ class EvilPortal extends Module
         $allowedClients = file_get_contents($this->ALLOWED_FILE);
         file_put_contents($this->CLIENTS_FILE, $allowedClients);
 
-        // Configure other rules
-        exec("iptables -t nat -A PREROUTING -s 172.16.42.0/24 -p tcp --dport 80 -j DNAT --to-destination 172.16.42.1:80");
-        exec("iptables -A INPUT -p tcp --dport 53 -j ACCEPT");
+//        // Configure other rules
+        exec("iptables -A INPUT -s 172.16.42.0/24 -j DROP");
+        exec("iptables -A OUTPUT -s 172.16.42.0/24 -j DROP");
+        exec("iptables -A INPUT -s 172.16.42.0/24 -p udp --dport 53 -j ACCEPT");
+
+        // Allow the pineapple
+        exec("iptables -A INPUT -s 172.16.42.1 -j ACCEPT");
+        exec("iptables -A OUTPUT -s 172.16.42.1 -j ACCEPT");
+
+        //exec("iptables -A INPUT -i br-lan -p tcp --dport 443 -j DROP");
+        //exec("iptables -t nat -A PREROUTING -i br-lan -j DROP");
+
+        exec("iptables -t nat -A PREROUTING -i br-lan -p tcp --dport 80 -j DNAT --to-destination 172.16.42.1:80");
+        exec("iptables -t nat -A POSTROUTING -j MASQUERADE");
+
+//        exec("{$this->BASE_EP_COMMAND} init");
 
         // Add rule for each allowed client
         $lines = file($this->CLIENTS_FILE);
         foreach ($lines as $client) {
             $this->authorizeClient($client);
-            //exec("iptables -t nat -I PREROUTING -s {$client} -j ACCEPT");
         }
 
-        // Drop everything else
-        exec("iptables -I INPUT -p tcp --dport 443 -j DROP");
+        $success = $this->checkEvilPortalRunning();
+        $message = ($success) ? "EvilPortal is now up and running!" : "EvilPortal failed to start.";
 
-        return $this->checkCaptivePortalRunning();
-
+        return array("success" => $success, "message" => $message);
     }
 
-    private function authorizeClient($client)
-    {
-        exec("iptables -t nat -I PREROUTING -s {$client} -j ACCEPT");
-    }
-
-    private function revokeClient($client)
-    {
-        exec("iptables -t nat -D PREROUTING -s {$client}");
-        exec("iptables -t nat -D PREROUTING -s {$client} -j ACCEPT");
-    }
-
-    public function stopCaptivePortal()
+    /**
+     * Stop the captive portal portion of Evil Portal from running
+     * @return mixed
+     */
+    private function stopEvilPortal()
     {
         if (file_exists($this->CLIENTS_FILE)) {
             $lines = file($this->CLIENTS_FILE);
             foreach ($lines as $client) {
                 $this->revokeClient($client);
-                //exec("iptables -t nat -D PREROUTING -s {$client} -j ACCEPT");
             }
             unlink($this->CLIENTS_FILE);
         }
 
-        exec("iptables -t nat -D PREROUTING -s 172.16.42.0/24 -p tcp --dport 80 -j DNAT --to-destination 172.16.42.1:80");
+        exec("iptables -t nat -D PREROUTING -i br-lan -p tcp --dport 80 -j DNAT --to-destination 172.16.42.1:80");
         exec("iptables -D INPUT -p tcp --dport 53 -j ACCEPT");
         exec("iptables -D INPUT -j DROP");
 
-        return $this->checkCaptivePortalRunning();
+//        exec("{$this->BASE_EP_COMMAND} purge");
 
+        $success = !$this->checkEvilPortalRunning();
+        $message = ($success) ? "EvilPortal has stopped running" : "There was an issue stopping EvilPortal";
+
+        return array("success" => $success, "messsage" => $message);
     }
 
-    public function handleRunning()
+    /**
+     * If Evil Portal is running then stop it, otherwise start it.
+     */
+    private function toggleCaptivePortal() {
+        // Make the file executable. In the future the `module` command should do this for us.
+        chmod("/pineapple/modules/EvilPortal/executable/executable", 0755);
+
+        return $this->checkEvilPortalRunning() ? $this->stopEvilPortal() : $this->startEvilPortal();
+    }
+
+    /**
+     * Enable or Disable Evil Portal to run when the pineapple boots.
+     * If Evil Portal is supposed to run when this method is called then it will be disabled
+     * If Evil Portal is not supposed to run when this method is called then it will be enabled on boot.
+     *
+     * This method does not start nor stop current running instances of Evil Portal.
+     *
+     * @return array
+     */
+    private function autoStartEvilPortal()
     {
-        $response_array = array();
-        if (!$this->checkCaptivePortalRunning()) {
-            //exec("/etc/init.d/nodogsplash start");
-            //$running = $this->checkRunning("nodogsplash");
-            $running = $this->startCaptivePortal();
-            $message = "Started EvilPortal.";
-            if (!$running) {
-                $message = "Error starting EvilPortal.";
-            }
+        // if EvilPortal is not set to start on startup then set that shit
+        if (!$this->checkAutoStart()) {
+            copy("/pineapple/modules/EvilPortal/includes/evilportal.sh", "/etc/init.d/evilportal");
+            chmod("/etc/init.d/evilportal", 0755);
+            exec("/etc/init.d/evilportal enable");
+            $enabled = $this->checkAutoStart();
+            $message = ($enabled) ? "EvilPortal is now enabled on start up" : "Error enabling EvilPotal on startup.";
 
-            $response_array = array(
-                "control_success" => $running,
-                "control_message" => $message
+            return array(
+                "success" => $enabled,
+                "message" => $message
             );
-        } else {
-            //exec("/etc/init.d/nodogsplash stop");
-            //sleep(1);
-            //$running = !$this->checkRunning("nodogsplash");
-            $running = !$this->stopCaptivePortal();
-            $message = "Stopped EvilPortal.";
-            if (!$running) {
-                $message = "Error stopping EvilPortal.";
-            }
+        } else {  // if evil portal is set to run on startup then disable that shit.
+            exec("/etc/init.d/evilportal disable");
+            $enabled = !$this->checkAutoStart();
+            $message = ($enabled) ? "EvilPortal is now disabled on startup." : "Error disabling EvilPortal on startup.";
 
-            $response_array = array(
-                "control_success" => $running,
-                "control_message" => $message
+            return array(
+                "success" => $enabled,
+                "message" => $message
             );
         }
-
-        $this->response = $response_array;
     }
 
-    public function getList()
+    /**
+     * Removes a client from either the whiteList or authorizedList
+     * @param $clientIP: The IP address of the client to be removed
+     * @param $listName: The name of the list to remove the client from
+     * @return array
+     */
+    private function removeFromList($clientIP, $listName)
     {
-        $response_array = array();
-        $contents = null;
-        $message = "Successful";
-        switch ($this->request->listName) {
+        $valid = preg_match('/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\z/', $clientIP);
+
+        // if the IP address is invalid then return an error message
+        if (!$valid) {
+            return array("success" => false, "message" => "Invalid IP Address.");
+        }
+
+        $success = true;
+        switch ($listName) {
             case "whiteList":
-                if (!file_exists($this->ALLOWED_FILE)) {
-                    $message = "White List file doesn't exist.";
-                } else {
-                    $contents = file_get_contents($this->ALLOWED_FILE);
-                    $contents = ($contents == null) ? "No White Listed Clients" : $contents;
-                }
+                $data = file_get_contents($this->ALLOWED_FILE);
+                $data = str_replace("{$clientIP}\n", '', $data);
+                file_put_contents("/root/removeFromList", $data);
+                file_put_contents($this->ALLOWED_FILE, $data);
                 break;
 
             case "accessList":
-                if (!file_exists($this->CLIENTS_FILE)) {
-                    $contents = "No Authorized Clients.";
-                } else {
-                    $contents = file_get_contents($this->CLIENTS_FILE);
-                    $contents = ($contents == null) ? "No Authorized Clients." : $contents;
-                }
+                $data = file_get_contents($this->CLIENTS_FILE);
+                $data = str_replace("{$clientIP}\n", '', $data);
+                file_put_contents($this->CLIENTS_FILE, $data);
+                $this->revokeClient($clientIP);
                 break;
-        }
 
-        if ($contents != null) {
-            $response_array = array(
-                "list_success" => true,
-                "list_contents" => $contents,
-                "list_message" => $message
-            );
-        } else {
-            $response_array = array("list_success" => false, "list_contents" => "", "list_message" => $message);
-        }
+            default:
+                $success = false;
+                break;
 
-        $this->response = $response_array;
+        }
+        $message = ($success) ? "Successfully removed {$clientIP} from {$listName}" : "Error removing {$clientIP} from {$listName}";
+        return array("success" => $success, "message" => $message);
     }
 
-    public function addToList()
-    {
-        $valid = preg_match('/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\z/', $this->request->clientIP);
-        if ($valid) {
-            switch ($this->request->listName) {
-                case "whiteList":
-                    file_put_contents($this->ALLOWED_FILE, $this->request->clientIP . "\n", FILE_APPEND);
-                    $this->response = array("add_success" => true, "add_message" => "Successful");
-                    break;
-
-                case "accessList":
-                    file_put_contents($this->CLIENTS_FILE, $this->request->clientIP . "\n", FILE_APPEND);
-                    $this->authorizeClient($this->request->clientIP);
-                    $this->response = array("add_success" => true, "add_message" => "Successful");
-                    break;
-
-                default:
-                    $this->response = array("add_success" => false, "add_message" => "Unkown list.");
-                    break;
+    /**
+     * Add a value to a json file
+     * @param $keyValueArray: The data to add to the file
+     * @param $file: The file to write the content to.
+     */
+    private function updateJSONFile($keyValueArray, $file) {
+        $data = json_decode(file_get_contents($file), true);
+        foreach ($data as $key => $value) {
+            if (isset($keyValueArray[$key])) {
+                $data[$key] = $keyValueArray[$key];
             }
-        } else {
-            $this->response = array("add_success" => false, "add_message" => "Invalid IP Address.");
         }
-
+        file_put_contents($file, json_encode($data));
     }
 
-    public function removeFromList()
-    {
-        $valid = preg_match('/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\z/', $this->request->clientIP);
-        if ($valid) {
-            switch ($this->request->listName) {
-                case "whiteList":
-                    $data = file_get_contents($this->ALLOWED_FILE);
-                    $data = str_replace($this->request->clientIP . "\n", '', $data);
-                    file_put_contents($this->ALLOWED_FILE, $data);
-                    $this->response = array("remove_success" => true, "remove_message" => "Successful");
-                    break;
-
-                case "accessList":
-                    $data = file_get_contents($this->CLIENTS_FILE);
-                    $data = str_replace($this->request->clientIP . "\n", '', $data);
-                    file_put_contents($this->CLIENTS_FILE, $data);
-                    $this->revokeClient($this->request->clientIP);
-                    $this->response = array("remove_success" => true, "remove_message" => "Successful");
-                    break;
-
-                default:
-                    $this->response = array("remove_success" => false, "remove_message" => "Unkown list.");
-                    break;
-
+    /**
+     * Get values from a JSON file
+     * @param $keys: The key or keys you wish to get the value from
+     * @param $file: The file to that contains the JSON data.
+     * @return array
+     */
+    private function getValueFromJSONFile($keys, $file) {
+        $data = json_decode(file_get_contents($file), true);
+        $values = array();
+        foreach ($data as $key => $value) {
+            if (in_array($key, $keys)) {
+                $values[$key] = $value;
             }
-        } else {
-            $this->response = array("remove_success" => false, "remove_message" => "Invalid IP Address.");
         }
-    }
-
-    public function getControlValues()
-    {
-        $this->response = array(
-            //"dependencies" => true,
-            "running" => $this->checkCaptivePortalRunning(),
-            "autostart" => $this->checkAutoStart()
-        );
-    }
-
-    public function checkAutoStart()
-    {
-        if (exec("ls /etc/rc.d/ | grep evilportal") == '') {
-            return false;
-        } else {
-            return true;
-        }
+        return $values;
     }
 
 }
