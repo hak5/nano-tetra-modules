@@ -1,10 +1,6 @@
 {
-    "author": "newbi3",
-    "description": "An Evil Captive Portal.",
-    "devices": [
-        "nano",
-        "tetra"
-    ],
-    "title": "Evil Portal",
-    "version": "2.1"
+	"title": "Evil Portal",
+	"version": "3.0",
+	"author": "newbi3",
+	"description": "An Evil Captive Portal."
 }

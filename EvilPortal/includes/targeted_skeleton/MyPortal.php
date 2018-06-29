@@ -9,7 +9,6 @@ class MyPortal extends Portal
 
         // Call parent to handle basic authorization first
         parent::handleAuthorization();
-
     }
 
     /**
