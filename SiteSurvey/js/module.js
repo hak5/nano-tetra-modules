@@ -438,7 +438,7 @@ registerController('SiteSurvey_CaptureController', ['$api', '$scope', '$rootScop
             module: "SiteSurvey",
             action: "refreshCapture"
         }, function(response) {
-                $scope.capture = JSON.parse(response.replace(/\)\]\}\',\ntrue/, ''));
+                $scope.capture = response;
         })
     });
 
