@@ -18,6 +18,10 @@ if [ "$1" = "install" ]; then
     opkg update
     opkg install p0f --dest sd
   fi
+  
+  if [ ! -f /usr/lib/libpcap.so ] && [ -f /usr/lib/libpcap.so.1.3 ]; then
+  	ln -s /usr/lib/libpcap.so /usr/lib/libpcap.so.1.3
+  fi
 
   touch /etc/config/p0f
   echo "config p0f 'module'" > /etc/config/p0f

@@ -1,0 +1,10 @@
+{
+    "author": "trashbo4t",
+    "description": "Create, download, and share custom themes.",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "Themes",
+    "version": "1.0"
+}

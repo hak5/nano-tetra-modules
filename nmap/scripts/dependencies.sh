@@ -12,11 +12,15 @@ touch /tmp/nmap.progress
 
 if [ "$1" = "install" ]; then
   if [ "$2" = "internal" ]; then
-	   opkg update
+	 opkg update
      opkg install nmap
   elif [ "$2" = "sd" ]; then
     opkg update
     opkg install nmap --dest sd
+  fi
+  
+  if [ ! -f /usr/lib/libpcap.so ] && [ -f /usr/lib/libpcap.so.1.3 ]; then
+  	ln -s /usr/lib/libpcap.so /usr/lib/libpcap.so.1.3
   fi
 
   touch /etc/config/nmap
