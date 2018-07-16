@@ -21,7 +21,7 @@ from bs4 import BeautifulSoup
 
 class PortalCloner:
 	
-	def __init__(self, portalName, directory, injectSet):
+	def __init__(self, portalName, directory, injectSet, targeted):
 		self.portalName = portalName
 		self.portalDirectory = directory + self.portalName + "/"
 		self.resourceDirectory = self.portalDirectory + "resources/"
@@ -33,6 +33,7 @@ class PortalCloner:
 		self.session = requests.Session()
 		self.basePath = '/pineapple/modules/PortalAuth/'
 		self.uas = {"User-Agent":"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"}
+		self.targeted = targeted
 		
 		
 	def find_meta_refresh(self, r):
@@ -302,10 +303,16 @@ class PortalCloner:
 			
 		# Copy the MyPortal PHP script to portalDirectory
 		shutil.copy(self.basePath + 'includes/scripts/injects/' + self.injectionSet + '/MyPortal.php', self.portalDirectory)
+		
+		# Copy the helper PHP script to portalDirectory
+		shutil.copy(self.basePath + 'includes/scripts/injects/' + self.injectionSet + '/helper.php', self.portalDirectory)
 
 		# Create the required .ep file
 		with open(self.portalDirectory + self.portalName + ".ep", 'w+') as epFile:
-			epFile.write("DO NOT DELETE THIS")
+			if self.targeted:
+				epFile.write("{\"name\":\"" + self.portalName + "\",\"type\":\"targeted\",\"targeted_rules\":{\"default\":\"default.php\",\"rule_order\":[\"mac\",\"ssid\",\"hostname\",\"useragent\"],\"rules\":{\"mac\":{\"exact\":[],\"regex\":[]},\"ssid\":{\"exact\":[],\"regex\":[]},\"hostname\":{\"exact\":[],\"regex\":[]},\"useragent\":{\"exact\":[],\"regex\":[]}}}}")
+			else:
+				epFile.write("{\"name\":\"" + self.portalName + "\",\"type\":\"basic\"}")
 			
 		# Copy jquery to the portal directory
 		shutil.copy(self.basePath + 'includes/scripts/jquery-2.2.1.min.js', self.portalDirectory)
