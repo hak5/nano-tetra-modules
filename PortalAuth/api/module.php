@@ -11,11 +11,11 @@ define('__LOGS__', __INCLUDES__ . "logs/");
 define('__HELPFILES__', __INCLUDES__ . "help/");
 define('__CHANGELOGS__', __INCLUDES__ . "changelog/");
 define('__SCRIPTS__', __INCLUDES__ . "scripts/");
-    
+
 // Injection set defines
 define('__INJECTS__', __SCRIPTS__ . "injects/");
 define('__SKELETON__', __SCRIPTS__. "skeleton/");
-    
+
 // NetClient defines
 define('__DOWNLOAD__', "/www/download/");
 define('__WINDL__', __DOWNLOAD__ . "windows/");
@@ -25,6 +25,7 @@ define('__IOSDL__', __DOWNLOAD__ . "ios/");
 
 // PASS defines
 define('__PASSDIR__', __INCLUDES__ . "pass/");
+define('__KEYDIR__', __PASSDIR__ . "keys/");
 define('__PASSSRV__', __PASSDIR__ . "pass.py");
 define('__PASSBAK__', __PASSDIR__ . "Backups/pass.py");
 define('__PASSLOG__', __PASSDIR__ . "pass.log");
@@ -240,7 +241,14 @@ class PortalAuth extends Module
 	private function init() {
 		if (!file_exists(__LOGS__)) {
 			if (!mkdir(__LOGS__, 0755, true)) {
-				$this->respond(false, "Failed to create logs directory");
+				$this->respond(false, "Failed to create logs directory at " . __LOGS__);
+				return false;
+			}
+		}
+		if (!file_exists(__KEYDIR__)) {
+			if (!mkdir(__KEYDIR__, 0755, true)) {
+				$this->logError("Failed init", "Failed to initialize because the keys directory at '" . __KEYDIR__ . "' could not be created.");
+				$this->respond(false);
 				return false;
 			}
 		}
@@ -284,7 +292,13 @@ class PortalAuth extends Module
 	//======================//
 	
 	private function checkIsOnline() {
-		$this->respond(checkdnsrr("wifipineapple.com", "A"));
+		$connected = @fsockopen("www.wifipineapple.com", 443);
+		if ($connected) {
+			fclose($connected);
+			$this->respond(true);
+			return true;
+		}
+		$this->respond(false);
 	}
 	private function getCapturedCreds() {
 		if (file_exists(__AUTHLOG__)) {
