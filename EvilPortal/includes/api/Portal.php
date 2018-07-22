@@ -29,9 +29,35 @@ abstract class Portal
      * Run a command in the background and don't wait for it to finish.
      * @param $command: The command to run
      */
-    protected function execBackground($command)
+    protected final function execBackground($command)
     {
         exec("echo \"{$command}\" | at now");
+    }
+
+    /**
+     * Send notifications to the web UI.
+     * @param $message: The notification message
+     */
+    protected final function notify($message)
+    {
+        $this->execBackground("notify {$message}");
+    }
+
+    /**
+     * Write a log to the portals log file.
+     * These logs can be retrieved from the web UI for .logs in the portals directory.
+     * The log file is automatically appended to so there is no reason to add new line characters to your message.
+     * @param $message: The message to write to the log file.
+     */
+    protected final function writeLog($message) 
+    {
+        try {
+            $reflector = new \ReflectionClass(get_class($this));
+            $logPath = dirname($reflector->getFileName());
+            file_put_contents("{$logPath}/.logs", "{$message}\n", FILE_APPEND);
+        } catch (\ReflectionException $e) {
+            // do nothing.
+        }
     }
 
     /**
@@ -44,7 +70,7 @@ abstract class Portal
     {
         if (!$this->isClientAuthorized($clientIP)) {
             exec("iptables -t nat -I PREROUTING -s {$clientIP} -j ACCEPT");
-//            exec("{$this->BASE_EP_COMMAND} add {$clientIP}");
+            // exec("{$this->BASE_EP_COMMAND} add {$clientIP}");
             file_put_contents($this->AUTHORIZED_CLIENTS_FILE, "{$clientIP}\n", FILE_APPEND);
         }
         return true;
@@ -82,7 +108,7 @@ abstract class Portal
      */
     protected function onSuccess()
     {
-        $this->execBackground("notify New client authorized through EvilPortal!");
+        $this->notify("New client authorized through EvilPortal!");
     }
 
     /**

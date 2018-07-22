@@ -33,9 +33,13 @@ registerController("EvilPortalController", ['$api', '$scope', function ($api, $s
     $scope.portalDeleteValidation = null;
 
     // the portal workshop
-    $scope.workshop = {"portal": {}, "dirContents": null, "inRoot": true, "rootDirectory": null, "editFile": {"path": null, "isNewFile": true},
-        "onEnable": null, "onDisable": null, "concreteTargetedRules": null, "workingTargetedRules": null, "deleteFile": null
+    $scope.workshop = {"portal": {}, "dirContents": null, "inRoot": true, "rootDirectory": null, 
+        "editFile": {"path": null, "isNewFile": true}, "onEnable": null, "onDisable": null,
+        "concreteTargetedRules": null, "workingTargetedRules": null, "deleteFile": null
     };
+
+    // active log file
+    $scope.activeLog = {"title": null, "path": null, "contents": null};
 
     /**
      * Reset the workshop object to a blank slate with initial values.
@@ -397,6 +401,16 @@ registerController("EvilPortalController", ['$api', '$scope', function ($api, $s
     };
 
     /**
+     * Load logs for a given portal
+     * @param portal: The portal to load logs for
+     */
+    $scope.loadPortalLog = function(portal) {
+        var basePath = (portal.storage === "sd") ? "/sd/portals/" : "/root/portals/";
+        var logPath = basePath + portal.title + "/.logs";
+        $scope.loadLog(logPath);
+    }
+
+    /**
      * check if a given object is empty.
      * @param obj: The object to check
      * @returns {boolean}: true if empty false if not empty
@@ -404,6 +418,51 @@ registerController("EvilPortalController", ['$api', '$scope', function ($api, $s
     $scope.isObjectEmpty = function(obj) {
         return (Object.keys(obj).length === 0);
     };
+
+    /**
+     * Loads a file from filePath and puts the data into the activeLog object.
+     */
+    $scope.loadLog = function(filePath) {
+        getFileOrDirectoryContent(filePath, function(response) {
+            console.log(response);
+            if (!response.success) {
+                $scope.activeLog = {
+                    "title": "Unknown",
+                    "path": null,
+                    "contents": null,
+                    "size": "0 Bytes"
+                };
+                return;
+            }
+            $scope.activeLog = {
+                "title": response.content.name,
+                "path": response.content.path,
+                "contents": response.content.fileContent,
+                "size": response.content.size
+            };
+        });
+    };
+
+    /**
+     * Writes an empty string to whatever file path is in $scope.activeLog.path
+     * On successful write, $scope.activeLog.contents is set to null.
+     *
+     * If $scope.activeLog.path is null, the request if not made.
+     *
+     */
+    $scope.clearLog = function() {
+        if ($scope.activeLog.path == null)
+            return;
+        
+        writeToFile($scope.activeLog.path, '', false, function(response) {
+            if (!response.success) {
+                $scope.sendMessage("Error Clearing Log", response.message);
+                return;
+            }
+            $scope.activeLog.contents = response.content;
+            $scope.activeLog.size = "0 Bytes";
+        });
+    }
 
     /**
      * Load the contents of a given file.
@@ -431,6 +490,7 @@ registerController("EvilPortalController", ['$api', '$scope', function ($api, $s
         var basePath = ($scope.workshop.portal.storage === "sd") ? "/sd/portals/" : "/root/portals/";
         $scope.workshop.editFile.path = basePath + $scope.workshop.portal.title + "/";
         $scope.workshop.editFile.isNewFile = true;
+        $scope.workshop.editFile.size = "0 Bytes";
     };
 
     /**
@@ -442,7 +502,6 @@ registerController("EvilPortalController", ['$api', '$scope', function ($api, $s
         if (!editFile.path.includes(editFile.name))
             editFile.path = editFile.path + editFile.name;
 
-        console.log(editFile.path);
         writeToFile(editFile.path, editFile.content, false, function(response) {
             if (!response.success)
                 $scope.sendMessage("Error write to file " + editFile.name, response.message);
@@ -461,6 +520,20 @@ registerController("EvilPortalController", ['$api', '$scope', function ($api, $s
 
             $scope.loadPortal($scope.workshop.portal);  // refresh the portal
         });
+    };
+
+    $scope.download = function(filePath) {
+        $api.request({
+            module: "EvilPortal",
+            action: "download",
+            filePath: filePath
+        }, function (response) {
+            if (!response.success) {
+                $scope.sendMessage("Error", response.message);
+                return;
+            }
+            window.location = "/api/?download=" + response.download;
+        })
     };
 
     /**
@@ -654,6 +727,7 @@ registerController("EvilPortalController", ['$api', '$scope', function ($api, $s
             response.portals.forEach(function(item, index) {
                 $scope.portals.unshift({
                     title: item.title,
+                    size: item.size,
                     storage: item.storage,
                     active: item.active,
                     type: item.portalType,

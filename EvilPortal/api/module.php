@@ -43,6 +43,10 @@ class EvilPortal extends Module
                 $this->response =  $this->getFileOrDirectoryContents($this->request->filePath);
                 break;
 
+            case 'download':
+                $this->response = $this->download($this->request->filePath);
+                break;
+
             case 'listAvailablePortals':
                 $this->response = $this->getListOfPortals();
                 break;
@@ -138,7 +142,7 @@ class EvilPortal extends Module
             $contents = array(
                 "name" => basename($file),
                 "path" => $file,
-                "size" => filesize($file),
+                "size" => $this->readableFileSize($file),
                 "fileContent" => file_get_contents($file)
             );
             $success = true;
@@ -153,7 +157,7 @@ class EvilPortal extends Module
                 $obj = array("name" => $object, "directory" => is_dir("{$file}/{$object}"),
                     "path" => realpath("{$file}/{$object}"),
                     "permissions" => substr(sprintf('%o', fileperms("{$file}/{$object}")), -4),
-                    "size" => filesize("{$file}/{$object}"),
+                    "size" => $this->readableFileSize("{$file}/{$object}"),
                     "deletable" => $this->isFileDeletable($object));
                 array_push($contents, $obj);
             }
@@ -203,6 +207,20 @@ class EvilPortal extends Module
     }
 
     /**
+     * Download a file
+     * @param: The path to the file to download
+     * @return array : array
+     */
+    private function download($filePath)
+    {
+        if (file_exists($filePath)) {
+            return array("success" => true, "message" => null, "download" => $this->downloadFile($filePath));
+        } else {
+            return array("success" => false, "message" => "File does not exist", "download" => null);
+        }
+    }
+
+    /**
      * Get a list of portals found on internal and sd storage.
      */
     private function getListOfPortals()
@@ -226,6 +244,7 @@ class EvilPortal extends Module
                 $portal = array(
                     "title" => $object,
                     "portalType" => $this->getValueFromJSONFile(array("type"), "{$storageLocation}{$object}/{$object}.ep")["type"],
+                    "size" => $this->readableFileSize("{$storageLocation}{$object}"),
                     "location" => "{$storageLocation}{$object}",
                     "storage" => $medium,
                     "active" => (file_exists("/www/{$object}.ep"))
@@ -547,7 +566,7 @@ class EvilPortal extends Module
         $allowedClients = file_get_contents($this->ALLOWED_FILE);
         file_put_contents($this->CLIENTS_FILE, $allowedClients);
 
-//        // Configure other rules
+        // Configure other rules
         exec("iptables -A INPUT -s 172.16.42.0/24 -j DROP");
         exec("iptables -A OUTPUT -s 172.16.42.0/24 -j DROP");
         exec("iptables -A INPUT -s 172.16.42.0/24 -p udp --dport 53 -j ACCEPT");
@@ -717,6 +736,27 @@ class EvilPortal extends Module
             }
         }
         return $values;
+    }
+
+    /**
+     * Get the size of a file and add a unit to the end of it.
+     * @param $file: The file to get size of
+     * @return string: File size plus unit. Exp: 3.14M
+     */
+    private function readableFileSize($file) {
+        $size = filesize($file);
+
+        if ($size == null)
+            return "0 Bytes";
+
+        if ($size < 1024) {
+            return "{$size} Bytes";
+        } else if ($size >= 1024 && $size < 1024*1024) {
+            return round($size / 1024, 2) . "K";
+        } else if ($size >= 1024*1024) {
+            return round($size / (1024*1024), 2) . "M";
+        }
+        return "{$size} Bytes";
     }
 
 }
