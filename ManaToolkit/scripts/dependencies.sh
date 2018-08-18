@@ -10,20 +10,23 @@ export PATH=$PATH:/sd/usr/bin:/sd/usr/sbin
 
 touch /tmp/ManaToolkit.progress
 mkdir -p /tmp/ManaToolkit
+wget https://github.com/adde88/hostapd-mana-openwrt/tree/master/bin/ar71xx/packages/base -P /tmp/ManaToolkit
+MANA=`grep -F "hostapd-mana_" /tmp/ManaToolkit/base | awk {'print $5'} | awk -F'"' {'print $2'}`
+ASLEAP=`grep -F "asleap_" /tmp/ManaToolkit/base | awk {'print $5'} | awk -F'"' {'print $2'}`
 
 if [ "$1" = "install" ]; then
   if [ "$2" = "internal" ]; then
     if [ -d /sd ]; then
       exit 0
     fi
-	wget https://github.com/adde88/hostapd-mana-openwrt/raw/master/bin/ar71xx/packages/base/asleap_2.2-1_ar71xx.ipk -P /tmp/ManaToolkit
-	wget https://github.com/adde88/hostapd-mana-openwrt/raw/master/bin/ar71xx/packages/base/hostapd-mana_2.6-13_ar71xx.ipk -P /tmp/ManaToolkit
+	wget https://github.com/adde88/hostapd-mana-openwrt/raw/master/bin/ar71xx/packages/base/"$ASLEAP" -P /tmp/ManaToolkit
+	wget https://github.com/adde88/hostapd-mana-openwrt/raw/master/bin/ar71xx/packages/base/"$MANA" -P /tmp/ManaToolkit
     opkg update
     opkg install /tmp/ManaToolkit/*.ipk sslsplit --force-overwrite
     #opkg install hostapd-mana sslsplit
   elif [ "$2" = "sd" ]; then
-	wget https://github.com/adde88/hostapd-mana-openwrt/raw/master/bin/ar71xx/packages/base/asleap_2.2-1_ar71xx.ipk -P /tmp/ManaToolkit
-	wget https://github.com/adde88/hostapd-mana-openwrt/raw/master/bin/ar71xx/packages/base/hostapd-mana_2.6-13_ar71xx.ipk -P /tmp/ManaToolkit
+	wget https://github.com/adde88/hostapd-mana-openwrt/raw/master/bin/ar71xx/packages/base/"$ASLEAP" -P /tmp/ManaToolkit
+	wget https://github.com/adde88/hostapd-mana-openwrt/raw/master/bin/ar71xx/packages/base/"$MANA" -P /tmp/ManaToolkit
     opkg update
     opkg install /tmp/ManaToolkit/*.ipk sslsplit --dest sd --force-overwrite
     #opkg install hostapd-mana sslsplit --dest sd
