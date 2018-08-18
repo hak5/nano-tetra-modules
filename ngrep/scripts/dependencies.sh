@@ -1,5 +1,5 @@
 #!/bin/sh
-#2015 - Whistle Master
+#2018 - Whistle Master + Small fix by Zylla
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sd/lib:/sd/usr/lib
 export PATH=$PATH:/sd/usr/bin:/sd/usr/sbin
@@ -9,16 +9,19 @@ export PATH=$PATH:/sd/usr/bin:/sd/usr/sbin
 }
 
 touch /tmp/ngrep.progress
+mkdir -p /tmp/ngrep
+wget https://github.com/adde88/openwrt-useful-tools/tree/master -P /tmp/ngrep
+NGREP=`grep -F "ngrep_" /tmp/ngrep/master | awk {'print $5'} | awk -F'"' {'print $2'}`
 
 if [ "$1" = "install" ]; then
   if [ "$2" = "internal" ]; then
 	 opkg update
-     opkg install ngrep
+     opkg install "$NGREP"
   elif [ "$2" = "sd" ]; then
     opkg update
-    opkg install ngrep --dest sd
+    opkg install "$NGREP" --dest sd
   fi
-  
+
   if [ ! -f /usr/lib/libpcap.so ] && [ -f /usr/lib/libpcap.so.1.3 ]; then
   	ln -s /usr/lib/libpcap.so /usr/lib/libpcap.so.1.3
   fi
@@ -35,3 +38,4 @@ elif [ "$1" = "remove" ]; then
 fi
 
 rm /tmp/ngrep.progress
+rm -rf /tmp/ngrep
