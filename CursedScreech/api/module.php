@@ -165,6 +165,14 @@ class CursedScreech extends Module {
 				return false;
 			}
 		}
+		
+		if (!file_exists(__TARGETLOGS__)) {
+			if (!mkdir(__TARGETLOGS__, 0755, true)) {
+				$this->logError("Failed init", "Failed to initialize because the targetlogs directory at '" . __TARGETLOGS__ . "' could not be created.");
+				$this->respond(false);
+				return false;
+			}
+		}
 	}
 	
 	/* ============================ */

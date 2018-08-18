@@ -11,11 +11,11 @@ registerController("CabinetController", ['$api', '$scope', function($api, $scope
 	$scope.showMessage = function(msgTitle, msgBody) {
 		$scope.message = {title: msgTitle, body: msgBody};
 		$('#messageModal').modal("show");
-	}
+	};
 
 	$scope.submitChangeDirectory = function(directory) {
 		console.log(directory);
-	}
+	};
 
 	$scope.getDirectoryContents = function(dir) {
 		$api.request({
@@ -38,7 +38,7 @@ registerController("CabinetController", ['$api', '$scope', function($api, $scope
 				$scope.showMessage("Error Loading Directory", "There was an error loading directory contents. Please verify that the directory you are navigating to exists.");
 			}
 		});
-	}
+	};
 
 	$scope.goToParentDirctory = function() {
 		$api.request({
@@ -53,14 +53,14 @@ registerController("CabinetController", ['$api', '$scope', function($api, $scope
 				$scope.showMessage("Error Finding Parent Directory", "An error occured while trying to find the parent directory. Please verify that the directory you are navigating to exists.");
 			}
 		});
-	}
+	};
 
 	$scope.requestDeleteFile = function(file) {
 		$scope.deleteFile.name = file.name;
 		$scope.deleteFile.path = file.path;
 		$scope.deleteFile.directory = file.directory;
 		console.log($scope.deleteFile);
-	}
+	};
 
 	$scope.sendDeleteFile = function() {
 		$api.request({
@@ -75,7 +75,7 @@ registerController("CabinetController", ['$api', '$scope', function($api, $scope
 				$scope.showMessage("Error Deleting File", "An error occured while trying to delete the file " + $scope.deleteFile.path + ". Please verify that this file exists and you have permission to delete it.");
 			}
 		});
-	}
+	};
 
 	$scope.requestEditFile = function(file) {
 		$api.request({
@@ -84,12 +84,12 @@ registerController("CabinetController", ['$api', '$scope', function($api, $scope
 			file: file.path
 		}, function(response) {
 			if (response.success == true) {
-				$scope.editFile = {name: file.name, path: file.path, content: response.content};
+				$scope.editFile = {name: file.name, path: file.path, content: response.content, size: response.size};
 			} else {
 				$scope.showMessage("Error Loading File Contents", "An error occured while trying to load the file " + file.name + ". Please verify that this file exists and you have permission to edit it.");
 			}
 		});
-	}
+	};
 
 	$scope.sendEditFile = function() {
 		$api.request({
@@ -105,7 +105,7 @@ registerController("CabinetController", ['$api', '$scope', function($api, $scope
 				$scope.showMessage("Error Saving File", "An error occured while trying to save the file " + $scope.editFile.name + ". Please verify that this file exists and you have permission to edit it.");
 			}
 		});
-	}
+	};
 
 	$scope.createFolder = function() {
 		$api.request({
@@ -121,7 +121,21 @@ registerController("CabinetController", ['$api', '$scope', function($api, $scope
 				$scope.showMessage("Error Creating Directory", "An error occured while trying to create the folder " + $scope.newFolder.name + ". Please verify that you have permission to create new items in this directory.");
 			}
 		});
-	}
+	};
+
+    $scope.download = function(filePath) {
+        $api.request({
+            module: "Cabinet",
+            action: "download",
+            filePath: filePath
+        }, function (response) {
+            if (!response.success) {
+                $scope.showMessage("Error", response.message);
+                return;
+            }
+            window.location = "/api/?download=" + response.download;
+        })
+    };
 
 	$scope.getDirectoryContents($scope.currentDirectory);
 

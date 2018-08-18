@@ -1,0 +1,53 @@
+tinycss changelog
+=================
+
+
+Version 0.4
+-----------
+
+Released on 2016-09-23.
+
+* Add an __eq__ operator to Token object.
+* Support Fonts 3.
+
+
+
+Version 0.3
+-----------
+
+Released on 2012-09-18.
+
+* Fix a bug when parsing \5c (an escaped antislash.)
+
+
+
+Version 0.2
+-----------
+
+Released on 2012-04-27.
+
+**Breaking changes:**
+
+* Remove the ``selectors3`` module. The functionality has moved to the
+  `cssselect <http://packages.python.org/cssselect/>`_ project.
+* Simplify the API for :func:`~tinycss.make_parser`.
+
+
+Version 0.1.1
+-------------
+
+Released on 2012-04-06.
+
+Bug fixes:
+
+* Error handling on exepected end of stylesheet in an at-rule head
+* Fix the installation on ASCII-only locales
+
+
+Version 0.1
+-----------
+
+Released on 2012-04-05.
+
+First release. Parser support for CSS 2.1, Seloctors 3, Color 3 and
+Paged Media 3.

@@ -56,18 +56,18 @@ class LEDController extends Module
 
     private function getTetraYellow()
     {
-        $trigger = $this->uciGet('system.@led[2].trigger');
+        $trigger = $this->uciGet('system.led_eth0.trigger');
 
         if ($trigger == 'none') {
-            $default = $this->uciGet('system.@led[2].default');
+            $default = $this->uciGet('system.led_eth0.default');
             if ($default == 0) {
                 $this->response = array('enabled' => false, 'trigger' => $trigger);
             } elseif ($default == 1) {
                 $this->response = array('enabled' => true, 'trigger' => $trigger);
             }
         } elseif ($trigger == 'netdev') {
-            $mode = $this->uciGet('system.@led[2].mode');
-            $interface = $this->uciGet('system.@led[2].dev');
+            $mode = $this->uciGet('system.led_eth0.mode');
+            $interface = $this->uciGet('system.led_eth0.dev');
             if ($mode == 'link tx rx') {
                 $this->response = array('enabled' => true, 'trigger' => $trigger,
                                         'mode' => 'link tx rx', 'interface' => $interface);
@@ -79,8 +79,8 @@ class LEDController extends Module
                                         'mode' => 'link rx', 'interface' => $interface);
             }
         } elseif ($trigger == 'timer') {
-            $delayOn = $this->uciGet('system.@led[2].delayon');
-            $delayOff = $this->uciGet('system.@led[2].delayoff');
+            $delayOn = $this->uciGet('system.led_eth0.delayon');
+            $delayOff = $this->uciGet('system.led_eth0.delayoff');
             $this->response = array('enabled' => true, 'trigger' => $trigger,
                                     'delayOn' => $delayOn, 'delayOff' => $delayOff);
         } else {
@@ -99,23 +99,23 @@ class LEDController extends Module
 
         if ($enabled == true) {
             if ($trigger == 'none') {
-                $this->uciSet('system.@led[2].trigger', 'none');
-                $this->uciSet('system.@led[2].default', '1');
+                $this->uciSet('system.led_eth0.trigger', 'none');
+                $this->uciSet('system.led_eth0.default', '1');
                 $this->restartLEDs();
             } elseif ($trigger == 'netdev') {
-                $this->uciSet('system.@led[2].trigger', 'netdev');
-                $this->uciSet('system.@led[2].mode', "$mode");
-                $this->uciSet('system.@led[2].dev', "$interface");
+                $this->uciSet('system.led_eth0.trigger', 'netdev');
+                $this->uciSet('system.led_eth0.mode', "$mode");
+                $this->uciSet('system.led_eth0.dev', "$interface");
                 $this->restartLEDs();
             } elseif ($trigger == 'timer') {
-                $this->uciSet('system.@led[2].trigger', 'timer');
-                $this->uciSet('system.@led[2].delayon', "$delayOn");
-                $this->uciSet('system.@led[2].delayoff', "$delayOff");
+                $this->uciSet('system.led_eth0.trigger', 'timer');
+                $this->uciSet('system.led_eth0.delayon', "$delayOn");
+                $this->uciSet('system.led_eth0.delayoff', "$delayOff");
                 $this->restartLEDs();
             }
         } elseif ($enabled == false) {
-            $this->uciSet('system.@led[2].trigger', 'none');
-            $this->uciSet('system.@led[2].default', '0');
+            $this->uciSet('system.led_eth0.trigger', 'none');
+            $this->uciSet('system.led_eth0.default', '0');
             $this->restartLEDs();
         }
 
@@ -126,18 +126,18 @@ class LEDController extends Module
 
     private function getTetraBlue()
     {
-        $trigger = $this->uciGet('system.@led[0].trigger');
+        $trigger = $this->uciGet('system.led_wlan0.trigger');
 
         if ($trigger == 'none') {
-            $default = $this->uciGet('system.@led[0].default');
+            $default = $this->uciGet('system.led_wlan0.default');
             if ($default == 0) {
                 $this->response = array('enabled' => false, 'trigger' => $trigger);
             } elseif ($default == 1) {
                 $this->response = array('enabled' => true, 'trigger' => $trigger);
             }
         } elseif ($trigger == 'netdev') {
-            $mode = $this->uciGet('system.@led[0].mode');
-            $interface = $this->uciGet('system.@led[0].dev');
+            $mode = $this->uciGet('system.led_wlan0.mode');
+            $interface = $this->uciGet('system.led_wlan0.dev');
             if ($mode == 'link tx rx') {
                 $this->response = array('enabled' => true, 'trigger' => $trigger,
                                         'mode' => 'link tx rx', 'interface' => $interface);
@@ -149,8 +149,8 @@ class LEDController extends Module
                                         'mode' => 'link rx', 'interface' => $interface);
             }
         } elseif ($trigger == 'timer') {
-            $delayOn = $this->uciGet('system.@led[0].delayon');
-            $delayOff = $this->uciGet('system.@led[0].delayoff');
+            $delayOn = $this->uciGet('system.led_wlan0.delayon');
+            $delayOff = $this->uciGet('system.led_wlan0.delayoff');
             $this->response = array('enabled' => true, 'trigger' => $trigger,
                                     'delayOn' => $delayOn, 'delayOff' => $delayOff);
         } else {
@@ -169,23 +169,23 @@ class LEDController extends Module
 
         if ($enabled == true) {
             if ($trigger == 'none') {
-                $this->uciSet('system.@led[0].trigger', 'none');
-                $this->uciSet('system.@led[0].default', '1');
+                $this->uciSet('system.led_wlan0.trigger', 'none');
+                $this->uciSet('system.led_wlan0.default', '1');
                 $this->restartLEDs();
             } elseif ($trigger == 'netdev') {
-                $this->uciSet('system.@led[0].trigger', 'netdev');
-                $this->uciSet('system.@led[0].mode', "$mode");
-                $this->uciSet('system.@led[0].dev', "$interface");
+                $this->uciSet('system.led_wlan0.trigger', 'netdev');
+                $this->uciSet('system.led_wlan0.mode', "$mode");
+                $this->uciSet('system.led_wlan0.dev', "$interface");
                 $this->restartLEDs();
             } elseif ($trigger == 'timer') {
-                $this->uciSet('system.@led[0].trigger', 'timer');
-                $this->uciSet('system.@led[0].delayon', "$delayOn");
-                $this->uciSet('system.@led[0].delayoff', "$delayOff");
+                $this->uciSet('system.led_wlan0.trigger', 'timer');
+                $this->uciSet('system.led_wlan0.delayon', "$delayOn");
+                $this->uciSet('system.led_wlan0.delayoff', "$delayOff");
                 $this->restartLEDs();
             }
         } elseif ($enabled == false) {
-            $this->uciSet('system.@led[0].trigger', 'none');
-            $this->uciSet('system.@led[0].default', '0');
+            $this->uciSet('system.led_wlan0.trigger', 'none');
+            $this->uciSet('system.led_wlan0.default', '0');
             $this->restartLEDs();
         }
 
@@ -196,18 +196,18 @@ class LEDController extends Module
 
     private function getTetraRed()
     {
-        $trigger = $this->uciGet('system.@led[1].trigger');
+        $trigger = $this->uciGet('system.led_wlan1mon.trigger');
 
         if ($trigger == 'none') {
-            $default = $this->uciGet('system.@led[1].default');
+            $default = $this->uciGet('system.led_wlan1mon.default');
             if ($default == 0) {
                 $this->response = array('enabled' => false, 'trigger' => $trigger);
             } elseif ($default == 1) {
                 $this->response = array('enabled' => true, 'trigger' => $trigger);
             }
         } elseif ($trigger == 'netdev') {
-            $mode = $this->uciGet('system.@led[1].mode');
-            $interface = $this->uciGet('system.@led[1].dev');
+            $mode = $this->uciGet('system.led_wlan1mon.mode');
+            $interface = $this->uciGet('system.led_wlan1mon.dev');
             if ($mode == 'link tx rx') {
                 $this->response = array('enabled' => true, 'trigger' => $trigger,
                                         'mode' => 'link tx rx', 'interface' => $interface);
@@ -219,8 +219,8 @@ class LEDController extends Module
                                         'mode' => 'link rx', 'interface' => $interface);
             }
         } elseif ($trigger == 'timer') {
-            $delayOn = $this->uciGet('system.@led[1].delayon');
-            $delayOff = $this->uciGet('system.@led[1].delayoff');
+            $delayOn = $this->uciGet('system.led_wlan1mon.delayon');
+            $delayOff = $this->uciGet('system.led_wlan1mon.delayoff');
             $this->response = array('enabled' => true, 'trigger' => $trigger,
                                     'delayOn' => $delayOn, 'delayOff' => $delayOff);
         } else {
@@ -239,23 +239,23 @@ class LEDController extends Module
 
         if ($enabled == true) {
             if ($trigger == 'none') {
-                $this->uciSet('system.@led[1].trigger', 'none');
-                $this->uciSet('system.@led[1].default', '1');
+                $this->uciSet('system.led_wlan1mon.trigger', 'none');
+                $this->uciSet('system.led_wlan1mon.default', '1');
                 $this->restartLEDs();
             } elseif ($trigger == 'netdev') {
-                $this->uciSet('system.@led[1].trigger', 'netdev');
-                $this->uciSet('system.@led[1].mode', "$mode");
-                $this->uciSet('system.@led[1].dev', "$interface");
+                $this->uciSet('system.led_wlan1mon.trigger', 'netdev');
+                $this->uciSet('system.led_wlan1mon.mode', "$mode");
+                $this->uciSet('system.led_wlan1mon.dev', "$interface");
                 $this->restartLEDs();
             } elseif ($trigger == 'timer') {
-                $this->uciSet('system.@led[1].trigger', 'timer');
-                $this->uciSet('system.@led[1].delayon', "$delayOn");
-                $this->uciSet('system.@led[1].delayoff', "$delayOff");
+                $this->uciSet('system.led_wlan1mon.trigger', 'timer');
+                $this->uciSet('system.led_wlan1mon.delayon', "$delayOn");
+                $this->uciSet('system.led_wlan1mon.delayoff', "$delayOff");
                 $this->restartLEDs();
             }
         } elseif ($enabled == false) {
-            $this->uciSet('system.@led[1].trigger', 'none');
-            $this->uciSet('system.@led[1].default', '0');
+            $this->uciSet('system.led_wlan1mon.trigger', 'none');
+            $this->uciSet('system.led_wlan1mon.default', '0');
             $this->restartLEDs();
         }
 
@@ -266,18 +266,18 @@ class LEDController extends Module
 
     private function getNanoBlue()
     {
-        $trigger = $this->uciGet('system.@led[0].trigger');
+        $trigger = $this->uciGet('system.led_wlan0.trigger');
 
         if ($trigger == 'none') {
-            $default = $this->uciGet('system.@led[0].default');
+            $default = $this->uciGet('system.led_wlan0.default');
             if ($default == 0) {
                 $this->response = array('enabled' => false, 'trigger' => $trigger);
             } elseif ($default == 1) {
                 $this->response = array('enabled' => true, 'trigger' => $trigger);
             }
         } elseif ($trigger == 'netdev') {
-            $mode = $this->uciGet('system.@led[0].mode');
-            $interface = $this->uciGet('system.@led[0].dev');
+            $mode = $this->uciGet('system.led_wlan0.mode');
+            $interface = $this->uciGet('system.led_wlan0.dev');
             if ($mode == 'link tx rx') {
                 $this->response = array('enabled' => true, 'trigger' => $trigger,
                                         'mode' => 'link tx rx', 'interface' => $interface);
@@ -289,8 +289,8 @@ class LEDController extends Module
                                         'mode' => 'link rx', 'interface' => $interface);
             }
         } elseif ($trigger == 'timer') {
-            $delayOn = $this->uciGet('system.@led[0].delayon');
-            $delayOff = $this->uciGet('system.@led[0].delayoff');
+            $delayOn = $this->uciGet('system.led_wlan0.delayon');
+            $delayOff = $this->uciGet('system.led_wlan0.delayoff');
             $this->response = array('enabled' => true, 'trigger' => $trigger,
                                     'delayOn' => $delayOn, 'delayOff' => $delayOff);
         } else {
@@ -309,23 +309,23 @@ class LEDController extends Module
 
         if ($enabled == true) {
             if ($trigger == 'none') {
-                $this->uciSet('system.@led[0].trigger', 'none');
-                $this->uciSet('system.@led[0].default', '1');
+                $this->uciSet('system.led_wlan0.trigger', 'none');
+                $this->uciSet('system.led_wlan0.default', '1');
                 $this->restartLEDs();
             } elseif ($trigger == 'netdev') {
-                $this->uciSet('system.@led[0].trigger', 'netdev');
-                $this->uciSet('system.@led[0].mode', "$mode");
-                $this->uciSet('system.@led[0].dev', "$interface");
+                $this->uciSet('system.led_wlan0.trigger', 'netdev');
+                $this->uciSet('system.led_wlan0.mode', "$mode");
+                $this->uciSet('system.led_wlan0.dev', "$interface");
                 $this->restartLEDs();
             } elseif ($trigger == 'timer') {
-                $this->uciSet('system.@led[0].trigger', 'timer');
-                $this->uciSet('system.@led[0].delayon', "$delayOn");
-                $this->uciSet('system.@led[0].delayoff', "$delayOff");
+                $this->uciSet('system.led_wlan0.trigger', 'timer');
+                $this->uciSet('system.led_wlan0.delayon', "$delayOn");
+                $this->uciSet('system.led_wlan0.delayoff', "$delayOff");
                 $this->restartLEDs();
             }
         } elseif ($enabled == false) {
-            $this->uciSet('system.@led[0].trigger', 'none');
-            $this->uciSet('system.@led[0].default', '0');
+            $this->uciSet('system.led_wlan0.trigger', 'none');
+            $this->uciSet('system.led_wlan0.default', '0');
             $this->restartLEDs();
         }
 
@@ -339,21 +339,21 @@ class LEDController extends Module
         $device = $this->getDevice();
 
         if ($device == 'tetra') {
-            $this->uciSet('system.@led[0].trigger', 'netdev');
-            $this->uciSet('system.@led[0].mode', 'link tx rx');
-            $this->uciSet('system.@led[0].dev', 'wlan0');
-            $this->uciSet('system.@led[1].trigger', 'netdev');
-            $this->uciSet('system.@led[1].mode', 'link tx rx');
-            $this->uciSet('system.@led[1].dev', 'wlan1mon');
-            $this->uciSet('system.@led[2].trigger', 'netdev');
-            $this->uciSet('system.@led[2].mode', 'link tx rx');
-            $this->uciSet('system.@led[2].dev', 'eth0');
+            $this->uciSet('system.led_wlan0.trigger', 'netdev');
+            $this->uciSet('system.led_wlan0.mode', 'link tx rx');
+            $this->uciSet('system.led_wlan0.dev', 'wlan0');
+            $this->uciSet('system.led_wlan1mon.trigger', 'netdev');
+            $this->uciSet('system.led_wlan1mon.mode', 'link tx rx');
+            $this->uciSet('system.led_wlan1mon.dev', 'wlan1mon');
+            $this->uciSet('system.led_eth0.trigger', 'netdev');
+            $this->uciSet('system.led_eth0.mode', 'link tx rx');
+            $this->uciSet('system.led_eth0.dev', 'eth0');
             $this->restartLEDs();
             $this->response = array('success' => true);
         } else {
-            $this->uciSet('system.@led[0].trigger', 'netdev');
-            $this->uciSet('system.@led[0].mode', 'link tx rx');
-            $this->uciSet('system.@led[0].dev', 'wlan0');
+            $this->uciSet('system.led_wlan0.trigger', 'netdev');
+            $this->uciSet('system.led_wlan0.mode', 'link tx rx');
+            $this->uciSet('system.led_wlan0.dev', 'wlan0');
             $this->restartLEDs();
             $this->response = array('success' => true);
         }
