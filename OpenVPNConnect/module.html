@@ -1,0 +1,151 @@
+<div class="col-md-12" ng-controller="openVPNConnectController">
+	<div class="panel-group">
+		<div class="col-md-12">
+			<!-- OpenVPN Connect Title Panel -->
+			<div class="panel panel-default">
+				<div class="panel-header text-muted text-center">
+					<h3>OpenVPN Connect
+					</h5>
+				</div>
+				<div id="main-panel" class="panel panel-default">
+					<div class="panel-body">
+						<!-- Dependency Installer UI -->
+						<div class="panel-body">
+							<div class="form-group">
+								<label class="control-label text-center">Dependencies:</label>
+								<button type="button" style="width: 90px;" class="btn btn-{{installLabel}} btn-xs" ng-click="handleDependencies()">{{installLabelText}}</button>
+							</div>
+							<div class="form-group">
+								<label class="control-label text-center">Setup Status</label>
+								<p>
+									<input class="form-control" ng-model="workspace.setupcontent" placeholder="" readonly></input>
+								</p>
+							</div>
+						</div>
+						<!-- OpenVPN Cert Selector -->
+						<div class="panel-body">
+							<form class="form-horizontal">
+								<div class="form-group">
+									<p>
+										<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ovpn_upload_view">Upload Cert</button>
+									</p>
+									<p>
+										<div>
+											<label class="control-label">
+												<a href="javascript:;" data-toggle="collapse" data-parent="#accordion" data-target="#collapseCertList">
+													<button type="button" class="btn btn-default" ng-click="refreshCertList()">
+                                                                         Select Cert +
+                                                                    </button>
+												</a>
+											</label>
+											<div id="collapseCertList" class="panel-collapse collapse">
+												<div class="panel panel-default">
+													<div>
+														<ul class="list-group text-center" ng-repeat="cert in workspace.availablecerts">
+															<li class="list-group-item">
+																<button type="button" class="btn btn-default" ng-click="setConfig(cert)">{{cert}}</button>
+															</ul>
+														</ul>
+													</div>
+												</div>
+											</div>
+										</div>
+									</p>
+
+									<!-- OpenVPN Connect Option Form -->
+									<label class="control-label text-center">VPN Config Name:</label>
+									<a href="javascript:;" ng-click="workspace.config = ''">Clear</a>
+									<p>
+										<input class="form-control" ng-model="workspace.config" placeholder="Enter input"></input>
+									</p>
+									<label class="control-label text-center">VPN Config Password (Optional):</label>
+									<a href="javascript:;" ng-click="workspace.pass = ''">Clear</a>
+									<p>
+										<input class="form-control" type="password" ng-model="workspace.pass" placeholder="Enter input"></input>
+									</p>
+									<label class="control-label text-center">OpenVPN Flags (Optional):</label>
+									<a href="javascript:;" ng-click="workspace.flags = ''">Clear</a>
+									<p>
+										<input class="form-control" ng-model="workspace.flags" placeholder="Enter input"></input>
+									</p>
+									<label class="control-label text-center">Share Connection With Clients:</label>
+										<input type="checkbox" ng-model="workspace.sharedconnection">
+										<div class="input-group">
+											<span class="input-group-btn text-center">
+												<button class="btn btn-default" type="button" ng-click="startVPN()">Start VPN</button>
+												<button class="btn btn-default" type="button" ng-click="stopVPN()">Stop VPN</button>
+											</span>
+										</div>
+									</div>
+								</form>
+							</div>
+							<!-- OpenVPN Status Section -->
+							<div class="panel-body">
+								<div class="form-group">
+									<label class="control-label text-center">OpenVPN Status</label>
+									<p>
+										<textarea class="form-control" rows="1" ng-model="workspace.outputcontent" placeholder="" readonly></textarea>
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- OpenVPN Cert Upload Modal -->
+				<div id="ovpn_upload_view" class="modal fade" role="dialog">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+								<div class="btn btn-primary">
+									<label for="selectedFiles" style="cursor: pointer">Add files</label>
+								</div>
+							</div>
+							<div class="modal-body">
+								<table class="table">
+									<thead>
+										<th>File</th>
+										<th>Actions</th>
+									</thead>
+									<tbody>
+										<tr ng-repeat="file in selectedFiles">
+											<td>{{ file.name }}</td>
+											<td>
+												<button class="btn btn-danger" ng-click="removeSelectedFile(file);">Remove
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									<div style="text-align:center">
+										<input type="file" accept=".ovpn" id="selectedFiles" onchange="angular.element(this).scope().setSelectedFiles()" style="visibility: hidden;" multiple>
+											<img ng-show="uploading" ng-hide="!uploading">
+                                                <button class="btn" ng-show="!uploading" ng-hide="uploading" ng-disabled="selectedFiles.length == 0" ng-click="uploadFile();">Upload</button>
+                                                <div class="alert alert-{{workspace.uploadstatus}}">{{workspace.uploadstatusLabel}}</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- Change Log Pannel -->
+							<div class="panel panel-default">
+								<div class="panel-header text-muted text-center">
+									<h5>
+										<a href="javascript:;" data-toggle="collapse" data-parent="#accordion" data-target="#collapseChangelog">Change Log</a>
+									</h5>
+								</div>
+								<div id="collapseChangelog" class="panel-collapse collapse">
+									<div class="panel-body">
+										<ul>
+											<li>
+												<b>1.0</b>
+											</li>
+											<ul>
+												<li class="text-muted">Initial Pineapple Nano Release</li>
+											</ul>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>

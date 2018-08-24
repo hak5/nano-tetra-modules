@@ -1,0 +1,250 @@
+.truncated {
+    text-overflow: ellipsis;
+    overflow: hidden
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+.table-layout-fixed {
+    table-layout: fixed;
+}
+
+.module-icon {
+     display: inline;
+     height: 24px;
+     width: 24px;
+}
+
+.fixed-addon-width {
+    min-width: 70px;
+    text-align: left;
+}
+
+.fixed-addon-width-2 {
+    min-width: 90px;
+    text-align: left;
+}
+
+.fixed-addon-width-3 {
+    min-width: 110px;
+    text-align: left;
+}
+
+.fixed-width-200 {
+    min-width: 200px;
+}
+
+.caret-reversed {
+    border-top-width: 0;
+    border-bottom: 4px solid #000;
+}
+
+.image-small-18 {
+    height: 18px;
+}
+
+.center-text {
+    text-align: center;
+}
+
+.scrollable-pre {
+    overflow: auto;
+    word-wrap: normal;
+    white-space: pre;
+}
+
+.log-pre {
+    max-height: 300px;
+}
+
+.btn-fixed-length {
+    width: 70px;
+}
+
+.title-message {
+    margin-left: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    height: 9px;
+    border-radius: 3px;
+}
+
+.padding-left {
+    margin-left: 10px;
+}
+
+.select-inline {
+    font-weight: normal;
+}
+
+body {
+    background-color: #f8f8f8;
+}
+
+.logout {
+    cursor: pointer;
+}
+
+.module-nav li a {
+    margin-left: 30px;
+}
+
+.module-nav li:hover {
+    background-color: #eee;
+}
+
+.sidebar .sidebar-nav.navbar-collapse {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.sidebar ul li {
+    cursor: pointer;
+    border-bottom: 1px solid #e7e7e7;
+}
+
+.sidebar .active {
+    background-color: #eee;
+}
+
+@media(min-width:768px) {
+    .sidebar {
+        z-index: 1;
+        position: absolute;
+        width: 250px;
+        margin-top: 51px;
+    }
+
+    .module-content {
+        position: inherit;
+        margin: 0 0 0 250px;
+        padding: 15px 30px;
+        border-left: 1px solid #e7e7e7;
+    }
+
+    .navbar-top-links {
+        margin-left: 10px;
+    }
+}
+
+.navbar-top-links {
+    margin-right: 5px;
+    margin-left: 10px;
+}
+
+.navbar-top-links li {
+    display: inline-block;
+}
+
+.navbar {
+    margin-bottom: 0;
+}
+
+.navbar-top-links .dropdown-menu li {
+    display: block;
+}
+
+.module-content {
+    padding: 15px 15px;
+    background-color: #fff;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    cursor: pointer;
+}
+
+.dropdown-menu-top {
+    max-height: 300px !important;
+    overflow-y: auto !important;
+}
+
+@media(max-width:768px) {
+    .dropdown-menu-top {
+        margin: auto !important;
+        position: absolute !important;
+        background-color: #fff !important;
+        word-wrap: break-word !important;
+        border: 1px solid #ccc !important;
+        width: 300px !important;
+        max-width: 300px !important;
+    }
+    .dropdown-menu-top li a {
+        white-space: normal !important;
+    }
+
+    .dropdown-menu-logout {
+        max-width: 50px !important;
+    }
+}
+
+.login-logo {
+    margin: 0 auto;
+    padding-bottom: 10px;
+    max-width: 150px;
+}
+
+.brand-logo {
+    content: url('/img/logo.png');
+    max-height: 30px;
+    padding-bottom: 5px;
+}
+
+.brand-text::after {
+    content: "WiFi Pineapple";
+    padding-top: 3px;
+    padding-left: 5px;
+    float: right;
+}
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 20px;
+}
+.switch input {display:none;}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+ }
+input:checked + .slider {
+  background-color: #2196F3;
+}
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+.slider.round:before {
+    border-radius: 50%;
+}

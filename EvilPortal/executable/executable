@@ -1,133 +1,99 @@
-#!/usr/bin/python
+#!/bin/bash
 
-#
-# Evil Portal
-# Newbi3
-# This is the python control script to handle all iptables things for creating and managing a Captive Portal
-#
+#Modified by oXis for the Wifi Pineapple (OpenWRT)
 
-import sys
-import os
+# Written by Sitwon and The Doctor.
+# Copyright (C) 2013 Project Byzantium
+# This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version.
 
+arp () { cat /proc/net/arp; } # arp function
 
-CLIENTS_FILE = "/tmp/EVILPORTAL_CLIENTS.txt"
-WHITE_LIST = ["172.16.42.42"]
+IPTABLES=/usr/sbin/iptables
+ARP=arp
+IP=172.16.42.1
 
+case "$1" in
+    'init')
 
-def revoke_client(ip_address=None):
-	global CLIENTS_FILE
+        # Convert the IP address of the client interface into a netblock.
+        CLIENTNET=`echo $IP | sed 's/1$/0\/24/'`
 
-	if not ip_address:
-		print "An ipaddress is expected."
-		return
+        # Exempt traffic which does not originate from the client network.
+        $IPTABLES -t mangle -I PREROUTING -p all ! -s $CLIENTNET -j RETURN
 
-	f = open(CLIENTS_FILE, 'r')
-	lines = f.readlines()
-	f.close()
+        # Traffic not coming from an accepted user gets marked 99.
+        $IPTABLES -t mangle -A fwmark -j MARK --set-mark 99
 
-	f = open(CLIENTS_FILE, 'w')
-	for line in lines:
-		if line == ip_address + "\n":
-			os.system("iptables -t nat -D PREROUTING -s " + line.rstrip('\n') + " -j ACCEPT")
-		else:
-			f.write(line)
-	f.close()
+        # Traffic which has been marked 99 and is headed for 80/TCP or 443/TCP
+        # should be redirected to the captive portal web server.
+        $IPTABLES -t nat -A prerouting_rule -m mark --mark 99 -p tcp --dport 80 -j DNAT --to-destination $IP:80
+        # Need to activate HTTPS on the nginx server of the PineAP, so for now HTTPS traffic is dropped.
+        #$IPTABLES -t nat -A prerouting_rule -m mark --mark 99 -p tcp --dport 443 -j DNAT --to-destination $IP:443
 
+        # for use with dns spoff
+        $IPTABLES -t filter -A forwarding_rule -p udp --dport 53 -j ACCEPT
+        $IPTABLES -t nat -A prerouting_rule -m mark --mark 99 -p udp --dport 53 -j DNAT --to-destination $IP:53
 
-def authorize_client(ip_address=None):
-	global CLIENTS_FILE
+        $IPTABLES -t filter -A input_rule -p tcp --dport 80 -j ACCEPT #Webserver
+        #$IPTABLES -t filter -A input_rule -p tcp --dport 443 -j ACCEPT #Webserver
+        $IPTABLES -t filter -A input_rule -p tcp --dport 1471 -j ACCEPT #PineAP admin page
+        $IPTABLES -t filter -A input_rule -p tcp --dport 22 -j ACCEPT #SSH
 
-	if not ip_address:
-		print "An ipaddress is expected."
-		return
+        # All other traffic which is marked 99 is just dropped
+        $IPTABLES -t filter -A forwarding_rule -m mark --mark 99 -j DROP
+        # Even on INPUT rule
+        $IPTABLES -t filter -A input_rule -m mark --mark 99 -j DROP
 
-	f = open(CLIENTS_FILE, 'a+')
-	lines = f.readlines()
-	if ip_address + "\n" not in lines:
-		os.system("iptables -t nat -I PREROUTING -s " + ip_address + " -j ACCEPT")
-		f.write(ip_address + "\n")
-	f.close()
+        exit 0
+        ;;
+    'add')
+        # $2: IP address of client.
+        CLIENT=$2
 
+        # Isolate the MAC address of the client in question.
+        CLIENTMAC=`$ARP -n | grep ':' | grep $CLIENT | awk '{print $4}'`
 
-def stop_evilportal():
-	"""
-	stop_evilportal
-	Stop EvilPortals
-	"""
-	global CLIENTS_FILE, WHITE_LIST
+        # Add the MAC address of the client to the whitelist, so it'll be able
+        # to access the mesh even if its IP address changes.
+        $IPTABLES -t mangle -I fwmark -m mac --mac-source $CLIENTMAC -j RETURN
+        $IPTABLES -A INPUT -m mac --mac-source 74:da:38:5a:03:66 -p udp --dport 53 -j ACCEPT
 
-	if os.path.isfile(CLIENTS_FILE):
-		# Remove rule for each accepted client
-		[os.system("iptables -t nat -D PREROUTING -s " + line.rstrip('\n') + " -j ACCEPT") for line in open(CLIENTS_FILE, 'r')]
+        exit 0
+        ;;
+    'remove')
+        # $2: IP address of client.
+        CLIENT=$2
 
-		# Delete the clients file
-		os.remove(CLIENTS_FILE)
+        # Isolate the MAC address of the client in question.
+        CLIENTMAC=`$ARP -n | grep ':' | grep $CLIENT | awk '{print $4}'`
 
-	# Stop HTTP Redirection
-	os.system("iptables -t nat -D PREROUTING -s 172.16.42.0/24 -p tcp --dport 80 -j DNAT --to-destination 172.16.42.1:80")
+        # Delete the MAC address of the client from the whitelist.
+        $IPTABLES -t mangle -D fwmark -m mac --mac-source $CLIENTMAC -j RETURN
 
-	# Remove DNS Policy
-	os.system("iptables -D INPUT -p tcp --dport 53 -j ACCEPT")
+        exit 0
+        ;;
+    'purge')
+        CLIENTNET=`echo $IP | sed 's/1$/0\/24/'`
+        # Purge the user defined chains
+        $IPTABLES -t mangle -F fwmark
+        $IPTABLES -t nat -F prerouting_rule
+        $IPTABLES -t filter -F input_rule
+        $IPTABLES -t filter -F forwarding_rule
+        $IPTABLES -t mangle -D PREROUTING -p all ! -s $CLIENTNET -j RETURN
 
+        $IPTABLES -t nat -D prerouting_rule -m mark --mark 99 -p udp --dport 53 -j DNAT --to-destination $IP:53
 
-def start_evilportal():
-	"""
-	start_evilportal
-	Start EvilPortals IP table based captive portal
-	"""
-	global CLIENTS_FILE, WHITE_LIST
+        exit 0
+        ;;
+    'list')
+        # Display the currently running IP tables ruleset.
+        $IPTABLES --list -t nat -n
+        $IPTABLES --list -t mangle -n
+        $IPTABLES --list -t filter -n
 
-	if os.path.isfile(CLIENTS_FILE):
-		os.remove(CLIENTS_FILE)
-
-	# Make sure forwarding is enabled which it should be but just to be sure do it here
-	os.system("echo 1 > /proc/sys/net/ipv4/ip_forward")
-
-	# Setup the iptables
-	# Set white listed clients
-	f = open(CLIENTS_FILE, "w")
-	for client in WHITE_LIST:
-		os.system("iptables -A INPUT -s " + client + " -j ACCEPT")
-		f.write(client + "\n")
-	f.close()
-
-	# Redirect all web traffic to port 80 on the pineapple
-	os.system("iptables -t nat -A PREROUTING -s 172.16.42.0/24 -p tcp --dport 80 -j DNAT --to-destination 172.16.42.1:80")
-
-	# Accept dns
-	os.system("iptables -A INPUT -p tcp --dport 53 -j ACCEPT")
-
-
-def handler(args=None):
-	cmd = None
-	param = None
-	if args is not None:
-		try:
-			cmd = args[1].lower()
-		except IndexError as e:
-			cmd = "help"
-		try:
-			param = args[2].lower()
-		except IndexError as e:
-			pass
-	else:
-		cmd = "start"
-
-	commands = {"start": "Start EvilPortal", "stop": "Stop EvilPortal", "help": "What you are reading"}
-
-	if cmd == "start":
-		start_evilportal()
-	elif cmd == "stop":
-		stop_evilportal()
-	elif cmd == "authorize":
-		authorize_client(param)
-	elif cmd == "help":
-		print "-"*20
-		print "Evil Portal"
-		print "-"*20
-		for command, description in commands.iteritems():
-			print command + ":\t" + description
-
-
-if __name__ == '__main__':
-	handler(sys.argv)
+        exit 0
+        ;;
+    *)
+        echo "USAGE: $0 {initialize|add <IP>|remove <IP>|purge|list}"
+        exit 0
+    esac

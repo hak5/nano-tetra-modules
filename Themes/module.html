@@ -1,0 +1,798 @@
+<!-- Author: 		    -->
+<!-- trashbo4t	            -->
+<!-- (github.com/trashbo4t) -->
+
+<div class="row" ng-controller="ThemesController">
+
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <a href="javascript:;" data-toggle="collapse" data-target="#collapseControls" class="text-muted"><h4
+                            class="panel-title"><b>Theme:</b> {{ current.substring(0, current.length - 4); }}</h4></a>
+                </div>
+                <div id="collapseControls" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                            <table style="width:100%">
+                            <tr>
+                                <td>
+                                    Auto Refresh
+                                </td>
+                                <td>
+                                    <label class="switch" >
+                                        <input type="checkbox" ng-model="autoRefresh"> 
+                                        <span class="slider round">
+                                        </span>
+                                    </label>
+                                </td>
+
+                                <td style="text-align:right;">
+                                        <button class="btn btn-default" 
+                                            data-toggle="modal" 
+                                            data-target="#loadingModal" 
+                                            type="button" 
+                                            ng-click="restoreDefault()">Restore Default</button>
+                                </td>
+                            </tr>
+                            <tr>
+                            </tr>
+                            
+                            </table>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <a href="javascript:;" data-toggle="collapse" data-target="#collapseMessages" class="text-muted"><h4
+                                class="panel-title">Themes Messages</h4></a>
+                    </div>
+                    <div id="collapseMessages" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                            <p ng-show="(messages.length == 0)" class="text-muted"><i>No Messages...</i></p>
+                            <a ng-hide="(messages.length < 2)" ng-click="messages = []" class="pull-right" href="javascript:;">Clear
+                                All</a>
+                            <table style="width:100%" ng-hide="(messages.length == 0)">
+                                <tr ng-repeat="message in messages">
+                                    <td>
+                                        <hr/>
+                                        <h5><b>{{ message.title }}</b> <a ng-click="dismissMessage($index)" href="javascript:;"
+                                                                          class="pull-right">Dismiss</a></h5>
+                                        <p class="text-muted"><i>{{ message.msg }}</i></p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <a href="javascript:;" data-toggle="collapse" data-target="#collapseIconColors" class="text-muted"><h4
+                                class="panel-title">Icon Colors</h4></a>
+                    </div>
+                    <div id="collapseIconColors" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                                <table class="table table-striped" align="left">
+                                <thead>
+                                    <th>Icon</th>
+                                    <th>Color</th>
+                                    <th>Brightness</th>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Throbber</td><td> {{ throbbercontrastText }}</td><td> N/A </td> </tr>
+                                    <tr><td>Logo</td><td> {{ logocontrastText }}</td><td> N/A </td> </tr>
+                                    <tr><td>Favicon</td><td> {{ faviconcontrastText }}</td><td> N/A </td> </tr>
+                                    <tr><td>Dashboard</td><td> {{ dashboardcontrastText }}</td><td> {{ dashboardcontrastBrightness }}</td> </tr>
+                                    <tr><td>Recon</td><td> {{ reconcontrastText }}</td><td> {{ reconcontrastBrightness }}</td> </tr>
+                                    <tr><td>Clients</td><td> {{ clientscontrastText }}</td><td> {{ clientscontrastBrightness }}</td> </tr>
+                                    <tr><td>Modules</td><td> {{ modulescontrastText }}</td><td> {{ modulescontrastBrightness }}</td> </tr>
+                                    <tr><td>Filters</td><td> {{ filterscontrastText }}</td><td> {{ filterscontrastBrightness }}</td> </tr>
+                                    <tr><td>PineAP</td><td> {{ pineapcontrastText }}</td><td> {{ pineapcontrastBrightness }}</td> </tr>
+                                    <tr><td>Tracking</td><td> {{ trackingcontrastText }}</td><td> {{ trackingcontrastBrightness }}</td> </tr>
+                                    <tr><td>Logging</td><td> {{ loggingcontrastText }}</td><td> {{ loggingcontrastBrightness }}</td> </tr>
+                                    <tr><td>Reporting</td><td> {{ reportingcontrastText }}</td><td> {{ reportingcontrastBrightness }}</td> </tr>
+                                    <tr><td>Networking</td><td> {{ networkingcontrastText }}</td><td> {{ networkingcontrastBrightness }}</td> </tr>
+                                    <tr><td>Configuration</td><td> {{ configurationcontrastText }}</td><td> {{ configurationcontrastBrightness }}</td> </tr>
+                                    <tr><td>Advanced</td><td> {{ advancedcontrastText }}</td><td> {{ advancedcontrastBrightness }}</td> </tr>
+                                    <tr><td>Notes</td><td> {{ notescontrastText }}</td><td> {{ notescontrastBrightness }}</td> </tr>
+                                    <tr><td>Help</td><td> {{ helpcontrastText }}</td><td> {{ helpcontrastBrightness }}</td> </tr>
+                                </tbody>
+                                </table>
+                            </div>
+                     </div>
+                </div>
+        </div>
+    
+        <div class="panel-group" id="accordion">
+            <div class="col-md-9">
+                <!-- Library panel -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h5 class="panel-title"><a href="javascript:;" data-toggle="collapse" data-parent="#accordion"
+                                                   data-target="#collapseLibrary" class="text-muted">Themes</a></h5>
+                    </div>
+                    <div id="collapseLibrary" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                            <div class="input-group" ng-show="library">
+                                <input type="text" class="form-control" placeholder="Theme Name" name="themeName"
+                                       ng-model="newThemeName">
+                                <span class="input-group-btn">
+                                    <button ng-disabled="newThemeName == ''" class="btn btn-default" type="button" ng-click="createNewTheme()">Create New Theme</button>
+                                </span>
+                            </div>
+                            <hr ng-show="library"/>
+                            <div ng-show="themes.length > 0 && library == true">
+                                <div class="table-responsive">
+                                    <table class="table table-striped" align="center">
+                                        <thead>
+                                        <th>Theme Name</th>
+                                        <th>Location</th>
+                                        <th>Activate</th>
+                                        <th>Delete</th>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="theme in themes">
+                                            <td><a href="javascript:;" ng-click="getThemeFields(theme)">
+                                                <b>{{ theme.title.substring(0, theme.title.length - 4);  }}</b></a></td>
+                                            <td class="text-muted"><i>{{ theme.storage }}</i></td>
+                                            <td><a href="javascript:;"
+                                                                           ng-click="activateTheme(theme)">Activate</a>
+                                            </td>
+                                            <td><a href="javascript:;" data-toggle="modal"
+                                                                           ng-click="deleteTheme(theme)"
+                                                                           > Delete</a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+    
+                            <div ng-hide="themes.length > 0 || library == false">
+                                <p class="text-muted text-center">
+                                    <i>No Themes in Library to Display.</i>
+                                </p>
+                            </div>
+    
+                            <div ng-show="library == false">
+                                <button type="submit" class="btn btn-default btn-sm" ng-click="library = true">Back To
+                                    Library
+                                </button>
+                                <hr />
+                                <h3>Theme Editor | {{ workshopTheme.themeName }}</h3>
+    
+                                <div class="table-responsive">
+                                    <table class="table table-striped" align="center">
+                                        <thead>
+                                        <th>CSS Editor</th>
+                                        </thead>
+                                        <tbody>
+                                        <textarea class="form-control" rows="30" ng-model="workshopTheme.code"> </textarea>
+    
+                            <div class="modal-footer">
+                                <div style="padding-right:5em" >
+                                    <button type="button" ng-click="saveThemeCode(workshopTheme)" class="btn btn-success pull-left"
+                                        data-dismiss="modal">Save
+                                    </button>
+                                </div>
+                                <div style="padding-left:5em" >
+                                    <button type="button" ng-click="saveThemeCode(workshopTheme); activateTheme(workshopTheme)" class="btn btn-success pull-left"
+                                        data-dismiss="modal" >Save and Activate
+                                    </button>
+                                </div>
+                                <button type="button" class="btn btn-default pull-right" data-dismiss="modal"
+                                    ng-click="library = true">Cancel
+                                </button>
+                            </div>
+                        </tbody>
+                                    </table>
+                                </div>
+    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h5 class="panel-title"><a href="javascript:;" data-toggle="collapse" data-parent="#accordion"
+                                                   data-target="#collapseImages" class="text-muted">Icons</a></h5>
+                    </div>
+                    <div id="collapseImages" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <hr style="height:1px;border:none;color:#333;background-color:#333;">
+                            <h3>Generic</h3>
+                            <hr style="height:1px;border:none;color:#333;background-color:#333;">
+                            <table class="table table-striped" align="center">
+                            <thead>
+                                <th>Type</th>
+                                <th>Image</th>
+                                <th>Light Theme</th>
+                                <th>Dark Theme</th>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <b>Throbber</b>
+                                </td>
+                                <td>
+                                    <img src="/img/throbber.gif"/>
+                                </td>
+                                <td>
+                                    <div class="btn-switch" 
+                                        ng-hide="throbbercontrast == false"
+                                        ng-style="switchOff"
+                                        ng-model="throbbercontrast" 
+                                        ng-click="changeThrobber()">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="btn-switch" 
+                                        ng-hide="throbbercontrast == true"
+                                        ng-style="switchOn"
+                                        ng-model="throbbercontrast" 
+                                        ng-click="changeThrobber()">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <b>Logo</b>
+                                </td>
+                                <td>
+                                    <img src="/img/logo.png" width="30" height="30" />
+                                </td>
+                                <td>
+                                    <div class="btn-switch" 
+                                        ng-hide="logocontrast == false"
+                                        ng-style="switchOff"
+                                        ng-model="logocontrast" 
+                                        ng-click="changeLogo()">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="btn-switch" 
+                                        ng-hide="logocontrast == true"
+                                        ng-style="switchOn"
+                                        ng-model="logocontrast" 
+                                        ng-click="changeLogo()">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <b>Icon</b>
+                                </td>
+                                <td>
+                                    <img src="/img/favicon.ico"/>
+                                </td>
+                                <td>
+                                    <div class="btn-switch" 
+                                        ng-hide="faviconcontrast == false"
+                                        ng-style="switchOff"
+                                        ng-model="faviconcontrast" 
+                                        ng-click="changeFavicon()">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="btn-switch" 
+                                        ng-hide="faviconcontrast == true"
+                                        ng-style="switchOn"
+                                        ng-model="faviconcontrast" 
+                                        ng-click="changeFavicon()">
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <hr style="height:1px;border:none;color:#333;background-color:#333;">
+                    <h3>Modules</h3>
+                    <hr style="height:1px;border:none;color:#333;background-color:#333;">
+                    <table class="table table-striped" align="center">
+                        <thead>
+                            <th>Type</th>
+                            <th>Image</th>
+                            <th>Color</th>
+                            <th>Brightness</th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                        <tr>
+                                <td>
+                                    <b>ALL</b>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                    <select ng-model="allcontrastText"
+                                            ng-style="selectOptions" 
+                                            ng-options="x for x in colors"
+                                            ng-value="{{ allcontrastText }}"
+                                            >
+                                    </select>
+                                </td>
+                                <td>
+                                    <select ng-model="allcontrastBrightness"
+                                            ng-style="selectOptions" 
+                                            ng-options="x for x in brightness"
+                                            ng-value="{{ allcontrastBrightness }}"
+                                            >
+                                    </select>
+                                </td>
+                                <td>
+                                    <button class="btn btn-default" 
+                                            type="button"
+                                            ng-click="changeAllIcons()">
+                                        Apply
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <b>Dashboard</b>
+                                </td>
+                                <td>
+                                    <img src="/modules/Dashboard/module_icon.svg" width="30" height="30" />
+                                </td>
+                                <td>
+                                    <select ng-model="dashboardcontrastText"
+                                            ng-style="selectOptions" 
+                                            ng-options="x for x in colors"
+                                            ng-value="{{ dashboardcontrastText }}"
+                                            >
+                                    </select>
+                                </td>
+                                <td>
+                                    <select ng-model="dashboardcontrastBrightness"
+                                            ng-style="selectOptions" 
+                                            ng-options="x for x in brightness"
+                                            ng-value="{{ dashboardcontrastBrightness }}"
+                                            >
+                                    </select>
+                                </td>
+                                <td>
+                                    <button class="btn btn-default" 
+                                            type="button"
+                                            ng-click="changeDashboard()">
+                                            Apply
+                                    </button>
+                                </td>
+                            </tr>
+                             <tr>
+                                    <td><b>Recon</b></td>
+                                    <td><img src="/modules/Recon/module_icon.svg" width="30" height="30" /></td>
+                                    <td><select ng-model="reconcontrastText"
+                                                ng-style="selectOptions" 
+                                                ng-options="x for x in colors"
+                                                ng-value="{{ reconcontrastText }}"
+                                                >
+                                        </select>
+                                    </td>
+                                    <td><select ng-model="reconcontrastBrightness"
+                                                ng-style="selectOptions" 
+                                                ng-options="x for x in brightness"
+                                                ng-value="{{ reconcontrastBrightness }}"
+                                                >
+                                        </select>
+                                    </td>
+                                    <td><button class="btn btn-default" 
+                                                type="button"
+                                                ng-click="changeRecon()">
+                                                Apply
+                                        </button>
+                                    </td>
+                                </tr>
+
+				<td><b>Notes</b></td>
+                                <td><img src="/modules/Notes/module_icon.svg" width="30" height="30" /></td>
+                                <td><select ng-model="notescontrastText"
+                                            ng-style="selectOptions" 
+                                            ng-options="x for x in colors"
+                                            ng-value="{{ notescontrastText }}"
+                                            >
+                                    </select>
+                                </td>
+                                <td><select ng-model="notescontrastBrightness"
+                                            ng-style="selectOptions" 
+                                            ng-options="x for x in brightness"
+                                            
+                                            ng-value="{{ notescontrastBrightness }}"
+                                            >
+                                    </select>
+                                </td>
+                                <td><button class="btn btn-default" 
+                                            type="button"
+                                            ng-click="changeNotes()">
+                                            Apply
+                                    </button>
+                                </td>
+                            </tr>
+    
+                            <td><b>Clients</b></td>
+                            <td><img src="/modules/Clients/module_icon.svg" width="30" height="30" /></td>
+                            <td><select ng-model="clientscontrastText"
+                                        ng-style="selectOptions" 
+                                        ng-options="x for x in colors"
+                                        ng-value="{{ clientscontrastText }}"
+                                        >
+                                </select>
+                            </td>
+                            <td><select ng-model="clientscontrastBrightness"
+                                        ng-style="selectOptions" 
+                                        ng-options="x for x in brightness"
+                                        ng-value="{{ clientscontrastBrightness }}"
+                                        >
+                                </select>
+                            </td>
+                            <td><button class="btn btn-default" 
+                                        type="button"
+                                        ng-click="changeClients()">
+                                        Apply
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                        <td><b>Modules</b></td>
+                        <td><img src="/modules/ModuleManager/module_icon.svg" width="30" height="30" /></td>
+                        <td><select ng-model="modulescontrastText"
+                                    ng-style="selectOptions" 
+                                    ng-options="x for x in colors"
+                                    ng-value="{{ modulescontrastText }}"
+                                    >
+                            </select>
+                        </td>
+                        <td><select ng-model="modulescontrastBrightness"
+                                    ng-style="selectOptions" 
+                                    ng-options="x for x in brightness"
+                                    ng-value="{{ modulescontrastBrightness }}"
+                                    >
+                            </select>
+                        </td>
+                        <td><button class="btn btn-default" 
+                                    type="button"
+                                    ng-click="changeModules()">
+                                    Apply
+                            </button>
+                        </td>
+                        </tr>
+                        <tr>
+                            <td><b>Filters</b></td>
+                            <td><img src="/modules/Filters/module_icon.svg" width="30" height="30" /></td>
+                            <td><select ng-model="filterscontrastText"
+                                ng-style="selectOptions" 
+                                ng-options="x for x in colors"
+                                ng-value="{{ filterscontrastText }}">
+                                    </select>
+                                </td>
+                                <td><select ng-model="filterscontrastBrightness"
+                                            ng-style="selectOptions" 
+                                            ng-options="x for x in brightness"
+                                            ng-value="{{ filterscontrastBrightness }}">
+                                    </select>
+                                </td>
+                                <td><button class="btn btn-default" 
+                                            type="button"
+                                            ng-click="changeFilters()">
+                                            Apply
+                                    </button>
+                                </td>
+                        </tr>
+                        <tr>
+                                <td><b>PineAP</b></td>
+                                <td><img src="/modules/PineAP/module_icon.svg" width="30" height="30" /></td>
+                                <td><select ng-model="pineapcontrastText"
+                                            ng-style="selectOptions" 
+                                            ng-options="x for x in colors"
+                                            ng-value="{{ pineapcontrastText }}">
+                                    </select>
+                                </td>
+                                <td><select ng-model="pineapcontrastBrightness"
+                                            ng-style="selectOptions" 
+                                            ng-options="x for x in brightness"
+                                            ng-value="{{ pineapcontrastBrightness }}">
+                                    </select>
+                                </td>
+                                <td><button class="btn btn-default" 
+                                            type="button"
+                                            ng-click="changePineap()">Apply
+                                    </button>
+                                </td>
+                                </tr>
+    
+                                <tr>
+                                    <td><b>Tracking</b></td>
+                                    <td><img src="/modules/Tracking/module_icon.svg" width="30" height="30" /></td>
+                                    <td><select ng-model="trackingcontrastText"
+                                        ng-style="selectOptions" 
+                                        ng-options="x for x in colors"
+                                        ng-value="{{ trackingcontrastText }}">
+                                        </select>
+                                    </td>
+                                    <td><select ng-model="trackingcontrastBrightness"
+                                        ng-style="selectOptions" 
+                                        ng-options="x for x in brightness"
+                                        ng-value="{{ trackingcontrastBrightness }}">
+                                        </select>
+                                    </td>
+                                    <td><button class="btn btn-default" 
+                                        type="button"
+                                        ng-click="changeTracking()">Apply</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Logging</b></td>
+                                    <td><img src="/modules/Logging/module_icon.svg" width="30" height="30" /></td>
+                                    <td><select ng-model="loggingcontrastText"
+                                        ng-style="selectOptions" 
+                                        ng-options="x for x in colors"
+                                        ng-value="{{ loggingcontrastText }}">
+                                        </select>
+                                    </td>
+                                    <td><select ng-model="loggingcontrastBrightness"
+                                        ng-style="selectOptions" 
+                                        ng-options="x for x in brightness"
+                                        ng-value="{{ loggingcontrastBrightness }}">
+                                        </select>
+                                    </td>
+                                    <td><button class="btn btn-default" 
+                                        type="button"
+                                        ng-click="changeLogging()">Apply
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Reporting</b></td>
+                                    <td><img src="/modules/Reporting/module_icon.svg" width="30" height="30" /></td>
+                                    <td><select ng-model="reportingcontrastText"
+                                        ng-style="selectOptions" 
+                                        ng-options="x for x in colors"
+                                        ng-value="{{ reportingcontrastText }}">
+                                        </select>
+                                    </td>
+                                    <td><select ng-model="reportingcontrastBrightness"
+                                        ng-style="selectOptions" 
+                                        ng-options="x for x in brightness"
+                                        ng-value="{{ reportingcontrastBrightness }}">
+                                        </select>
+                                    </td>
+                                    <td><button class="btn btn-default" 
+                                        type="button"
+                                        ng-click="changeReporting()">Apply
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Networking</b></td>
+                                    <td><img src="/modules/Networking/module_icon.svg" width="30" height="30" /></td>
+                                    <td><select ng-model="networkingcontrastText"
+                                        ng-style="selectOptions" 
+                                        ng-options="x for x in colors"
+                                        ng-value="{{ networkingcontrastText }}">
+                                        </select>
+                                    </td>
+                                    <td><select ng-model="networkingcontrastBrightness"
+                                        ng-style="selectOptions" 
+                                        ng-options="x for x in brightness"
+                                        ng-value="{{ networkingcontrastBrightness }}">
+                                        </select>
+                                    </td>
+                                    <td><button class="btn btn-default" 
+                                        type="button"
+                                        ng-click="changeNetworking()">Apply</button>
+                                    </td>
+                                    </tr>
+                                <tr>
+                                    <td><b>Configuration</b></td>
+                                    <td><img src="/modules/Configuration/module_icon.svg" width="30" height="30" /></td>
+                                    <td><select ng-model="configurationcontrastText"
+                                        ng-style="selectOptions" 
+                                        ng-options="x for x in colors"
+                                        ng-value="{{ configurationcontrastText }}">
+                                        </select>
+                                    </td>
+                                    <td><select ng-model="configurationcontrastBrightness"
+                                        ng-style="selectOptions" 
+                                        ng-options="x for x in brightness"
+                                        ng-value="{{ configurationcontrastBrightness }}">
+                                        </select>
+                                    </td>
+                                    <td><button class="btn btn-default" 
+                                        type="button"
+                                        ng-click="changeConfiguration()">Apply
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Advanced</b></td>
+                                    <td><img src="/modules/Advanced/module_icon.svg" width="30" height="30" /></td>
+                                    <td><select ng-model="advancedcontrastText"
+                                        ng-style="selectOptions" 
+                                        ng-options="x for x in colors"
+                                        ng-value="{{ advancedcontrastText }}">
+                                        </select>
+                                    </td>
+                                    <td><select ng-model="advancedcontrastBrightness"
+                                        ng-style="selectOptions" 
+                                        ng-options="x for x in brightness"
+                                        ng-value="{{ advancedcontrastBrightness }}">
+                                        </select>
+                                    </td>
+                                    <td><button class="btn btn-default" 
+                                        type="button"
+                                        ng-click="changeAdvanced()">Apply
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Help</b></td>
+                                    <td><img src="/modules/Help/module_icon.svg" width="30" height="30" /></td>
+                                    <td><select ng-model="helpcontrastText"
+                                        ng-style="selectOptions" 
+                                        ng-options="x for x in colors"
+                                        ng-value="{{ helpcontrastText }}">
+                                        </select>
+                                    </td>
+                                    <td><select ng-model="helpcontrastBrightness"
+                                        ng-style="selectOptions" 
+                                        ng-options="x for x in brightness"
+                                        ng-value="{{ helpcontrastBrightness }}">
+                                        </select>
+                                    </td>
+                                    <td><button class="btn btn-default" 
+                                        type="button"
+                                        ng-click="changeHelp()">Apply
+                                        </button>
+                                    </td>
+                                </tr>
+                        </tbody>
+                        </table>
+                        </ul>
+                        </div>
+                    </div>
+            </div>
+            
+                 <!-- Contribution Pannel -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h5 class="panel-title"><a href="javascript:;" data-toggle="collapse" data-parent="#accordion"
+                                                   data-target="#collapseContribution" class="text-muted">How To</a></h5>
+                    </div>
+                    <div id="collapseContribution" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <ul>
+                                <li><b>Share your new theme</b></li>
+                                <ul>
+                                    <li class="text-muted">Navigate to the wifi pineapple modules repository</li>
+                                    <li class="text-muted">Add your theme .css file in the css directory of this module</li>
+                                    <li class="text-muted">Create a new pull request</li>
+                                    <li class="text-muted">Update the version number</li>
+                                    <li class="text-muted">Update the module version in module.info</li>
+                                </ul>
+                            </ul>
+                            <ul>
+                                <li><b>Fix Images appearing broken/unable to be loaded</b></li>
+                                <ul>
+                                    <li class="text-muted">Refresh the page</li>
+                                    <li class="text-muted">If the problem persists, see "Submit a Bug"</li>
+                                </ul>
+                            </ul>
+                              <ul>
+                                <li><b>Fix a messy looking page after a save/refresh</b></li>
+                                <ul>
+                                    <li class="text-muted">Reselect 'Activate' beside your theme</li>
+                                    <li class="text-muted">Refresh the page</li>
+                                </ul>
+                            </ul>
+                              <ul>
+                                <li><b>Select the proper Image type</b></li>
+                                <ul>
+                                    <li class="text-muted">Beside each Image type are two options "Light" and "Dark"</li>
+                                    <li class="text-muted">"Dark" images are intended for dark backgrounds </li>
+                                    <li class="text-muted">"Light" images are intended for light backgrounds </li>
+                                </ul>
+                            </ul>
+                            <ul>
+                                <li><b>Use a theme once without a module</b></li>
+                                <ul>
+                                    <li class="text-muted">Navigate to https://github.com/kbeflo/pineapple-themes</li>
+                                    <li class="text-muted">Select a theme and run the install.sh script</li>
+                                </ul>
+                            </ul>
+                            <ul>
+                                <li><b>Submit a Bug</b></li>
+                                <ul>
+                                    <li class="text-muted">Navigate to https://github.com/hak5/wifipineapple-modules/issues</li>
+                                    <li class="text-muted">Select the "New Issue" button </li>
+                                    <li class="text-muted">Tag @trashbo4t in your issue description </li>
+                                </ul>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h5 class="panel-title"><a href="javascript:;" data-toggle="collapse" data-parent="#accordion"
+                                                       data-target="#collapseTips" class="text-muted">Community Tips</a></h5>
+                        </div>
+                        <div id="collapseTips" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <ul>
+                                    <li><b>Creating a New Theme</b></li>
+                                    <ul>
+                                        <li class="text-muted">
+                                            The set of .css files bundled with the Themes module are already configured to handle
+                                            undefined colors from the standard bootstrap .css file in the default settings.
+                                        </li>
+                                        <li class="text-muted">
+                                                A reccommended method to ensure larger coverage is to create a new .css file with the theme creator
+                                                then copy another .css files code.
+                                        </li>
+                                        <li class="text-muted">
+                                                Once you copied the code do a search and replace for the colors of your choosing!
+                                        </li>
+                                    </ul>
+                                </ul>
+                                <ul>
+                                    <li><b>Working with .css files in a browser</b></li>
+                                        <ul>
+                                            <li class="text-muted">Modyfing a .css file with active updating is possible in modern browsers.</li>
+                                            <li class="text-muted">Select 'ctrl'+'shift'+'I', then select the sourses tab.</li>
+                                            <li class="text-muted">Select the 'css' folder, then the main.css file</li>
+                                            <li class="text-muted">Modify the main.css file until you like the appearance of the page.</li> 
+                                            <li class="text-muted">From there select all of the code ('ctrl'+'a') and paste it into your theme files CSS Editor box</li>
+                                            <li class="text-muted">Then select "Save" and "Activate"</li>
+                                        </ul>
+                                    </ul>
+                                <ul>
+                                    <li><b>Dark Theme vs Light Theme Icons</b></li>
+                                    <ul>
+                                        <li class="text-muted">If your background is dark, its best to choose a "Dark Theme" icon.</li>
+                                        <li class="text-muted">Overlooked transparency pixels will be harder to see this way!</li>
+                                    </ul>
+                                </ul>
+                               
+                            </div>
+                    </div>
+                </div>
+                <!-- Change Log Pannel -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h5 class="panel-title"><a href="javascript:;" data-toggle="collapse" data-parent="#accordion"
+                                                   data-target="#collapseChangelog" class="text-muted">Themes Change Log</a></h5>
+                    </div>
+                    <div id="collapseChangelog" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <ul>
+                                <li><b>1.1</b></li>
+                                <ul>
+                                    <li class="text-muted">Removed profiling icon options</li>
+                                    <li class="text-muted">Added "Notes" icon options</li>
+                                </ul>
+                            </ul>
+                            <ul>
+                                <li><b>1.0</b></li>
+                                <ul>
+                                    <li class="text-muted">Pending release of 1.0</li>
+                                </ul>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+               
+
+    </div>
+</div>
+        <div id="loadingModal" class="modal fade" role="dialog" >
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Loading</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="panel-title"><img src="/img/throbber.gif" ng-show="throbber"/>
+                        <p><b>{{ working }}</b></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    

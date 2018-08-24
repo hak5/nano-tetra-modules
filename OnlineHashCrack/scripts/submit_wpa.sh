@@ -25,7 +25,7 @@ if [ -n "$EMAIL" ]; then
 
     echo -e "" >> ${LOG}
 
-    curl -s -v -F submit="Submit" -F emailWpa="${EMAIL}" -F wpaFile=@${FILE} http://www.onlinehashcrack.com/wifi-wpa-rsna-psk-crack.php > /dev/null 2>> ${LOG}
+    curl -s -v -F submit="Submit" -F emailWpa="${EMAIL}" -F wpaFile=@${FILE} https://www.onlinehashcrack.com/wifi-wpa-rsna-psk-crack.php > /dev/null 2>> ${LOG}
 
   fi
 else

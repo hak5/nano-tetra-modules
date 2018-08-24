@@ -432,6 +432,7 @@ registerController('SiteSurvey_CaptureController', ['$api', '$scope', '$rootScop
 	$scope.capture = [];
 	$scope.captureOutput = 'Loading...';
 	$scope.captureDate = 'Loading...';
+	$scope.throbber = false;
 
   $scope.refreshCapture = (function() {
         $api.request({
@@ -464,11 +465,13 @@ registerController('SiteSurvey_CaptureController', ['$api', '$scope', '$rootScop
     });
 
 	$scope.downloadCapture = (function(param) {
+	        $scope.throbber = true;
 				$api.request({
             module: 'SiteSurvey',
             action: 'downloadCapture',
 						file: param
         }, function(response) {
+	    $scope.throbber = false;
             if (response.error === undefined) {
                 window.location = '/api/?download=' + response.download;
             }

@@ -11,10 +11,10 @@ class MyPortal extends Portal
 	// Check for other form data here
     }
 
-    public function showSuccess()
+    public function onSuccess()
     {
 	// Calls default success message
-	parent::showSuccess();
+	parent::onSuccess();
     }
 
     public function showError()

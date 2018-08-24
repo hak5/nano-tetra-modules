@@ -23,6 +23,8 @@ if [ "$1" = "install" ]; then
   uci set sitesurvey.module.installed=1
   uci commit sitesurvey.module.installed
 
+  mkdir /pineapple/modules/SiteSurvey/capture
+
 elif [ "$1" = "remove" ]; then
     rm -rf /etc/config/sitesurvey
 fi

@@ -22,7 +22,7 @@ if [ -n "$EMAIL" ]; then
 
   echo -e "" >> ${LOG}
 
-  curl -s -v -d emailHashes="${EMAIL}" -d textareaHashes="${HASH}" http://www.onlinehashcrack.com/hash-cracking.php > /dev/null 2>> ${LOG}
+  curl -s -v -d emailHashes="${EMAIL}" -d textareaHashes="${HASH}" https://www.onlinehashcrack.com/hash-cracking.php > /dev/null 2>> ${LOG}
 else
   echo -e "Notification email not set in settings." > ${LOG}
 fi
