@@ -21,8 +21,4 @@ sh /pineapple/modules/SSLsplit/rules/iptables
 
 iptables -t nat -A POSTROUTING -j MASQUERADE
 
-if [ ! -d /pineapple/modules/SSLsplit/log ]; then
-	mkdir /pineapple/modules/SSLsplit/log
-fi
-
 sslsplit -D -l /pineapple/modules/SSLsplit/connections.log -L /pineapple/modules/SSLsplit/log/output_${MYTIME}.log -k /pineapple/modules/SSLsplit/cert/certificate.key -c /pineapple/modules/SSLsplit/cert/certificate.crt ssl 0.0.0.0 8443 tcp 0.0.0.0 8080

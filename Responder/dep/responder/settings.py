@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-# This file is part of Responder
-# Original work by Laurent Gaffie - Trustwave Holdings
-#
+# This file is part of Responder, a network take-over set of tools 
+# created and maintained by Laurent Gaffie.
+# email: laurent.gaffie@gmail.com
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -14,16 +14,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import os
-import sys
-import socket
 import utils
-import logging
 import ConfigParser
+import subprocess
 
-from utils import IsOsX
+from utils import *
 
-__version__ = 'Responder 2.3'
+__version__ = 'Responder 2.3.3.6'
 
 class Settings:
 	
@@ -39,7 +36,7 @@ class Settings:
 		return ret
 
 	def toBool(self, str):
-		return True if str.upper() == 'ON' else False
+		return str.upper() == 'ON'
 
 	def ExpandIPRanges(self):
 		def expand_ranges(lst):
@@ -68,8 +65,12 @@ class Settings:
 
 	def populate(self, options):
 
-		if options.Interface is None and IsOsX() is False:
+		if options.Interface is None and utils.IsOsX() is False:
 			print utils.color("Error: -I <if> mandatory option is missing", 1)
+			sys.exit(-1)
+
+		if options.Interface == "ALL" and options.OURIP == None:
+			print utils.color("Error: -i is missing.\nWhen using -I ALL you need to provide your current ip address", 1)
 			sys.exit(-1)
 
 		# Config parsing
@@ -101,6 +102,7 @@ class Settings:
 		self.SessionLogFile      = os.path.join(self.LogDir, config.get('Responder Core', 'SessionLog'))
 		self.PoisonersLogFile    = os.path.join(self.LogDir, config.get('Responder Core', 'PoisonersLog'))
 		self.AnalyzeLogFile      = os.path.join(self.LogDir, config.get('Responder Core', 'AnalyzeLog'))
+		self.ResponderConfigDump = os.path.join(self.LogDir, config.get('Responder Core', 'ResponderConfigDump'))
 
 		self.FTPLog          = os.path.join(self.LogDir, 'FTP-Clear-Text-Password-%s.txt')
 		self.IMAPLog         = os.path.join(self.LogDir, 'IMAP-Clear-Text-Password-%s.txt')
@@ -148,44 +150,68 @@ class Settings:
 		self.DontRespondTo     = filter(None, [x.upper().strip() for x in config.get('Responder Core', 'DontRespondTo').strip().split(',')])
 		self.DontRespondToName = filter(None, [x.upper().strip() for x in config.get('Responder Core', 'DontRespondToName').strip().split(',')])
 
+		# Auto Ignore List
+		self.AutoIgnore                       = self.toBool(config.get('Responder Core', 'AutoIgnoreAfterSuccess'))
+		self.CaptureMultipleCredentials       = self.toBool(config.get('Responder Core', 'CaptureMultipleCredentials'))
+                self.CaptureMultipleHashFromSameHost  = self.toBool(config.get('Responder Core', 'CaptureMultipleHashFromSameHost'))
+		self.AutoIgnoreList                   = []
+
 		# CLI options
-		self.LM_On_Off       = options.LM_On_Off
-		self.WPAD_On_Off     = options.WPAD_On_Off
-		self.Wredirect       = options.Wredirect
-		self.NBTNSDomain     = options.NBTNSDomain
-		self.Basic           = options.Basic
-		self.Finger_On_Off   = options.Finger
-		self.Interface       = options.Interface
-                self.OURIP           = options.OURIP
-		self.Force_WPAD_Auth = options.Force_WPAD_Auth
-		self.Upstream_Proxy  = options.Upstream_Proxy
-		self.AnalyzeMode     = options.Analyze
-		self.Verbose         = options.Verbose
-		self.CommandLine     = str(sys.argv)
+                self.ExternalIP         = options.ExternalIP
+		self.LM_On_Off          = options.LM_On_Off
+		self.WPAD_On_Off        = options.WPAD_On_Off
+		self.Wredirect          = options.Wredirect
+		self.NBTNSDomain        = options.NBTNSDomain
+		self.Basic              = options.Basic
+		self.Finger_On_Off      = options.Finger
+		self.Interface          = options.Interface
+		self.OURIP              = options.OURIP
+		self.Force_WPAD_Auth    = options.Force_WPAD_Auth
+		self.Upstream_Proxy     = options.Upstream_Proxy
+		self.AnalyzeMode        = options.Analyze
+		self.Verbose            = options.Verbose
+		self.ProxyAuth_On_Off   = options.ProxyAuth_On_Off
+		self.CommandLine        = str(sys.argv)
+
+                if self.ExternalIP:
+                        self.ExternalIPAton = socket.inet_aton(self.ExternalIP)
 
 		if self.HtmlToInject is None:
 			self.HtmlToInject = ''
 
-		self.Bind_To = utils.FindLocalIP(self.Interface, self.OURIP)
+                self.Bind_To         = utils.FindLocalIP(self.Interface, self.OURIP)
 
-		self.IP_aton         = socket.inet_aton(self.Bind_To)
+                if self.Interface == "ALL":
+                	self.Bind_To_ALL  = True
+                else:
+                        self.Bind_To_ALL  = False
+
+                if self.Interface == "ALL":
+                	self.IP_aton   = socket.inet_aton(self.OURIP)
+                else:
+                	self.IP_aton   = socket.inet_aton(self.Bind_To)
+
 		self.Os_version      = sys.platform
 
 		# Set up Challenge
 		self.NumChal = config.get('Responder Core', 'Challenge')
+                if self.NumChal.lower() == 'random':
+                   self.NumChal = "random"
 
-		if len(self.NumChal) is not 16:
+		if len(self.NumChal) is not 16 and not "random":
 			print utils.color("[!] The challenge must be exactly 16 chars long.\nExample: 1122334455667788", 1)
 			sys.exit(-1)
 
 		self.Challenge = ""
-		for i in range(0, len(self.NumChal),2):
-			self.Challenge += self.NumChal[i:i+2].decode("hex")
+                if self.NumChal.lower() == 'random':
+                   pass
+                else: 
+		   for i in range(0, len(self.NumChal),2):
+	               self.Challenge += self.NumChal[i:i+2].decode("hex")
 
 		# Set up logging
 		logging.basicConfig(filename=self.SessionLogFile, level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 		logging.warning('Responder Started: %s' % self.CommandLine)
-		logging.warning('Responder Config: %s' % str(self))
 
 		Formatter = logging.Formatter('%(asctime)s - %(message)s')
 		PLog_Handler = logging.FileHandler(self.PoisonersLogFile, 'w')
@@ -200,6 +226,36 @@ class Settings:
 
 		self.AnalyzeLogger = logging.getLogger('Analyze Log')
 		self.AnalyzeLogger.addHandler(ALog_Handler)
+                
+		try:
+			NetworkCard = subprocess.check_output(["ifconfig", "-a"])
+		except:
+			try:
+				NetworkCard = subprocess.check_output(["ip", "address", "show"])
+			except subprocess.CalledProcessError as ex:
+				NetworkCard = "Error fetching Network Interfaces:", ex
+				pass
+		try:
+			DNS = subprocess.check_output(["cat", "/etc/resolv.conf"])
+		except subprocess.CalledProcessError as ex:
+			DNS = "Error fetching DNS configuration:", ex
+			pass
+		try:
+			RoutingInfo = subprocess.check_output(["netstat", "-rn"])
+		except:
+			try:
+				RoutingInfo = subprocess.check_output(["ip", "route", "show"])
+			except subprocess.CalledProcessError as ex:
+				RoutingInfo = "Error fetching Routing information:", ex
+				pass
+
+		Message = "Current environment is:\nNetwork Config:\n%s\nDNS Settings:\n%s\nRouting info:\n%s\n\n"%(NetworkCard,DNS,RoutingInfo)
+		try:
+			utils.DumpConfig(self.ResponderConfigDump, Message)
+			utils.DumpConfig(self.ResponderConfigDump,str(self))
+		except AttributeError as ex:
+			print "Missing Module:", ex
+			pass
 
 def init():
 	global Config

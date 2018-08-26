@@ -7,15 +7,15 @@ class dump1090 extends Module
 	public function route()
     {
         switch ($this->request->action) {
-						case 'refreshInfo':
-								$this->refreshInfo();
-								break;
-						case 'refreshOutput':
+			case 'refreshInfo':
+				$this->refreshInfo();
+				break;
+			case 'refreshOutput':
                 $this->refreshOutput();
                 break;
-						case 'clearOutput':
-								$this->clearOutput();
-								break;
+			case 'clearOutput':
+				$this->clearOutput();
+				break;
             case 'refreshStatus':
                 $this->refreshStatus();
                 break;
@@ -34,76 +34,76 @@ class dump1090 extends Module
             case 'deleteHistory':
                 $this->deleteHistory();
                 break;
-						case 'downloadHistory':
-								$this->downloadHistory();
-								break;
-						case 'viewHistory':
-								$this->viewHistory();
-								break;
-						case 'getSettings':
-								$this->getSettings();
-								break;
-						case 'setSettings':
-								$this->setSettings();
-								break;
-						case 'refreshList':
-								$this->refreshList();
-								break;
+			case 'downloadHistory':
+				$this->downloadHistory();
+				break;
+			case 'viewHistory':
+				$this->viewHistory();
+				break;
+			case 'getSettings':
+				$this->getSettings();
+				break;
+			case 'setSettings':
+				$this->setSettings();
+				break;
+			case 'refreshList':
+				$this->refreshList();
+				break;
         }
     }
 
-		protected function checkDependency($dependencyName)
-		{
-				return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("dump1090.module.installed")));
-		}
+	protected function checkDependency($dependencyName)
+	{
+		return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("dump1090.module.installed")));
+	}
 
-		protected function getDevice()
-		{
-				return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
-		}
+	protected function getDevice()
+	{
+		return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
+	}
 
-		protected function refreshInfo()
-		{
-			$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/dump1090/module.info"));
-			$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
-		}
+	protected function refreshInfo()
+	{
+		$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/dump1090/module.info"));
+		$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
+	}
 
     private function handleDependencies()
     {
-				if(!$this->checkDependency("dump1090"))
-				{
-			        $this->execBackground("/pineapple/modules/dump1090/scripts/dependencies.sh install ".$this->request->destination);
-			        $this->response = array('success' => true);
-				}
-				else
-				{
-			        $this->execBackground("/pineapple/modules/dump1090/scripts/dependencies.sh remove");
-			        $this->response = array('success' => true);
-				}
+		if(!$this->checkDependency("dump1090"))
+		{
+	        $this->execBackground("/pineapple/modules/dump1090/scripts/dependencies.sh install ".$this->request->destination);
+	        $this->response = array('success' => true);
 		}
+		else
+		{
+	        $this->execBackground("/pineapple/modules/dump1090/scripts/dependencies.sh remove");
+	        $this->response = array('success' => true);
+		}
+	}
 
     private function handleDependenciesStatus()
     {
-		    if (!file_exists('/tmp/dump1090.progress'))
-				{
-		    	$this->response = array('success' => true);
-		    }
-				else
-				{
-			  	$this->response = array('success' => false);
+	    if (!file_exists('/tmp/dump1090.progress'))
+		{
+	    	$this->response = array('success' => true);
+	    }
+		else
+		{
+		  	$this->response = array('success' => false);
         }
     }
 
     private function toggledump1090()
     {
-				if(!$this->checkRunning("dump1090"))
-				{
-					$this->execBackground("/pineapple/modules/dump1090/scripts/dump1090.sh start");
-				}
-				else
-				{
-					$this->execBackground("/pineapple/modules/dump1090/scripts/dump1090.sh stop");
-				}
+		if(!$this->checkRunning("dump1090"))
+		{
+			$this->execBackground("/pineapple/modules/dump1090/scripts/dump1090.sh start");
+		}
+		else
+		{
+			$this->execBackground("/pineapple/modules/dump1090/scripts/dump1090.sh stop");
+		}
 	}
 
     private function refreshStatus()
@@ -162,31 +162,31 @@ class dump1090 extends Module
 
 	private function refreshOutput()
 	{
-	if ($this->checkDependency("dump1090"))
-	{
-		if (file_exists("/tmp/dump1090_capture.log"))
+		if ($this->checkDependency("dump1090"))
 		{
+			if (file_exists("/tmp/dump1090_capture.log"))
+			{
 				$output = file_get_contents("/tmp/dump1090_capture.log");
 				if(!empty($output))
 					$this->response = $output;
 				else
 					$this->response = "dump1090 is running...";
+			}
+			else
+			{
+				 $this->response = "dump1090 is not running...";
+			}
 		}
 		else
 		{
-			 $this->response = "dump1090 is not running...";
+			$this->response = "dump1090 is not installed...";
 		}
 	}
-	else
-	{
-		$this->response = "dump1090 is not installed...";
-	}
-}
 
-private function clearOutput()
-{
-	exec("rm -rf /tmp/dump1090_capture.log");
-}
+	private function clearOutput()
+	{
+		exec("rm -rf /tmp/dump1090_capture.log");
+	}
 
 	private function refreshHistory()
 	{
@@ -263,5 +263,4 @@ private function clearOutput()
 			echo file_get_contents("http://127.0.0.1:9090/data.json");
 		};
 	}
-
 }

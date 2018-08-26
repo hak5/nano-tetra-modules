@@ -7,13 +7,13 @@ class tcpdump extends Module
 	public function route()
     {
         switch ($this->request->action) {
-						case 'refreshInfo':
-								$this->refreshInfo();
-								break;
-						case 'refreshOutput':
+			case 'refreshInfo':
+				$this->refreshInfo();
+				break;
+			case 'refreshOutput':
                 $this->refreshOutput();
                 break;
-						case 'clearOutput':
+			case 'clearOutput':
                 $this->clearOutput();
                 break;
             case 'refreshStatus':
@@ -37,30 +37,30 @@ class tcpdump extends Module
             case 'deleteHistory':
                 $this->deleteHistory();
                 break;
-						case 'downloadHistory':
-								$this->downloadHistory();
-								break;
-						case 'getInterfaces':
+			case 'downloadHistory':
+				$this->downloadHistory();
+				break;
+			case 'getInterfaces':
                 $this->getInterfaces();
                 break;
         }
     }
 
-		protected function checkDependency($dependencyName)
-		{
-				return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("tcpdump.module.installed")));
-		}
+	protected function checkDependency($dependencyName)
+	{
+			return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("tcpdump.module.installed")));
+	}
 
-		protected function getDevice()
-		{
-				return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
-		}
+	protected function getDevice()
+	{
+			return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
+	}
 
-		protected function refreshInfo()
-		{
-			$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/tcpdump/module.info"));
-			$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
-		}
+	protected function refreshInfo()
+	{
+		$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/tcpdump/module.info"));
+		$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
+	}
 
     private function handleDependencies()
     {
@@ -90,17 +90,17 @@ class tcpdump extends Module
 
     private function toggletcpdump()
     {
-				if(!$this->checkRunning("tcpdump"))
-				{
-					$full_cmd = $this->request->command . " -w /pineapple/modules/tcpdump/dump/dump_".time().".pcap 2> /tmp/tcpdump_capture.log";
-					shell_exec("echo -e \"{$full_cmd}\" > /tmp/tcpdump.run");
+		if(!$this->checkRunning("tcpdump"))
+		{
+			$full_cmd = $this->request->command . " -w /pineapple/modules/tcpdump/dump/dump_".time().".pcap 2> /tmp/tcpdump_capture.log";
+			shell_exec("echo -e \"{$full_cmd}\" > /tmp/tcpdump.run");
 
-					$this->execBackground("/pineapple/modules/tcpdump/scripts/tcpdump.sh start");
-				}
-				else
-				{
-					$this->execBackground("/pineapple/modules/tcpdump/scripts/tcpdump.sh stop");
-				}
+			$this->execBackground("/pineapple/modules/tcpdump/scripts/tcpdump.sh start");
+		}
+		else
+		{
+			$this->execBackground("/pineapple/modules/tcpdump/scripts/tcpdump.sh stop");
+		}
 	}
 
     private function refreshStatus()

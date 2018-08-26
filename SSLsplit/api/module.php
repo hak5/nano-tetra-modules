@@ -7,10 +7,10 @@ class SSLsplit extends Module
 	public function route()
     {
         switch ($this->request->action) {
-						case 'refreshInfo':
-								$this->refreshInfo();
-								break;
-						case 'refreshOutput':
+			case 'refreshInfo':
+				$this->refreshInfo();
+				break;
+			case 'refreshOutput':
                 $this->refreshOutput();
                 break;
             case 'refreshStatus':
@@ -34,42 +34,42 @@ class SSLsplit extends Module
             case 'deleteHistory':
                 $this->deleteHistory();
                 break;
-						case 'downloadHistory':
-								$this->downloadHistory();
-								break;
-						case 'toggleSSLsplitOnBoot':
-							$this->toggleSSLsplitOnBoot();
-							break;
-						case 'handleCertificate':
-							$this->handleCertificate();
-							break;
-						case 'handleCertificateStatus':
-							$this->handleCertificateStatus();
-							break;
-						case 'saveConfigurationData':
-							$this->saveConfigurationData();
-							break;
-						case 'getConfigurationData':
-							$this->getConfigurationData();
-							break;
+			case 'downloadHistory':
+				$this->downloadHistory();
+				break;
+			case 'toggleSSLsplitOnBoot':
+				$this->toggleSSLsplitOnBoot();
+				break;
+			case 'handleCertificate':
+				$this->handleCertificate();
+				break;
+			case 'handleCertificateStatus':
+				$this->handleCertificateStatus();
+				break;
+			case 'saveConfigurationData':
+				$this->saveConfigurationData();
+				break;
+			case 'getConfigurationData':
+				$this->getConfigurationData();
+				break;
         }
     }
 
-		protected function checkDependency($dependencyName)
-		{
-				return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("sslsplit.module.installed")));
-		}
+	protected function checkDependency($dependencyName)
+	{
+			return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("sslsplit.module.installed")));
+	}
 
-		protected function getDevice()
-		{
-				return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
-		}
+	protected function getDevice()
+	{
+			return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
+	}
 
-		protected function refreshInfo()
-		{
-			$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/SSLsplit/module.info"));
-			$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
-		}
+	protected function refreshInfo()
+	{
+		$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/SSLsplit/module.info"));
+		$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
+	}
 
     private function handleCertificate()
     {

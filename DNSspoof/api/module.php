@@ -7,10 +7,10 @@ class DNSspoof extends Module
 	public function route()
     {
         switch ($this->request->action) {
-						case 'refreshInfo':
-								$this->refreshInfo();
-								break;
-						case 'refreshOutput':
+			case 'refreshInfo':
+					$this->refreshInfo();
+					break;
+			case 'refreshOutput':
                 $this->refreshOutput();
                 break;
             case 'refreshStatus':
@@ -34,48 +34,48 @@ class DNSspoof extends Module
             case 'deleteHistory':
                 $this->deleteHistory();
                 break;
-						case 'downloadHistory':
-								$this->downloadHistory();
-								break;
-						case 'toggleDNSspoofOnBoot':
-							$this->toggleDNSspoofOnBoot();
-							break;
-						case 'getInterfaces':
-							$this->getInterfaces();
-							break;
-						case 'saveAutostartSettings':
-							$this->saveAutostartSettings();
-							break;
-						case 'saveLandingPageData':
-							$this->saveLandingPageData();
-							break;
-						case 'getLandingPageData':
-							$this->getLandingPageData();
-							break;
-						case 'saveHostsData':
-							$this->saveHostsData();
-							break;
-						case 'getHostsData':
-							$this->getHostsData();
-							break;
+			case 'downloadHistory':
+				$this->downloadHistory();
+				break;
+			case 'toggleDNSspoofOnBoot':
+				$this->toggleDNSspoofOnBoot();
+				break;
+			case 'getInterfaces':
+				$this->getInterfaces();
+				break;
+			case 'saveAutostartSettings':
+				$this->saveAutostartSettings();
+				break;
+			case 'saveLandingPageData':
+				$this->saveLandingPageData();
+				break;
+			case 'getLandingPageData':
+				$this->getLandingPageData();
+				break;
+			case 'saveHostsData':
+				$this->saveHostsData();
+				break;
+			case 'getHostsData':
+				$this->getHostsData();
+				break;
         }
     }
 
-		protected function checkDependency($dependencyName)
-		{
-				return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("dnsspoof.module.installed")));
-		}
+	protected function checkDependency($dependencyName)
+	{
+		return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("dnsspoof.module.installed")));
+	}
 
-		protected function getDevice()
-		{
-				return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
-		}
+	protected function getDevice()
+	{
+		return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
+	}
 
-		protected function refreshInfo()
-		{
-			$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/DNSspoof/module.info"));
-			$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
-		}
+	protected function refreshInfo()
+	{
+		$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/DNSspoof/module.info"));
+		$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
+	}
 
     private function handleDependencies()
     {
@@ -105,39 +105,39 @@ class DNSspoof extends Module
 
     private function toggleDNSspoofOnBoot()
     {
-				if(exec("cat /etc/rc.local | grep DNSspoof/scripts/autostart_dnsspoof.sh") == "")
-				{
-					exec("sed -i '/exit 0/d' /etc/rc.local");
-					exec("echo /pineapple/modules/DNSspoof/scripts/autostart_dnsspoof.sh >> /etc/rc.local");
-					exec("echo exit 0 >> /etc/rc.local");
-				}
-				else
-				{
-					exec("sed -i '/DNSspoof\/scripts\/autostart_dnsspoof.sh/d' /etc/rc.local");
-				}
+		if(exec("cat /etc/rc.local | grep DNSspoof/scripts/autostart_dnsspoof.sh") == "")
+		{
+			exec("sed -i '/exit 0/d' /etc/rc.local");
+			exec("echo /pineapple/modules/DNSspoof/scripts/autostart_dnsspoof.sh >> /etc/rc.local");
+			exec("echo exit 0 >> /etc/rc.local");
 		}
+		else
+		{
+			exec("sed -i '/DNSspoof\/scripts\/autostart_dnsspoof.sh/d' /etc/rc.local");
+		}
+	}
 
     private function toggleDNSspoof()
     {
 		if(!$this->checkRunning("dnsspoof"))
 		{
-				$this->uciSet("dnsspoof.run.interface", $this->request->interface);
+			$this->uciSet("dnsspoof.run.interface", $this->request->interface);
 
-				$this->execBackground("/pineapple/modules/DNSspoof/scripts/dnsspoof.sh start");
+			$this->execBackground("/pineapple/modules/DNSspoof/scripts/dnsspoof.sh start");
 		}
 		else
 		{
-				$this->uciSet("dnsspoof.run.interface", '');
+			$this->uciSet("dnsspoof.run.interface", '');
 
-				$this->execBackground("/pineapple/modules/DNSspoof/scripts/dnsspoof.sh stop");
+			$this->execBackground("/pineapple/modules/DNSspoof/scripts/dnsspoof.sh stop");
 		}
 	}
 
 	private function getInterfaces()
 	{
-			exec("cat /proc/net/dev | tail -n +3 | cut -f1 -d: | sed 's/ //g'", $interfaceArray);
+		exec("cat /proc/net/dev | tail -n +3 | cut -f1 -d: | sed 's/ //g'", $interfaceArray);
 
-			$this->response = array("interfaces" => $interfaceArray, "selected" => $this->uciGet("dnsspoof.run.interface"));
+		$this->response = array("interfaces" => $interfaceArray, "selected" => $this->uciGet("dnsspoof.run.interface"));
 	}
 
     private function refreshStatus()
@@ -303,32 +303,31 @@ class DNSspoof extends Module
 
 	private function saveAutostartSettings()
 	{
-			$settings = $this->request->settings;
-			$this->uciSet("dnsspoof.autostart.interface", $settings->interface);
+		$settings = $this->request->settings;
+		$this->uciSet("dnsspoof.autostart.interface", $settings->interface);
 	}
 
 	private function saveLandingPageData()
 	{
-			$filename = '/www/index.php';
-			file_put_contents($filename, $this->request->configurationData);
+		$filename = '/www/index.php';
+		file_put_contents($filename, $this->request->configurationData);
 	}
 
 	private function getLandingPageData()
 	{
-			$configurationData = file_get_contents('/www/index.php');
-			$this->response = array("configurationData" => $configurationData);
+		$configurationData = file_get_contents('/www/index.php');
+		$this->response = array("configurationData" => $configurationData);
 	}
 
 	private function saveHostsData()
 	{
-			$filename = '/etc/pineapple/spoofhost';
-			file_put_contents($filename, $this->request->configurationData);
+		$filename = '/etc/pineapple/spoofhost';
+		file_put_contents($filename, $this->request->configurationData);
 	}
 
 	private function getHostsData()
 	{
-			$configurationData = file_get_contents('/etc/pineapple/spoofhost');
-			$this->response = array("configurationData" => $configurationData);
+		$configurationData = file_get_contents('/etc/pineapple/spoofhost');
+		$this->response = array("configurationData" => $configurationData);
 	}
-
 }

@@ -21,40 +21,40 @@ class wps extends Module
             case 'refreshStatus':
                 $this->refreshStatus();
                 break;
-						case 'refreshOutput':
-								$this->refreshOutput();
-								break;
+			case 'refreshOutput':
+				$this->refreshOutput();
+				break;
             case 'handleDependencies':
                 $this->handleDependencies();
                 break;
             case 'handleDependenciesStatus':
                 $this->handleDependenciesStatus();
                 break;
-						case 'getInterfaces':
-								$this->getInterfaces();
-								break;
-						case 'getMonitors':
-								$this->getMonitors();
-								break;
-						case 'startMonitor':
-								$this->startMonitor();
-								break;
-						case 'stopMonitor':
-								$this->stopMonitor();
-								break;
-						case 'scanForNetworks':
-								$this->scanForNetworks();
-								break;
-						case 'getMACInfo':
-								$this->getMACInfo();
-								break;
-						case 'togglewps':
-								$this->togglewps();
-								break;
-						case 'getProcesses':
-								$this->getProcesses();
-								break;
-						case 'refreshHistory':
+			case 'getInterfaces':
+				$this->getInterfaces();
+				break;
+			case 'getMonitors':
+				$this->getMonitors();
+				break;
+			case 'startMonitor':
+				$this->startMonitor();
+				break;
+			case 'stopMonitor':
+				$this->stopMonitor();
+				break;
+			case 'scanForNetworks':
+				$this->scanForNetworks();
+				break;
+			case 'getMACInfo':
+				$this->getMACInfo();
+				break;
+			case 'togglewps':
+				$this->togglewps();
+				break;
+			case 'getProcesses':
+				$this->getProcesses();
+				break;
+			case 'refreshHistory':
                 $this->refreshHistory();
                 break;
             case 'viewHistory':
@@ -63,122 +63,122 @@ class wps extends Module
             case 'deleteHistory':
                 $this->deleteHistory();
                 break;
-						case 'downloadHistory':
-								$this->downloadHistory();
-								break;
+			case 'downloadHistory':
+				$this->downloadHistory();
+				break;
         }
     }
 
-		protected function checkDependency($dependencyName)
-		{
-				return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("wps.module.installed")));
-		}
+	protected function checkDependency($dependencyName)
+	{
+		return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("wps.module.installed")));
+	}
 
-		protected function getDevice()
-		{
-				return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
-		}
+	protected function getDevice()
+	{
+		return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
+	}
 
-		protected function checkRunning($processName)
-		{
-				return exec("ps w | grep {$processName} | grep -v grep") !== '' ? 1 : 0;
-		}
+	protected function checkRunning($processName)
+	{
+		return exec("ps w | grep {$processName} | grep -v grep") !== '' ? 1 : 0;
+	}
 
-		protected function refreshInfo()
-		{
-			$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/wps/module.info"));
-			$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
-		}
+	protected function refreshInfo()
+	{
+		$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/wps/module.info"));
+		$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
+	}
 
     private function handleDependencies()
     {
-				if(!$this->checkDependency("reaver"))
-				{
-			        $this->execBackground("/pineapple/modules/wps/scripts/dependencies.sh install ".$this->request->destination);
-			        $this->response = array('success' => true);
-				}
-				else
-				{
-			        $this->execBackground("/pineapple/modules/wps/scripts/dependencies.sh remove");
-			        $this->response = array('success' => true);
-				}
+		if(!$this->checkDependency("reaver"))
+		{
+	        $this->execBackground("/pineapple/modules/wps/scripts/dependencies.sh install ".$this->request->destination);
+	        $this->response = array('success' => true);
 		}
+		else
+		{
+	        $this->execBackground("/pineapple/modules/wps/scripts/dependencies.sh remove");
+	        $this->response = array('success' => true);
+		}
+	}
 
     private function handleDependenciesStatus()
     {
-		    if (!file_exists('/tmp/wps.progress'))
-				{
-		    	$this->response = array('success' => true);
-		    }
-				else
-				{
-			  	$this->response = array('success' => false);
+	    if (!file_exists('/tmp/wps.progress'))
+		{
+	    	$this->response = array('success' => true);
+	    }
+		else
+		{
+		  	$this->response = array('success' => false);
         }
     }
 
     private function refreshStatus()
     {
-			if (!file_exists('/tmp/wps.progress'))
-			{
-				if(!$this->checkDependency("iwlist"))
-				{
-					$installed = false;
-					$install = "Not installed";
-					$installLabel = "danger";
-					$processing = false;
-
-					$status = "Start";
-					$statusLabel = "success";
-				}
-				else
-				{
-					$installed = true;
-					$install = "Installed";
-					$installLabel = "success";
-					$processing = false;
-
-					if ($this->checkRunning("reaver") || $this->checkRunning("bully"))
-					{
-						$status = "Stop";
-						$statusLabel = "danger";
-					}
-					else
-					{
-						$status = "Start";
-						$statusLabel = "success";
-					}
-				}
-			}
-			else
+		if (!file_exists('/tmp/wps.progress'))
+		{
+			if(!$this->checkDependency("iwlist"))
 			{
 				$installed = false;
-				$install = "Installing...";
-				$installLabel = "warning";
-				$processing = true;
+				$install = "Not installed";
+				$installLabel = "danger";
+				$processing = false;
 
 				$status = "Start";
 				$statusLabel = "success";
 			}
+			else
+			{
+				$installed = true;
+				$install = "Installed";
+				$installLabel = "success";
+				$processing = false;
 
-			$device = $this->getDevice();
-			$sdAvailable = $this->isSDAvailable();
+				if ($this->checkRunning("reaver") || $this->checkRunning("bully"))
+				{
+					$status = "Stop";
+					$statusLabel = "danger";
+				}
+				else
+				{
+					$status = "Start";
+					$statusLabel = "success";
+				}
+			}
+		}
+		else
+		{
+			$installed = false;
+			$install = "Installing...";
+			$installLabel = "warning";
+			$processing = true;
 
-			$this->response = array("device" => $device, "sdAvailable" => $sdAvailable, "status" => $status, "statusLabel" => $statusLabel, "installed" => $installed, "install" => $install, "installLabel" => $installLabel, "processing" => $processing);
+			$status = "Start";
+			$statusLabel = "success";
+		}
+
+		$device = $this->getDevice();
+		$sdAvailable = $this->isSDAvailable();
+
+		$this->response = array("device" => $device, "sdAvailable" => $sdAvailable, "status" => $status, "statusLabel" => $statusLabel, "installed" => $installed, "install" => $install, "installLabel" => $installLabel, "processing" => $processing);
 	}
 
 	private function togglewps()
 	{
-			if(!($this->checkRunning("reaver") || $this->checkRunning("bully")))
-			{
-				$full_cmd = $this->request->command . " -o /pineapple/modules/wps/log/log_".time().".log";
-				shell_exec("echo -e \"{$full_cmd}\" > /tmp/wps.run");
+		if(!($this->checkRunning("reaver") || $this->checkRunning("bully")))
+		{
+			$full_cmd = $this->request->command . " -o /pineapple/modules/wps/log/log_".time().".log";
+			shell_exec("echo -e \"{$full_cmd}\" > /tmp/wps.run");
 
-				$this->execBackground("/pineapple/modules/wps/scripts/wps.sh start");
-			}
-			else
-			{
-				$this->execBackground("/pineapple/modules/wps/scripts/wps.sh stop");
-			}
+			$this->execBackground("/pineapple/modules/wps/scripts/wps.sh start");
+		}
+		else
+		{
+			$this->execBackground("/pineapple/modules/wps/scripts/wps.sh stop");
+		}
 	}
 
 	private function refreshOutput()
@@ -227,124 +227,124 @@ class wps extends Module
 
 	private function getInterfaces()
 	{
-			exec("iwconfig 2> /dev/null | grep \"wlan*\" | grep -v \"mon*\" | awk '{print $1}'", $interfaceArray);
+		exec("iwconfig 2> /dev/null | grep \"wlan*\" | grep -v \"mon*\" | awk '{print $1}'", $interfaceArray);
 
-			$this->response = array("interfaces" => $interfaceArray);
+		$this->response = array("interfaces" => $interfaceArray);
 	}
 
 	private function getMonitors()
 	{
-			exec("iwconfig 2> /dev/null | grep \"mon*\" | awk '{print $1}'", $monitorArray);
+		exec("iwconfig 2> /dev/null | grep \"mon*\" | awk '{print $1}'", $monitorArray);
 
-			$this->response = array("monitors" => $monitorArray);
+		$this->response = array("monitors" => $monitorArray);
 	}
 
 	private function startMonitor()
 	{
-			exec("airmon-ng start ".$this->request->interface);
+		exec("airmon-ng start ".$this->request->interface);
 	}
 
 	private function stopMonitor()
 	{
-			exec("airmon-ng stop ".$this->request->monitor);
+		exec("airmon-ng stop ".$this->request->monitor);
 	}
 
 	private function scanForNetworks()
 	{
-			if($this->request->duration && $this->request->monitor != "")
-			{
-					exec("killall -9 airodump-ng && rm -rf /tmp/wps-*");
-					$this->execBackground("airodump-ng -a --output-format cap -w /tmp/wps ".$this->request->monitor." &> /dev/null");
-					sleep($this->request->duration);
-					exec("wash -f /tmp/wps-01.cap -o /tmp/wps-01.wash &> /dev/null");
+		if($this->request->duration && $this->request->monitor != "")
+		{
+				exec("killall -9 airodump-ng && rm -rf /tmp/wps-*");
+				$this->execBackground("airodump-ng -a --output-format cap -w /tmp/wps ".$this->request->monitor." &> /dev/null");
+				sleep($this->request->duration);
+				exec("wash -f /tmp/wps-01.cap -o /tmp/wps-01.wash &> /dev/null");
 
-					exec("killall -9 airodump-ng");
-			}
+				exec("killall -9 airodump-ng");
+		}
 
-			$p = $this->iwlistparse->parseScanDev($this->request->interface);
-			$apArray = $p[$this->request->interface];
+		$p = $this->iwlistparse->parseScanDev($this->request->interface);
+		$apArray = $p[$this->request->interface];
 
-			$returnArray = array();
-			foreach ($apArray as $apData) {
-					$accessPoint = array();
-					$accessPoint['mac'] = $apData["Address"];
-					$accessPoint['ssid'] = $apData["ESSID"];
-					$accessPoint['channel'] = intval($apData["Channel"]);
+		$returnArray = array();
+		foreach ($apArray as $apData) {
+				$accessPoint = array();
+				$accessPoint['mac'] = $apData["Address"];
+				$accessPoint['ssid'] = $apData["ESSID"];
+				$accessPoint['channel'] = intval($apData["Channel"]);
 
-					$frequencyData = explode(' ', $apData["Frequency"]);
-					$accessPoint['frequency'] = $frequencyData[0];
+				$frequencyData = explode(' ', $apData["Frequency"]);
+				$accessPoint['frequency'] = $frequencyData[0];
 
-					$accessPoint['signal'] = $apData["Signal level"];
-					$accessPoint['quality'] = intval($apData["Quality"]);
+				$accessPoint['signal'] = $apData["Signal level"];
+				$accessPoint['quality'] = intval($apData["Quality"]);
 
-					if($apData["Quality"] <= 25) $accessPoint['qualityLabel'] = "danger";
-					else if($apData["Quality"] <= 50) $accessPoint['qualityLabel'] = "warning";
-					else if($apData["Quality"] <= 100) $accessPoint['qualityLabel'] = "success";
+				if($apData["Quality"] <= 25) $accessPoint['qualityLabel'] = "danger";
+				else if($apData["Quality"] <= 50) $accessPoint['qualityLabel'] = "warning";
+				else if($apData["Quality"] <= 100) $accessPoint['qualityLabel'] = "success";
 
-					if(exec("cat /tmp/wps_capture.lock") == $apData["Address"]) $accessPoint['captureOnSelected'] = 1;
-					else $accessPoint['captureOnSelected'] = 0;
+				if(exec("cat /tmp/wps_capture.lock") == $apData["Address"]) $accessPoint['captureOnSelected'] = 1;
+				else $accessPoint['captureOnSelected'] = 0;
 
-					if($this->checkRunning("airodump-ng")) $accessPoint['captureRunning'] = 1;
-					else $accessPoint['captureRunning'] = 0;
+				if($this->checkRunning("airodump-ng")) $accessPoint['captureRunning'] = 1;
+				else $accessPoint['captureRunning'] = 0;
 
-					if(exec("cat /tmp/wps_deauth.lock") == $apData["Address"]) $accessPoint['deauthOnSelected'] = 1;
-					else $accessPoint['deauthOnSelected'] = 0;
+				if(exec("cat /tmp/wps_deauth.lock") == $apData["Address"]) $accessPoint['deauthOnSelected'] = 1;
+				else $accessPoint['deauthOnSelected'] = 0;
 
-					if($this->checkRunning("aireplay-ng")) $accessPoint['deauthRunning'] = 1;
-					else $accessPoint['deauthRunning'] = 0;
+				if($this->checkRunning("aireplay-ng")) $accessPoint['deauthRunning'] = 1;
+				else $accessPoint['deauthRunning'] = 0;
 
-					if($apData["Encryption key"] == "on")
+				if($apData["Encryption key"] == "on")
+				{
+					$WPA = strstr($apData["IE"], "WPA Version 1");
+					$WPA2 = strstr($apData["IE"], "802.11i/WPA2 Version 1");
+
+					$auth_type = str_replace("\n"," ",$apData["Authentication Suites (1)"]);
+					$auth_type = implode(' ',array_unique(explode(' ', $auth_type)));
+
+					$cipher = $apData["Pairwise Ciphers (2)"] ? $apData["Pairwise Ciphers (2)"] : $apData["Pairwise Ciphers (1)"];
+					$cipher = str_replace("\n"," ",$cipher);
+					$cipher = implode(', ',array_unique(explode(' ', $cipher)));
+
+					if($WPA2 != "" && $WPA != "") $accessPoint['encryption'] = 'Mixed WPA/WPA2';
+					else if($WPA2 != "") $accessPoint['encryption'] = 'WPA2';
+					else if($WPA != "") $accessPoint['encryption'] = 'WPA';
+					else $accessPoint['encryption'] = 'WEP';
+
+					$accessPoint['cipher'] = $cipher;
+					$accessPoint['auth'] = $auth_type;
+				}
+				else
+				{
+					$accessPoint['encryption'] = 'None';
+					$accessPoint['cipher'] = '';
+					$accessPoint['auth'] = '';
+				}
+
+				if($this->request->duration && $this->request->monitor != "")
+				{
+					$wps_enabled = trim(exec("cat /tmp/wps-01.wash | tail -n +3 | grep ".$accessPoint['mac']." | awk '{ print $5; }'"));
+					if($wps_enabled == "No" || $wps_enabled == "Yes")
 					{
-						$WPA = strstr($apData["IE"], "WPA Version 1");
-						$WPA2 = strstr($apData["IE"], "802.11i/WPA2 Version 1");
-
-						$auth_type = str_replace("\n"," ",$apData["Authentication Suites (1)"]);
-						$auth_type = implode(' ',array_unique(explode(' ', $auth_type)));
-
-						$cipher = $apData["Pairwise Ciphers (2)"] ? $apData["Pairwise Ciphers (2)"] : $apData["Pairwise Ciphers (1)"];
-						$cipher = str_replace("\n"," ",$cipher);
-						$cipher = implode(', ',array_unique(explode(' ', $cipher)));
-
-						if($WPA2 != "" && $WPA != "") $accessPoint['encryption'] = 'Mixed WPA/WPA2';
-						else if($WPA2 != "") $accessPoint['encryption'] = 'WPA2';
-						else if($WPA != "") $accessPoint['encryption'] = 'WPA';
-						else $accessPoint['encryption'] = 'WEP';
-
-						$accessPoint['cipher'] = $cipher;
-						$accessPoint['auth'] = $auth_type;
+							$accessPoint['wps'] = "Yes";
+							$accessPoint['wpsLabel'] = "success";
 					}
 					else
 					{
-						$accessPoint['encryption'] = 'None';
-						$accessPoint['cipher'] = '';
-						$accessPoint['auth'] = '';
+						$accessPoint['wps'] = "No";
+						$accessPoint['wpsLabel'] = "";
 					}
+				}
+				else
+				{
+					$accessPoint['wps'] = "--";
+				}
 
-					if($this->request->duration && $this->request->monitor != "")
-					{
-						$wps_enabled = trim(exec("cat /tmp/wps-01.wash | tail -n +3 | grep ".$accessPoint['mac']." | awk '{ print $5; }'"));
-						if($wps_enabled == "No" || $wps_enabled == "Yes")
-						{
-								$accessPoint['wps'] = "Yes";
-								$accessPoint['wpsLabel'] = "success";
-						}
-						else
-						{
-							$accessPoint['wps'] = "No";
-							$accessPoint['wpsLabel'] = "";
-						}
-					}
-					else
-					{
-						$accessPoint['wps'] = "--";
-					}
+				array_push($returnArray, $accessPoint);
+		}
 
-					array_push($returnArray, $accessPoint);
-			}
+		exec("rm -rf /tmp/wps-*");
 
-			exec("rm -rf /tmp/wps-*");
-
-			$this->response = $returnArray;
+		$this->response = $returnArray;
 	}
 
 	private function getMACInfo()
@@ -468,5 +468,4 @@ class wps extends Module
 	{
 		exec("rm -rf /pineapple/modules/wps/log/".$this->request->file);
 	}
-
 }

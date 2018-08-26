@@ -12,8 +12,8 @@ touch /tmp/nmap.progress
 
 if [ "$1" = "install" ]; then
   if [ "$2" = "internal" ]; then
-	 opkg update
-     opkg install nmap
+	opkg update
+    opkg install nmap
   elif [ "$2" = "sd" ]; then
     opkg update
     opkg install nmap --dest sd
@@ -30,8 +30,8 @@ if [ "$1" = "install" ]; then
   uci commit nmap.module.installed
 
 elif [ "$1" = "remove" ]; then
-    opkg remove nmap
-    rm -rf /etc/config/nmap
+  opkg remove nmap
+  rm -rf /etc/config/nmap
 fi
 
 rm /tmp/nmap.progress

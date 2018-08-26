@@ -7,15 +7,15 @@ class ettercap extends Module
 	public function route()
     {
         switch ($this->request->action) {
-						case 'refreshInfo':
-								$this->refreshInfo();
-								break;
-						case 'refreshOutput':
-	            $this->refreshOutput();
-	            break;
-						case 'clearOutput':
-                $this->clearOutput();
-                break;
+			case 'refreshInfo':
+				$this->refreshInfo();
+				break;
+			case 'refreshOutput':
+            	$this->refreshOutput();
+            	break;
+			case 'clearOutput':
+            	$this->clearOutput();
+            	break;
             case 'refreshStatus':
                 $this->refreshStatus();
                 break;
@@ -37,45 +37,45 @@ class ettercap extends Module
             case 'deleteHistory':
                 $this->deleteHistory();
                 break;
-						case 'downloadHistory':
-								$this->downloadHistory();
-								break;
-						case 'getInterfaces':
-                $this->getInterfaces();
-                break;
-						case 'getFilters':
-								$this->getFilters();
-								break;
-						case 'showFilter':
-								$this->showFilter();
-								break;
-						case 'deleteFilter':
-								$this->deleteFilter();
-								break;
-						case 'saveFilterData':
-								$this->saveFilterData();
-								break;
-						case 'compileFilterData':
-								$this->compileFilterData();
-								break;
+			case 'downloadHistory':
+				$this->downloadHistory();
+				break;
+			case 'getInterfaces':
+    			$this->getInterfaces();
+    			break;
+			case 'getFilters':
+				$this->getFilters();
+				break;
+			case 'showFilter':
+				$this->showFilter();
+				break;
+			case 'deleteFilter':
+				$this->deleteFilter();
+				break;
+			case 'saveFilterData':
+				$this->saveFilterData();
+				break;
+			case 'compileFilterData':
+				$this->compileFilterData();
+				break;
         }
     }
 
-		protected function checkDependency($dependencyName)
-		{
-				return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("ettercap.module.installed")));
-		}
+	protected function checkDependency($dependencyName)
+	{
+		return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("ettercap.module.installed")));
+	}
 
-		protected function getDevice()
-		{
-				return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
-		}
+	protected function getDevice()
+	{
+		return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
+	}
 
-		protected function refreshInfo()
-		{
-			$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/ettercap/module.info"));
-			$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
-		}
+	protected function refreshInfo()
+	{
+		$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/ettercap/module.info"));
+		$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
+	}
 
     private function handleDependencies()
     {
@@ -105,17 +105,17 @@ class ettercap extends Module
 
     private function toggleettercap()
     {
-				if(!$this->checkRunning("ettercap"))
-				{
-					$full_cmd = $this->request->command . " -T -w /pineapple/modules/ettercap/log/log_".time().".pcap -m /pineapple/modules/ettercap/log/log_".time().".log";
-					shell_exec("echo -e \"{$full_cmd}\" > /tmp/ettercap.run");
+		if(!$this->checkRunning("ettercap"))
+		{
+			$full_cmd = $this->request->command . " -T -w /pineapple/modules/ettercap/log/log_".time().".pcap -m /pineapple/modules/ettercap/log/log_".time().".log";
+			shell_exec("echo -e \"{$full_cmd}\" > /tmp/ettercap.run");
 
-					$this->execBackground("/pineapple/modules/ettercap/scripts/ettercap.sh start");
-				}
-				else
-				{
-					$this->execBackground("/pineapple/modules/ettercap/scripts/ettercap.sh stop");
-				}
+			$this->execBackground("/pineapple/modules/ettercap/scripts/ettercap.sh start");
+		}
+		else
+		{
+			$this->execBackground("/pineapple/modules/ettercap/scripts/ettercap.sh stop");
+		}
 	}
 
     private function refreshStatus()
@@ -294,27 +294,27 @@ class ettercap extends Module
 
 	private function showFilter()
 	{
-			$filterData = file_get_contents('/pineapple/modules/ettercap/filters/'.$this->request->filter);
-			$this->response = array("filterData" => $filterData);
+		$filterData = file_get_contents('/pineapple/modules/ettercap/filters/'.$this->request->filter);
+		$this->response = array("filterData" => $filterData);
 	}
 
 	private function deleteFilter()
 	{
-			exec("rm -rf /pineapple/modules/ettercap/filters/".basename($this->request->filter, '.filter').".*");
+		exec("rm -rf /pineapple/modules/ettercap/filters/".basename($this->request->filter, '.filter').".*");
 	}
 
 	private function compileFilterData()
 	{
-			$filename = "/pineapple/modules/ettercap/filters/".$this->request->filter;
-			$filename_ef = "/pineapple/modules/ettercap/filters/".basename($this->request->filter, '.filter').".ef";
+		$filename = "/pineapple/modules/ettercap/filters/".$this->request->filter;
+		$filename_ef = "/pineapple/modules/ettercap/filters/".basename($this->request->filter, '.filter').".ef";
 
-			$cmd = "etterfilter -o ".$filename_ef." ".$filename." 2>&1";
+		$cmd = "etterfilter -o ".$filename_ef." ".$filename." 2>&1";
 
-			exec ($cmd, $output);
-			if(!empty($output))
-				$this->response = implode("\n", $output);
-			else
-				$this->response = "Empty log...";
+		exec ($cmd, $output);
+		if(!empty($output))
+			$this->response = implode("\n", $output);
+		else
+			$this->response = "Empty log...";
 	}
 
 	private function saveFilterData()
@@ -322,5 +322,4 @@ class ettercap extends Module
 		$filename = "/pineapple/modules/ettercap/filters/".$this->request->filter;
 		file_put_contents($filename, $this->request->filterData);
 	}
-
 }

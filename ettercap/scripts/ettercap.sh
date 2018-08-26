@@ -11,6 +11,6 @@ if [ "$1" = "start" ]; then
 	eval ${MYCMD}
 	rm -rf /tmp/ettercap.run
 elif [ "$1" = "stop" ]; then
-  killall -9 ettercap
+  	killall -9 ettercap
 	rm -rf /tmp/ettercap.run
 fi

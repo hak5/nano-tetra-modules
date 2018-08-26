@@ -28,8 +28,8 @@ if [ "$1" = "install" ]; then
   uci commit urlsnarf.module.installed
 
 elif [ "$1" = "remove" ]; then
-    opkg remove urlsnarf
-    rm -rf /etc/config/urlsnarf
+  opkg remove urlsnarf
+  rm -rf /etc/config/urlsnarf
 fi
 
 rm /tmp/urlsnarf.progress

@@ -8,8 +8,8 @@ class nmap extends Module
     {
         switch ($this->request->action) {
 			case 'refreshInfo':
-					$this->refreshInfo();
-					break;
+				$this->refreshInfo();
+				break;
 			case 'refreshOutput':
                 $this->refreshOutput();
                 break;
@@ -19,7 +19,7 @@ class nmap extends Module
             case 'togglenmap':
                 $this->togglenmap();
                 break;
-						case 'scanStatus':
+			case 'scanStatus':
                 $this->scanStatus();
                 break;
             case 'handleDependencies':
@@ -45,12 +45,12 @@ class nmap extends Module
 
 	protected function checkDependency($dependencyName)
 	{
-			return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("nmap.module.installed")));
+		return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("nmap.module.installed")));
 	}
 
 	protected function getDevice()
 	{
-			return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
+		return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
 	}
 
 	protected function refreshInfo()
@@ -87,79 +87,79 @@ class nmap extends Module
 
 	private function scanStatus()
 	{
-			if (!$this->checkRunning("nmap"))
-	{
-					$this->response = array('success' => true);
-			}
-	else
-	{
-					$this->response = array('success' => false);
-			}
+		if (!$this->checkRunning("nmap"))
+		{
+			$this->response = array('success' => true);
+		}
+		else
+		{
+			$this->response = array('success' => false);
+		}
 	}
 
     private function togglenmap()
     {
-				if(!$this->checkRunning("nmap"))
-				{
-					$full_cmd = $this->request->command . " -oN /tmp/nmap.scan 2>&1";
-					shell_exec("echo -e \"{$full_cmd}\" > /tmp/nmap.run");
+		if(!$this->checkRunning("nmap"))
+		{
+			$full_cmd = $this->request->command . " -oN /tmp/nmap.scan 2>&1";
+			shell_exec("echo -e \"{$full_cmd}\" > /tmp/nmap.run");
 
-					$this->execBackground("/pineapple/modules/nmap/scripts/nmap.sh start");
-				}
-				else
-				{
-					$this->execBackground("/pineapple/modules/nmap/scripts/nmap.sh stop");
-				}
+			$this->execBackground("/pineapple/modules/nmap/scripts/nmap.sh start");
+		}
+		else
+		{
+			$this->execBackground("/pineapple/modules/nmap/scripts/nmap.sh stop");
+		}
 	}
 
     private function refreshStatus()
     {
-      if (!file_exists('/tmp/nmap.progress'))
-			{
-				if (!$this->checkDependency("nmap"))
-				{
-					$installed = false;
-					$install = "Not installed";
-					$installLabel = "danger";
-					$processing = false;
-
-					$status = "Start";
-					$statusLabel = "success";
-				}
-				else
-				{
-					$installed = true;
-					$install = "Installed";
-					$installLabel = "success";
-					$processing = false;
-
-					if ($this->checkRunning("nmap"))
-					{
-						$status = "Stop";
-						$statusLabel = "danger";
-					}
-					else
-					{
-						$status = "Start";
-						$statusLabel = "success";
-					}
-				}
-      }
-			else
+		if (!file_exists('/tmp/nmap.progress'))
+		{
+			if (!$this->checkDependency("nmap"))
 			{
 				$installed = false;
-				$install = "Installing...";
-				$installLabel = "warning";
-				$processing = true;
+				$install = "Not installed";
+				$installLabel = "danger";
+				$processing = false;
 
 				$status = "Start";
 				$statusLabel = "success";
-      }
+			}
+			else
+			{
+				$installed = true;
+				$install = "Installed";
+				$installLabel = "success";
+				$processing = false;
 
-			$device = $this->getDevice();
-			$sdAvailable = $this->isSDAvailable();
+				if ($this->checkRunning("nmap"))
+				{
+					$status = "Stop";
+					$statusLabel = "danger";
+				}
+				else
+				{
+					$status = "Start";
+					$statusLabel = "success";
+				}
+			}
+      	}
+		else
+		{
+			$installed = false;
+			$install = "Installing...";
+			$installLabel = "warning";
+			$processing = true;
 
-			$this->response = array("device" => $device, "sdAvailable" => $sdAvailable, "status" => $status, "statusLabel" => $statusLabel, "installed" => $installed, "install" => $install, "installLabel" => $installLabel, "processing" => $processing);
+			$status = "Start";
+			$statusLabel = "success";
+      	}
+
+		$device = $this->getDevice();
+		$sdAvailable = $this->isSDAvailable();
+
+		$this->response = array("device" => $device, "sdAvailable" => $sdAvailable, "status" => $status, "statusLabel" => $statusLabel, "installed" => $installed, "install" => $install, "installLabel" => $installLabel, "processing" => $processing);
 	}
 
     private function refreshOutput()
@@ -168,11 +168,11 @@ class nmap extends Module
 		{
 			if ($this->checkRunning("nmap") && file_exists("/tmp/nmap.scan"))
 			{
-					$output = file_get_contents("/tmp/nmap.scan");
-					if(!empty($output))
-						$this->response = $output;
-					else
-						$this->response = "Empty log...";
+				$output = file_get_contents("/tmp/nmap.scan");
+				if(!empty($output))
+					$this->response = $output;
+				else
+					$this->response = "Empty log...";
 			}
 			else
 			{
@@ -225,5 +225,4 @@ class nmap extends Module
 	{
 		$this->response = array("download" => $this->downloadFile("/pineapple/modules/nmap/scan/".$this->request->file));
 	}
-
 }

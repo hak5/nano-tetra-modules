@@ -8,8 +8,8 @@ class SiteSurvey extends Module
 {
 	public function __construct($request)
 	{
-			parent::__construct($request, __CLASS__);
-			$this->iwlistparse = new iwlist_parser();
+		parent::__construct($request, __CLASS__);
+		$this->iwlistparse = new iwlist_parser();
 	}
 
 	public function route()
@@ -27,186 +27,186 @@ class SiteSurvey extends Module
             case 'handleDependenciesStatus':
                 $this->handleDependenciesStatus();
                 break;
-						case 'getInterfaces':
-								$this->getInterfaces();
-								break;
-						case 'getMonitors':
-								$this->getMonitors();
-								break;
-						case 'startMonitor':
-								$this->startMonitor();
-								break;
-						case 'stopMonitor':
-								$this->stopMonitor();
-								break;
-						case 'scanForNetworks':
-								$this->scanForNetworks();
-								break;
-						case 'getMACInfo':
-								$this->getMACInfo();
-								break;
-						case 'refreshCapture':
-								$this->refreshCapture();
-								break;
-						case 'viewCapture':
-								$this->viewCapture();
-								break;
-						case 'deleteCapture':
-								$this->deleteCapture();
-								break;
-						case 'downloadCapture':
-								$this->downloadCapture();
-								break;
-						case 'toggleCapture':
-								$this->toggleCapture();
-								break;
-						case 'toggleDeauth':
-								$this->toggleDeauth();
-								break;
-						case 'getProcesses':
-								$this->getProcesses();
-								break;
+			case 'getInterfaces':
+				$this->getInterfaces();
+				break;
+			case 'getMonitors':
+				$this->getMonitors();
+				break;
+			case 'startMonitor':
+				$this->startMonitor();
+				break;
+			case 'stopMonitor':
+				$this->stopMonitor();
+				break;
+			case 'scanForNetworks':
+				$this->scanForNetworks();
+				break;
+			case 'getMACInfo':
+				$this->getMACInfo();
+				break;
+			case 'refreshCapture':
+				$this->refreshCapture();
+				break;
+			case 'viewCapture':
+				$this->viewCapture();
+				break;
+			case 'deleteCapture':
+				$this->deleteCapture();
+				break;
+			case 'downloadCapture':
+				$this->downloadCapture();
+				break;
+			case 'toggleCapture':
+				$this->toggleCapture();
+				break;
+			case 'toggleDeauth':
+				$this->toggleDeauth();
+				break;
+			case 'getProcesses':
+				$this->getProcesses();
+				break;
         }
     }
 
-		protected function checkDependency($dependencyName)
-		{
-				return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("sitesurvey.module.installed")));
-		}
+	protected function checkDependency($dependencyName)
+	{
+			return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("sitesurvey.module.installed")));
+	}
 
-		protected function getDevice()
-		{
-				return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
-		}
+	protected function getDevice()
+	{
+			return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
+	}
 
-		protected function checkRunning($processName)
-		{
-				return exec("ps w | grep {$processName} | grep -v grep") !== '' ? 1 : 0;
-		}
+	protected function checkRunning($processName)
+	{
+			return exec("ps w | grep {$processName} | grep -v grep") !== '' ? 1 : 0;
+	}
 
-		protected function refreshInfo()
-		{
-			$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/SiteSurvey/module.info"));
-			$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
-		}
+	protected function refreshInfo()
+	{
+		$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/SiteSurvey/module.info"));
+		$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
+	}
 
     private function handleDependencies()
     {
-				if(!$this->checkDependency("mdk3"))
-				{
-			        $this->execBackground("/pineapple/modules/SiteSurvey/scripts/dependencies.sh install ".$this->request->destination);
-			        $this->response = array('success' => true);
-				}
-				else
-				{
-			        $this->execBackground("/pineapple/modules/SiteSurvey/scripts/dependencies.sh remove");
-			        $this->response = array('success' => true);
-				}
+		if(!$this->checkDependency("mdk3"))
+		{
+	        $this->execBackground("/pineapple/modules/SiteSurvey/scripts/dependencies.sh install ".$this->request->destination);
+	        $this->response = array('success' => true);
 		}
+		else
+		{
+	        $this->execBackground("/pineapple/modules/SiteSurvey/scripts/dependencies.sh remove");
+	        $this->response = array('success' => true);
+		}
+	}
 
     private function handleDependenciesStatus()
     {
-		    if (!file_exists('/tmp/SiteSurvey.progress'))
-				{
-		    	$this->response = array('success' => true);
-		    }
-				else
-				{
-			  	$this->response = array('success' => false);
-        }
+	    if (!file_exists('/tmp/SiteSurvey.progress'))
+		{
+	    	$this->response = array('success' => true);
+	    }
+		else
+		{
+		  	$this->response = array('success' => false);
+    	}
     }
 
     private function refreshStatus()
     {
-			if (!file_exists('/tmp/SiteSurvey.progress'))
+		if (!file_exists('/tmp/SiteSurvey.progress'))
+		{
+			if(!$this->checkDependency("iwlist"))
 			{
-				if(!$this->checkDependency("iwlist"))
-				{
-					$installed = false;
-					$install = "Not installed";
-					$installLabel = "danger";
-					$processing = false;
-				}
-				else
-				{
-					$installed = true;
-					$install = "Installed";
-					$installLabel = "success";
-					$processing = false;
-				}
+				$installed = false;
+				$install = "Not installed";
+				$installLabel = "danger";
+				$processing = false;
 			}
 			else
 			{
-				$installed = false;
-				$install = "Installing...";
-				$installLabel = "warning";
-				$processing = true;
+				$installed = true;
+				$install = "Installed";
+				$installLabel = "success";
+				$processing = false;
 			}
+		}
+		else
+		{
+			$installed = false;
+			$install = "Installing...";
+			$installLabel = "warning";
+			$processing = true;
+		}
 
-			if (file_exists("/tmp/SiteSurvey.log") && (!$this->checkRunning("airodump-ng") || !$this->checkRunning("aireplay-ng"))) exec("rm -rf /tmp/SiteSurvey.log");
-			if (file_exists("/tmp/SiteSurvey_deauth.lock") && !$this->checkRunning("aireplay-ng")) exec("rm -rf /tmp/SiteSurvey_deauth.lock");
-			if (file_exists("/tmp/SiteSurvey_capture.lock") && !$this->checkRunning("airodump-ng")) exec("rm -rf /tmp/SiteSurvey_capture.lock");
+		if (file_exists("/tmp/SiteSurvey.log") && (!$this->checkRunning("airodump-ng") || !$this->checkRunning("aireplay-ng"))) exec("rm -rf /tmp/SiteSurvey.log");
+		if (file_exists("/tmp/SiteSurvey_deauth.lock") && !$this->checkRunning("aireplay-ng")) exec("rm -rf /tmp/SiteSurvey_deauth.lock");
+		if (file_exists("/tmp/SiteSurvey_capture.lock") && !$this->checkRunning("airodump-ng")) exec("rm -rf /tmp/SiteSurvey_capture.lock");
 
-			$device = $this->getDevice();
-			$sdAvailable = $this->isSDAvailable();
+		$device = $this->getDevice();
+		$sdAvailable = $this->isSDAvailable();
 
-			$this->response = array("device" => $device, "sdAvailable" => $sdAvailable, "installed" => $installed, "install" => $install, "installLabel" => $installLabel, "processing" => $processing);
+		$this->response = array("device" => $device, "sdAvailable" => $sdAvailable, "installed" => $installed, "install" => $install, "installLabel" => $installLabel, "processing" => $processing);
 	}
 
 	private function toggleCapture()
 	{
-			$ap = $this->request->ap;
+		$ap = $this->request->ap;
 
-			if(!$this->checkRunning("airodump-ng"))
-			{
-				$this->execBackground("/pineapple/modules/SiteSurvey/scripts/capture.sh start ".$this->request->interface." ".$ap->mac." ".$ap->channel);
-			}
-			else
-			{
-				$this->execBackground("/pineapple/modules/SiteSurvey/scripts/capture.sh stop");
-			}
+		if(!$this->checkRunning("airodump-ng"))
+		{
+			$this->execBackground("/pineapple/modules/SiteSurvey/scripts/capture.sh start ".$this->request->interface." ".$ap->mac." ".$ap->channel);
+		}
+		else
+		{
+			$this->execBackground("/pineapple/modules/SiteSurvey/scripts/capture.sh stop");
+		}
 	}
 
 	private function toggleDeauth()
 	{
-			$ap = $this->request->ap;
-			$client = $this->request->client;
+		$ap = $this->request->ap;
+		$client = $this->request->client;
 
-			if(!$this->checkRunning("aireplay-ng"))
-			{
-				if(!empty($client))
-					$this->execBackground("/pineapple/modules/SiteSurvey/scripts/deauth.sh start ".$this->request->interface." ".$ap->mac." ".$client);
-				else
-					$this->execBackground("/pineapple/modules/SiteSurvey/scripts/deauth.sh start ".$this->request->interface." ".$ap->mac);
-			}
+		if(!$this->checkRunning("aireplay-ng"))
+		{
+			if(!empty($client))
+				$this->execBackground("/pineapple/modules/SiteSurvey/scripts/deauth.sh start ".$this->request->interface." ".$ap->mac." ".$client);
 			else
-			{
-				$this->execBackground("/pineapple/modules/SiteSurvey/scripts/deauth.sh stop");
-			}
+				$this->execBackground("/pineapple/modules/SiteSurvey/scripts/deauth.sh start ".$this->request->interface." ".$ap->mac);
+		}
+		else
+		{
+			$this->execBackground("/pineapple/modules/SiteSurvey/scripts/deauth.sh stop");
+		}
 	}
 
 	private function getInterfaces()
 	{
-			exec("iwconfig 2> /dev/null | grep \"wlan*\" | grep -v \"mon*\" | awk '{print $1}'", $interfaceArray);
+		exec("iwconfig 2> /dev/null | grep \"wlan*\" | grep -v \"mon*\" | awk '{print $1}'", $interfaceArray);
 
-			$this->response = array("interfaces" => $interfaceArray);
+		$this->response = array("interfaces" => $interfaceArray);
 	}
 
 	private function getMonitors()
 	{
-			exec("iwconfig 2> /dev/null | grep \"mon*\" | awk '{print $1}'", $monitorArray);
+		exec("iwconfig 2> /dev/null | grep \"mon*\" | awk '{print $1}'", $monitorArray);
 
-			$this->response = array("monitors" => $monitorArray);
+		$this->response = array("monitors" => $monitorArray);
 	}
 
 	private function startMonitor()
 	{
-			exec("airmon-ng start ".$this->request->interface);
+		exec("airmon-ng start ".$this->request->interface);
 	}
 
 	private function stopMonitor()
 	{
-			exec("airmon-ng stop ".$this->request->monitor);
+		exec("airmon-ng stop ".$this->request->monitor);
 	}
 
 	private function refreshCapture()
@@ -267,120 +267,120 @@ class SiteSurvey extends Module
 
 	private function scanForNetworks()
 	{
-			if (file_exists("/tmp/SiteSurvey_deauth.lock") && !$this->checkRunning("aireplay-ng")) exec("rm -rf /tmp/SiteSurvey_deauth.lock");
-			if (file_exists("/tmp/SiteSurvey_capture.lock") && !$this->checkRunning("airodump-ng")) exec("rm -rf /tmp/SiteSurvey_capture.lock");
+		if (file_exists("/tmp/SiteSurvey_deauth.lock") && !$this->checkRunning("aireplay-ng")) exec("rm -rf /tmp/SiteSurvey_deauth.lock");
+		if (file_exists("/tmp/SiteSurvey_capture.lock") && !$this->checkRunning("airodump-ng")) exec("rm -rf /tmp/SiteSurvey_capture.lock");
 
-			$clientArray = array();
-			if($this->request->duration && $this->request->monitor != "" && $this->request->type == 'clientAP')
+		$clientArray = array();
+		if($this->request->duration && $this->request->monitor != "" && $this->request->type == 'clientAP')
+		{
+			exec("killall -9 airodump-ng && rm -rf /tmp/sitesurvey-*");
+
+			$this->execBackground("airodump-ng --write /tmp/sitesurvey ".$this->request->monitor." &> /dev/null ");
+			sleep($this->request->duration);
+
+			exec("cat /tmp/sitesurvey-01.csv | tail -n +$(($(cat /tmp/sitesurvey-01.csv | grep -n \"Station MAC\" | cut -f1 -d:)+1)) | tr '\r' '\n' > /tmp/sitesurvey-01.tmp");
+			exec("sed '/^$/d' < /tmp/sitesurvey-01.tmp > /tmp/sitesurvey-01.clients");
+
+			$file_handle = fopen("/tmp/sitesurvey-01.clients", "r");
+			while (!feof($file_handle))
 			{
-					exec("killall -9 airodump-ng && rm -rf /tmp/sitesurvey-*");
+				$line = fgets($file_handle); $line = str_replace(" ", "", $line);
+			   	$clientArray[] = explode(",", $line);
+			}
+			fclose($file_handle);
 
-					$this->execBackground("airodump-ng --write /tmp/sitesurvey ".$this->request->monitor." &> /dev/null ");
-					sleep($this->request->duration);
+			exec("killall -9 airodump-ng");
+		}
 
-					exec("cat /tmp/sitesurvey-01.csv | tail -n +$(($(cat /tmp/sitesurvey-01.csv | grep -n \"Station MAC\" | cut -f1 -d:)+1)) | tr '\r' '\n' > /tmp/sitesurvey-01.tmp");
-					exec("sed '/^$/d' < /tmp/sitesurvey-01.tmp > /tmp/sitesurvey-01.clients");
+		$p = $this->iwlistparse->parseScanDev($this->request->interface);
+		$apArray = $p[$this->request->interface];
 
-					$file_handle = fopen("/tmp/sitesurvey-01.clients", "r");
-					while (!feof($file_handle))
-					{
-						$line = fgets($file_handle); $line = str_replace(" ", "", $line);
-					   	$clientArray[] = explode(",", $line);
-					}
-					fclose($file_handle);
+		$returnArray = array();
+		foreach ($apArray as $apData) {
+			$accessPoint = array();
+			$accessPoint['mac'] = $apData["Address"];
+			$accessPoint['ssid'] = $apData["ESSID"];
+			$accessPoint['channel'] = intval($apData["Channel"]);
 
-					exec("killall -9 airodump-ng");
+			$frequencyData = explode(' ', $apData["Frequency"]);
+			$accessPoint['frequency'] = $frequencyData[0];
+
+			$accessPoint['signal'] = $apData["Signal level"];
+			$accessPoint['quality'] = intval($apData["Quality"]);
+
+			if($apData["Quality"] <= 25) $accessPoint['qualityLabel'] = "danger";
+			else if($apData["Quality"] <= 50) $accessPoint['qualityLabel'] = "warning";
+			else if($apData["Quality"] <= 100) $accessPoint['qualityLabel'] = "success";
+
+			if(file_exists("/tmp/SiteSurvey_capture.lock"))
+			{
+				if(file_get_contents("cat /tmp/SiteSurvey_capture.lock") == $apData["Address"]) $accessPoint['captureOnSelected'] = 1;
+				else $accessPoint['captureOnSelected'] = 0;
+			}
+			else
+			{
+				$accessPoint['captureOnSelected'] = 0;
 			}
 
-			$p = $this->iwlistparse->parseScanDev($this->request->interface);
-			$apArray = $p[$this->request->interface];
+			if($this->checkRunning("airodump-ng")) $accessPoint['captureRunning'] = 1;
+			else $accessPoint['captureRunning'] = 0;
 
-			$returnArray = array();
-			foreach ($apArray as $apData) {
-					$accessPoint = array();
-					$accessPoint['mac'] = $apData["Address"];
-					$accessPoint['ssid'] = $apData["ESSID"];
-					$accessPoint['channel'] = intval($apData["Channel"]);
-
-					$frequencyData = explode(' ', $apData["Frequency"]);
-					$accessPoint['frequency'] = $frequencyData[0];
-
-					$accessPoint['signal'] = $apData["Signal level"];
-					$accessPoint['quality'] = intval($apData["Quality"]);
-
-					if($apData["Quality"] <= 25) $accessPoint['qualityLabel'] = "danger";
-					else if($apData["Quality"] <= 50) $accessPoint['qualityLabel'] = "warning";
-					else if($apData["Quality"] <= 100) $accessPoint['qualityLabel'] = "success";
-
-					if(file_exists("/tmp/SiteSurvey_capture.lock"))
-					{
-						if(file_get_contents("cat /tmp/SiteSurvey_capture.lock") == $apData["Address"]) $accessPoint['captureOnSelected'] = 1;
-						else $accessPoint['captureOnSelected'] = 0;
-					}
-					else
-					{
-						$accessPoint['captureOnSelected'] = 0;
-					}
-
-					if($this->checkRunning("airodump-ng")) $accessPoint['captureRunning'] = 1;
-					else $accessPoint['captureRunning'] = 0;
-
-					if(file_exists("/tmp/SiteSurvey_deauth.lock"))
-					{
-						$targetArray = explode("\n", file_get_contents("/tmp/SiteSurvey_deauth.lock"));
-						if($targetArray[0] == $apData["Address"]) $accessPoint['deauthOnSelected'] = 1;
-						else $accessPoint['deauthOnSelected'] = 0;
-					}
-					else
-					{
-						$accessPoint['deauthOnSelected'] = 0;
-					}
-
-					if($this->checkRunning("aireplay-ng")) $accessPoint['deauthRunning'] = 1;
-					else $accessPoint['deauthRunning'] = 0;
-
-					if($apData["Encryption key"] == "on")
-					{
-						$WPA = strstr($apData["IE"], "WPA Version 1");
-						$WPA2 = strstr($apData["IE"], "802.11i/WPA2 Version 1");
-
-						$auth_type = str_replace("\n"," ",$apData["Authentication Suites (1)"]);
-						$auth_type = implode(' ',array_unique(explode(' ', $auth_type)));
-
-						$cipher = $apData["Pairwise Ciphers (2)"] ? $apData["Pairwise Ciphers (2)"] : $apData["Pairwise Ciphers (1)"];
-						$cipher = str_replace("\n"," ",$cipher);
-						$cipher = implode(', ',array_unique(explode(' ', $cipher)));
-
-						if($WPA2 != "" && $WPA != "") $accessPoint['encryption'] = 'Mixed WPA/WPA2';
-						else if($WPA2 != "") $accessPoint['encryption'] = 'WPA2';
-						else if($WPA != "") $accessPoint['encryption'] = 'WPA';
-						else $accessPoint['encryption'] = 'WEP';
-
-						$accessPoint['cipher'] = $cipher;
-						$accessPoint['auth'] = $auth_type;
-					}
-					else
-					{
-						$accessPoint['encryption'] = 'None';
-						$accessPoint['cipher'] = '';
-						$accessPoint['auth'] = '';
-					}
-
-					$accessPoint['clients'] = array();
-					foreach ($clientArray as $clientData)
-					{
-						if($clientData[5] == $accessPoint['mac'])
-						{
-								array_push($accessPoint['clients'], $clientData[0]);
-						}
-					}
-
-					exec("rm -rf /tmp/sitesurvey-*");
-
-					array_push($returnArray, $accessPoint);
+			if(file_exists("/tmp/SiteSurvey_deauth.lock"))
+			{
+				$targetArray = explode("\n", file_get_contents("/tmp/SiteSurvey_deauth.lock"));
+				if($targetArray[0] == $apData["Address"]) $accessPoint['deauthOnSelected'] = 1;
+				else $accessPoint['deauthOnSelected'] = 0;
+			}
+			else
+			{
+				$accessPoint['deauthOnSelected'] = 0;
 			}
 
-			$this->response = $returnArray;
+			if($this->checkRunning("aireplay-ng")) $accessPoint['deauthRunning'] = 1;
+			else $accessPoint['deauthRunning'] = 0;
+
+			if($apData["Encryption key"] == "on")
+			{
+				$WPA = strstr($apData["IE"], "WPA Version 1");
+				$WPA2 = strstr($apData["IE"], "802.11i/WPA2 Version 1");
+
+				$auth_type = str_replace("\n"," ",$apData["Authentication Suites (1)"]);
+				$auth_type = implode(' ',array_unique(explode(' ', $auth_type)));
+
+				$cipher = $apData["Pairwise Ciphers (2)"] ? $apData["Pairwise Ciphers (2)"] : $apData["Pairwise Ciphers (1)"];
+				$cipher = str_replace("\n"," ",$cipher);
+				$cipher = implode(', ',array_unique(explode(' ', $cipher)));
+
+				if($WPA2 != "" && $WPA != "") $accessPoint['encryption'] = 'Mixed WPA/WPA2';
+				else if($WPA2 != "") $accessPoint['encryption'] = 'WPA2';
+				else if($WPA != "") $accessPoint['encryption'] = 'WPA';
+				else $accessPoint['encryption'] = 'WEP';
+
+				$accessPoint['cipher'] = $cipher;
+				$accessPoint['auth'] = $auth_type;
+			}
+			else
+			{
+				$accessPoint['encryption'] = 'None';
+				$accessPoint['cipher'] = '';
+				$accessPoint['auth'] = '';
+			}
+
+			$accessPoint['clients'] = array();
+			foreach ($clientArray as $clientData)
+			{
+				if($clientData[5] == $accessPoint['mac'])
+				{
+						array_push($accessPoint['clients'], $clientData[0]);
+				}
+			}
+
+			exec("rm -rf /tmp/sitesurvey-*");
+
+			array_push($returnArray, $accessPoint);
+		}
+
+		$this->response = $returnArray;
 	}
 
 	private function getMACInfo()
@@ -416,5 +416,4 @@ class SiteSurvey extends Module
 
 		$this->response = $returnArray;
 	}
-
 }

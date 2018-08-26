@@ -11,6 +11,6 @@ if [ "$1" = "start" ]; then
 	eval ${MYCMD}
 	rm -rf /tmp/ngrep.run
 elif [ "$1" = "stop" ]; then
-  killall ngrep
+  	killall -9 ngrep
 	rm -rf /tmp/ngrep.run
 fi

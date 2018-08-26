@@ -7,10 +7,10 @@ class urlsnarf extends Module
 	public function route()
     {
         switch ($this->request->action) {
-						case 'refreshInfo':
-								$this->refreshInfo();
-								break;
-						case 'refreshOutput':
+			case 'refreshInfo':
+				$this->refreshInfo();
+				break;
+			case 'refreshOutput':
                 $this->refreshOutput();
                 break;
             case 'refreshStatus':
@@ -34,36 +34,36 @@ class urlsnarf extends Module
             case 'deleteHistory':
                 $this->deleteHistory();
                 break;
-						case 'downloadHistory':
-								$this->downloadHistory();
-								break;
-						case 'toggleurlsnarfOnBoot':
-							$this->toggleurlsnarfOnBoot();
-							break;
-						case 'getInterfaces':
-							$this->getInterfaces();
-							break;
-						case 'saveAutostartSettings':
-							$this->saveAutostartSettings();
-							break;
+			case 'downloadHistory':
+				$this->downloadHistory();
+				break;
+			case 'toggleurlsnarfOnBoot':
+				$this->toggleurlsnarfOnBoot();
+				break;
+			case 'getInterfaces':
+				$this->getInterfaces();
+				break;
+			case 'saveAutostartSettings':
+				$this->saveAutostartSettings();
+				break;
         }
     }
 
-		protected function checkDependency($dependencyName)
-		{
-				return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("urlsnarf.module.installed")));
-		}
+	protected function checkDependency($dependencyName)
+	{
+			return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("urlsnarf.module.installed")));
+	}
 
-		protected function getDevice()
-		{
-				return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
-		}
+	protected function getDevice()
+	{
+			return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
+	}
 
-		protected function refreshInfo()
-		{
-			$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/urlsnarf/module.info"));
-			$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
-		}
+	protected function refreshInfo()
+	{
+		$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/urlsnarf/module.info"));
+		$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
+	}
 
     private function handleDependencies()
     {
@@ -93,39 +93,39 @@ class urlsnarf extends Module
 
     private function toggleurlsnarfOnBoot()
     {
-				if(exec("cat /etc/rc.local | grep urlsnarf/scripts/autostart_urlsnarf.sh") == "")
-				{
-					exec("sed -i '/exit 0/d' /etc/rc.local");
-					exec("echo /pineapple/modules/urlsnarf/scripts/autostart_urlsnarf.sh >> /etc/rc.local");
-					exec("echo exit 0 >> /etc/rc.local");
-				}
-				else
-				{
-					exec("sed -i '/urlsnarf\/scripts\/autostart_urlsnarf.sh/d' /etc/rc.local");
-				}
+		if(exec("cat /etc/rc.local | grep urlsnarf/scripts/autostart_urlsnarf.sh") == "")
+		{
+			exec("sed -i '/exit 0/d' /etc/rc.local");
+			exec("echo /pineapple/modules/urlsnarf/scripts/autostart_urlsnarf.sh >> /etc/rc.local");
+			exec("echo exit 0 >> /etc/rc.local");
 		}
+		else
+		{
+			exec("sed -i '/urlsnarf\/scripts\/autostart_urlsnarf.sh/d' /etc/rc.local");
+		}
+	}
 
     private function toggleurlsnarf()
     {
 		if(!$this->checkRunning("urlsnarf"))
 		{
-				$this->uciSet("urlsnarf.run.interface", $this->request->interface);
+			$this->uciSet("urlsnarf.run.interface", $this->request->interface);
 
-				$this->execBackground("/pineapple/modules/urlsnarf/scripts/urlsnarf.sh start");
+			$this->execBackground("/pineapple/modules/urlsnarf/scripts/urlsnarf.sh start");
 		}
 		else
 		{
-				$this->uciSet("urlsnarf.run.interface", '');
+			$this->uciSet("urlsnarf.run.interface", '');
 
-				$this->execBackground("/pineapple/modules/urlsnarf/scripts/urlsnarf.sh stop");
+			$this->execBackground("/pineapple/modules/urlsnarf/scripts/urlsnarf.sh stop");
 		}
 	}
 
 	private function getInterfaces()
 	{
-			exec("cat /proc/net/dev | tail -n +3 | cut -f1 -d: | sed 's/ //g'", $interfaceArray);
+		exec("cat /proc/net/dev | tail -n +3 | cut -f1 -d: | sed 's/ //g'", $interfaceArray);
 
-			$this->response = array("interfaces" => $interfaceArray, "selected" => $this->uciGet("urlsnarf.run.interface"));
+		$this->response = array("interfaces" => $interfaceArray, "selected" => $this->uciGet("urlsnarf.run.interface"));
 	}
 
     private function refreshStatus()
@@ -291,8 +291,7 @@ class urlsnarf extends Module
 
 	private function saveAutostartSettings()
 	{
-			$settings = $this->request->settings;
-			$this->uciSet("urlsnarf.autostart.interface", $settings->interface);
+		$settings = $this->request->settings;
+		$this->uciSet("urlsnarf.autostart.interface", $settings->interface);
 	}
-
 }

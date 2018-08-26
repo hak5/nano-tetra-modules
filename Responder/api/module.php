@@ -7,10 +7,10 @@ class Responder extends Module
 	public function route()
     {
         switch ($this->request->action) {
-						case 'refreshInfo':
-								$this->refreshInfo();
-								break;
-						case 'refreshOutput':
+			case 'refreshInfo':
+				$this->refreshInfo();
+				break;
+			case 'refreshOutput':
                 $this->refreshOutput();
                 break;
             case 'refreshStatus':
@@ -34,47 +34,47 @@ class Responder extends Module
             case 'deleteHistory':
                 $this->deleteHistory();
                 break;
-						case 'downloadHistory':
-								$this->downloadHistory();
-								break;
-						case 'toggleResponderOnBoot':
-							$this->toggleResponderOnBoot();
-							break;
-						case 'getInterfaces':
-							$this->getInterfaces();
-							break;
-						case 'saveAutostartSettings':
-							$this->saveAutostartSettings();
-							break;
-						case 'getSettings':
-								$this->getSettings();
-								break;
-						case 'setSettings':
-								$this->setSettings();
-								break;
+			case 'downloadHistory':
+				$this->downloadHistory();
+				break;
+			case 'toggleResponderOnBoot':
+				$this->toggleResponderOnBoot();
+				break;
+			case 'getInterfaces':
+				$this->getInterfaces();
+				break;
+			case 'saveAutostartSettings':
+				$this->saveAutostartSettings();
+				break;
+			case 'getSettings':
+				$this->getSettings();
+				break;
+			case 'setSettings':
+				$this->setSettings();
+				break;
         }
     }
 
-		protected function checkDependency($dependencyName)
-		{
-				return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("responder.module.installed")));
-		}
+	protected function checkDependency($dependencyName)
+	{
+		return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("responder.module.installed")));
+	}
 
-		protected function checkRunning($processName)
-		{
-				return exec("ps w | grep {$processName} | grep -v grep") !== '' ? 1 : 0;
-		}
+	protected function checkRunning($processName)
+	{
+		return exec("ps w | grep {$processName} | grep -v grep") !== '' ? 1 : 0;
+	}
 
-		protected function getDevice()
-		{
-				return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
-		}
+	protected function getDevice()
+	{
+		return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
+	}
 
-		protected function refreshInfo()
-		{
-			$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/Responder/module.info"));
-			$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
-		}
+	protected function refreshInfo()
+	{
+		$moduleInfo = @json_decode(file_get_contents("/pineapple/modules/Responder/module.info"));
+		$this->response = array('title' => $moduleInfo->title, 'version' => $moduleInfo->version);
+	}
 
     private function handleDependencies()
     {
@@ -134,9 +134,9 @@ class Responder extends Module
 
 	private function getInterfaces()
 	{
-			exec("cat /proc/net/dev | tail -n +3 | cut -f1 -d: | sed 's/ //g'", $interfaceArray);
+		exec("cat /proc/net/dev | tail -n +3 | cut -f1 -d: | sed 's/ //g'", $interfaceArray);
 
-			$this->response = array("interfaces" => $interfaceArray, "selected" => $this->uciGet("responder.run.interface"));
+		$this->response = array("interfaces" => $interfaceArray, "selected" => $this->uciGet("responder.run.interface"));
 	}
 
     private function refreshStatus()
@@ -201,8 +201,8 @@ class Responder extends Module
 			$bootLabelOFF = "danger";
         }
 
-				$device = $this->getDevice();
-				$sdAvailable = $this->isSDAvailable();
+		$device = $this->getDevice();
+		$sdAvailable = $this->isSDAvailable();
 
 		$this->response = array("device" => $device, "sdAvailable" => $sdAvailable, "status" => $status, "statusLabel" => $statusLabel, "installed" => $installed, "install" => $install, "installLabel" => $installLabel, "bootLabelON" => $bootLabelON, "bootLabelOFF" => $bootLabelOFF, "processing" => $processing);
 	}
@@ -256,11 +256,11 @@ class Responder extends Module
 			echo '[';
 			for($i=0;$i<count($log_list);$i++)
 			{
-					$info = explode("_", basename($log_list[$i]));
-					$entryDate = gmdate('Y-m-d H-i-s', $info[1]);
-					$entryName = basename($log_list[$i]);
+				$info = explode("_", basename($log_list[$i]));
+				$entryDate = gmdate('Y-m-d H-i-s', $info[1]);
+				$entryName = basename($log_list[$i]);
 
-					echo json_encode(array($entryDate, $entryName));
+				echo json_encode(array($entryDate, $entryName));
 
 					if($i!=count($log_list)-1) echo ',';
 			}
@@ -291,8 +291,8 @@ class Responder extends Module
 
 	private function saveAutostartSettings()
 	{
-			$settings = $this->request->settings;
-			$this->uciSet("responder.autostart.interface", $settings->interface);
+		$settings = $this->request->settings;
+		$this->uciSet("responder.autostart.interface", $settings->interface);
 	}
 
 	private function getSettings()
@@ -315,6 +315,7 @@ class Responder extends Module
 					'fingerprint' => $this->uciGet("responder.settings.fingerprint"),
 					'wpad' => $this->uciGet("responder.settings.wpad"),
 					'forceWpadAuth' => $this->uciGet("responder.settings.forceWpadAuth"),
+					'proxyAuth' => $this->uciGet("responder.settings.proxyAuth"),
 					'forceLmDowngrade' => $this->uciGet("responder.settings.forceLmDowngrade"),
 					'verbose' => $this->uciGet("responder.settings.verbose"),
 					'analyse' => $this->uciGet("responder.settings.analyse")
@@ -324,28 +325,29 @@ class Responder extends Module
 
 	private function setSettings()
 	{
-			$settings = $this->request->settings;
-			if ($settings->SQL) $this->updateSetting("SQL", 1); else $this->updateSetting("SQL", 0);
-			if ($settings->SMB) $this->updateSetting("SMB", 1); else $this->updateSetting("SMB", 0);
-			if ($settings->Kerberos) $this->updateSetting("Kerberos", 1); else $this->updateSetting("Kerberos", 0);
-			if ($settings->FTP) $this->updateSetting("FTP", 1); else $this->updateSetting("FTP", 0);
-			if ($settings->POP) $this->updateSetting("POP", 1); else $this->updateSetting("POP", 0);
-			if ($settings->SMTP) $this->updateSetting("SMTP", 1); else $this->updateSetting("SMTP", 0);
-			if ($settings->IMAP) $this->updateSetting("IMAP", 1); else $this->updateSetting("IMAP", 0);
-			if ($settings->HTTP) $this->updateSetting("HTTP", 1); else $this->updateSetting("HTTP", 0);
-			if ($settings->HTTPS) $this->updateSetting("HTTPS", 1); else $this->updateSetting("HTTPS", 0);
-			if ($settings->DNS) $this->updateSetting("DNS", 1); else $this->updateSetting("DNS", 0);
-			if ($settings->LDAP) $this->updateSetting("LDAP", 1); else $this->updateSetting("LDAP", 0);
+		$settings = $this->request->settings;
+		if ($settings->SQL) $this->updateSetting("SQL", 1); else $this->updateSetting("SQL", 0);
+		if ($settings->SMB) $this->updateSetting("SMB", 1); else $this->updateSetting("SMB", 0);
+		if ($settings->Kerberos) $this->updateSetting("Kerberos", 1); else $this->updateSetting("Kerberos", 0);
+		if ($settings->FTP) $this->updateSetting("FTP", 1); else $this->updateSetting("FTP", 0);
+		if ($settings->POP) $this->updateSetting("POP", 1); else $this->updateSetting("POP", 0);
+		if ($settings->SMTP) $this->updateSetting("SMTP", 1); else $this->updateSetting("SMTP", 0);
+		if ($settings->IMAP) $this->updateSetting("IMAP", 1); else $this->updateSetting("IMAP", 0);
+		if ($settings->HTTP) $this->updateSetting("HTTP", 1); else $this->updateSetting("HTTP", 0);
+		if ($settings->HTTPS) $this->updateSetting("HTTPS", 1); else $this->updateSetting("HTTPS", 0);
+		if ($settings->DNS) $this->updateSetting("DNS", 1); else $this->updateSetting("DNS", 0);
+		if ($settings->LDAP) $this->updateSetting("LDAP", 1); else $this->updateSetting("LDAP", 0);
 
-			if ($settings->basic) $this->uciSet("responder.settings.basic", 1); else $this->uciSet("responder.settings.basic", 0);
-			if ($settings->wredir) $this->uciSet("responder.settings.wredir", 1); else $this->uciSet("responder.settings.wredir", 0);
-			if ($settings->NBTNS) $this->uciSet("responder.settings.NBTNS", 1); else $this->uciSet("responder.settings.NBTNS", 0);
-			if ($settings->fingerprint) $this->uciSet("responder.settings.fingerprint", 1); else $this->uciSet("responder.settings.fingerprint", 0);
-			if ($settings->wpad) $this->uciSet("responder.settings.wpad", 1); else $this->uciSet("responder.settings.wpad", 0);
-			if ($settings->forceWpadAuth) $this->uciSet("responder.settings.forceWpadAuth", 1); else $this->uciSet("responder.settings.forceWpadAuth", 0);
-			if ($settings->forceLmDowngrade) $this->uciSet("responder.settings.forceLmDowngrade", 1); else $this->uciSet("responder.settings.forceLmDowngrade", 0);
-			if ($settings->verbose) $this->uciSet("responder.settings.verbose", 1); else $this->uciSet("responder.settings.verbose", 0);
-			if ($settings->analyse) $this->uciSet("responder.settings.analyse", 1); else $this->uciSet("responder.settings.analyse", 0);
+		if ($settings->basic) $this->uciSet("responder.settings.basic", 1); else $this->uciSet("responder.settings.basic", 0);
+		if ($settings->wredir) $this->uciSet("responder.settings.wredir", 1); else $this->uciSet("responder.settings.wredir", 0);
+		if ($settings->NBTNS) $this->uciSet("responder.settings.NBTNS", 1); else $this->uciSet("responder.settings.NBTNS", 0);
+		if ($settings->fingerprint) $this->uciSet("responder.settings.fingerprint", 1); else $this->uciSet("responder.settings.fingerprint", 0);
+		if ($settings->wpad) $this->uciSet("responder.settings.wpad", 1); else $this->uciSet("responder.settings.wpad", 0);
+		if ($settings->forceWpadAuth) $this->uciSet("responder.settings.forceWpadAuth", 1); else $this->uciSet("responder.settings.forceWpadAuth", 0);
+		if ($settings->proxyAuth) $this->uciSet("responder.settings.proxyAuth", 1); else $this->uciSet("responder.settings.proxyAuth", 0);
+		if ($settings->forceLmDowngrade) $this->uciSet("responder.settings.forceLmDowngrade", 1); else $this->uciSet("responder.settings.forceLmDowngrade", 0);
+		if ($settings->verbose) $this->uciSet("responder.settings.verbose", 1); else $this->uciSet("responder.settings.verbose", 0);
+		if ($settings->analyse) $this->uciSet("responder.settings.analyse", 1); else $this->uciSet("responder.settings.analyse", 0);
 	}
 
 	private function updateSetting($setting, $value)
