@@ -12,8 +12,8 @@ touch /tmp/ngrep.progress
 
 if [ "$1" = "install" ]; then
   if [ "$2" = "internal" ]; then
-	 opkg update
-     opkg install ngrep
+	opkg update
+    opkg install ngrep
   elif [ "$2" = "sd" ]; then
     opkg update
     opkg install ngrep --dest sd

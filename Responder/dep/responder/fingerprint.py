@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-# This file is part of Responder
-# Original work by Laurent Gaffie - Trustwave Holdings
-#
+# This file is part of Responder, a network take-over set of tools 
+# created and maintained by Laurent Gaffie.
+# email: laurent.gaffie@gmail.com
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -14,15 +14,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import re
-import sys
 import socket
 import struct
-import string
-import logging
 
-from utils import *
-from odict import OrderedDict
+from utils import color
 from packets import SMBHeader, SMBNego, SMBNegoFingerData, SMBSessionFingerData
 
 def OsNameClientVersion(data):
@@ -31,7 +26,6 @@ def OsNameClientVersion(data):
 		pack = tuple(data[47+length:].split('\x00\x00\x00'))[:2]
 		OsVersion, ClientVersion = tuple([e.replace('\x00','') for e in data[47+length:].split('\x00\x00\x00')[:2]])
 		return OsVersion, ClientVersion
-
 	except:
 	 	return "Could not fingerprint Os version.", "Could not fingerprint LanManager Client version"
 

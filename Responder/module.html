@@ -126,6 +126,7 @@
               <div class="checkbox"><label><input type="checkbox" ng-model="settings.fingerprint"> This option allows you to fingerprint a host that issued an NBT-NS or LLMNR query.</label></div>
               <div class="checkbox"><label><input type="checkbox" ng-model="settings.wpad"> Start the WPAD rogue proxy server.</label></div>
               <div class="checkbox"><label><input type="checkbox" ng-model="settings.forceWpadAuth"> Force NTLM/Basic authentication on wpad.dat file retrieval. This may cause a login prompt.</label></div>
+              <div class="checkbox"><label><input type="checkbox" ng-model="settings.proxyAuth"> Force NTLM (transparently)/Basic (prompt) authentication for the proxy. WPAD doesn't need to be ON. This option is highly effective when combined with -r.</label></div>
               <div class="checkbox"><label><input type="checkbox" ng-model="settings.forceLmDowngrade"> Force LM hashing downgrade for Windows XP/2003 and earlier.</label></div>
               <div class="checkbox"><label><input type="checkbox" ng-model="settings.verbose"> Increase verbosity.</label></div>
               <div class="checkbox"><label><input type="checkbox" ng-model="settings.analyse"> Analyze mode. This option allows you to see NBT-NS, BROWSER, LLMNR requests without responding.</label></div>
