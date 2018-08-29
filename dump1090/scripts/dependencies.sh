@@ -12,14 +12,13 @@ touch /tmp/dump1090.progress
 
 if [ "$1" = "install" ]; then
   if [ "$2" = "internal" ]; then
-	   opkg update
-     opkg install dump1090
+	opkg update
+    opkg install dump1090
   elif [ "$2" = "sd" ]; then
     opkg update
     opkg install dump1090 --dest sd
 
     ln -s /sd/usr/share/dump1090/ /usr/share/dump1090
-
   fi
 
   touch /etc/config/dump1090
@@ -30,8 +29,8 @@ if [ "$1" = "install" ]; then
   uci commit dump1090.module.installed
 
 elif [ "$1" = "remove" ]; then
-    opkg remove dump1090
-    rm -rf /etc/config/dump1090
+  opkg remove dump1090
+  rm -rf /etc/config/dump1090
 fi
 
 rm /tmp/dump1090.progress

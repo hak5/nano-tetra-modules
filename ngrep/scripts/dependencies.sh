@@ -9,17 +9,14 @@ export PATH=$PATH:/sd/usr/bin:/sd/usr/sbin
 }
 
 touch /tmp/ngrep.progress
-mkdir -p /tmp/ngrep
-wget https://github.com/adde88/openwrt-useful-tools/tree/master -P /tmp/ngrep
-NGREP=`grep -F "ngrep_" /tmp/ngrep/master | awk {'print $5'} | awk -F'"' {'print $2'}`
 
 if [ "$1" = "install" ]; then
   if [ "$2" = "internal" ]; then
-	 opkg update
-     opkg install "$NGREP"
+	opkg update
+    opkg install ngrep
   elif [ "$2" = "sd" ]; then
     opkg update
-    opkg install "$NGREP" --dest sd
+    opkg install ngrep --dest sd
   fi
 
   if [ ! -f /usr/lib/libpcap.so ] && [ -f /usr/lib/libpcap.so.1.3 ]; then
@@ -38,4 +35,3 @@ elif [ "$1" = "remove" ]; then
 fi
 
 rm /tmp/ngrep.progress
-rm -rf /tmp/ngrep

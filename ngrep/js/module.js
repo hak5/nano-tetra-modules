@@ -2,17 +2,17 @@ registerController('ngrep_Controller', ['$api', '$scope', '$rootScope', '$interv
 	$scope.title = "Loading...";
 	$scope.version = "Loading...";
 
-  $scope.refreshInfo = (function() {
+	$scope.refreshInfo = (function() {
 		$api.request({
-            module: 'ngrep',
-            action: "refreshInfo"
-        }, function(response) {
-						$scope.title = response.title;
-						$scope.version = "v"+response.version;
-        })
-    });
+			module: 'ngrep',
+			action: "refreshInfo"
+		}, function(response) {
+			$scope.title = response.title;
+			$scope.version = "v" + response.version;
+		})
+	});
 
-		$scope.refreshInfo();
+	$scope.refreshInfo();
 
 }]);
 
@@ -29,31 +29,31 @@ registerController('ngrep_ControlsController', ['$api', '$scope', '$rootScope', 
 	$scope.sdAvailable = false;
 
 	$rootScope.status = {
-		installed : false,
-		refreshOutput : false,
-		refreshHistory : false,
-		refreshProfiles : false
+		installed: false,
+		refreshOutput: false,
+		refreshHistory: false,
+		refreshProfiles: false
 	};
 
-  $scope.refreshStatus = (function() {
+	$scope.refreshStatus = (function() {
 		$api.request({
-            module: "ngrep",
-            action: "refreshStatus"
-        }, function(response) {
-            $scope.status = response.status;
+			module: "ngrep",
+			action: "refreshStatus"
+		}, function(response) {
+			$scope.status = response.status;
 			$scope.statusLabel = response.statusLabel;
 
 			$rootScope.status.installed = response.installed;
 			$scope.device = response.device;
 			$scope.sdAvailable = response.sdAvailable;
-			if(response.processing) $scope.processing = true;
+			if (response.processing) $scope.processing = true;
 			$scope.install = response.install;
 			$scope.installLabel = response.installLabel;
-        })
-    });
+		})
+	});
 
-  $scope.togglengrep = (function() {
-		if($scope.status != "Stop")
+	$scope.togglengrep = (function() {
+		if ($scope.status != "Stop")
 			$scope.status = "Starting...";
 		else
 			$scope.status = "Stopping...";
@@ -65,103 +65,100 @@ registerController('ngrep_ControlsController', ['$api', '$scope', '$rootScope', 
 		$rootScope.status.refreshHistory = false;
 
 		$api.request({
-		        module: 'ngrep',
-		        action: 'togglengrep',
-		        command: $rootScope.command
-		    }, function(response) {
-		        $timeout(function(){
-							$rootScope.status.refreshOutput = true;
-							$rootScope.status.refreshHistory = true;
+			module: 'ngrep',
+			action: 'togglengrep',
+			command: $rootScope.command
+		}, function(response) {
+			$timeout(function() {
+				$rootScope.status.refreshOutput = true;
+				$rootScope.status.refreshHistory = true;
 
-							$scope.starting = false;
-							$scope.refreshStatus();
+				$scope.starting = false;
+				$scope.refreshStatus();
 
-		        }, 2000);
-		    })
+			}, 2000);
+		})
 	});
 
-  $scope.handleDependencies = (function(param) {
-    if(!$rootScope.status.installed)
+	$scope.handleDependencies = (function(param) {
+		if (!$rootScope.status.installed)
 			$scope.install = "Installing...";
 		else
 			$scope.install = "Removing...";
 
 		$api.request({
-            module: 'ngrep',
-            action: 'handleDependencies',
-						destination: param
-        }, function(response){
-            if (response.success === true) {
+			module: 'ngrep',
+			action: 'handleDependencies',
+			destination: param
+		}, function(response) {
+			if (response.success === true) {
 				$scope.installLabel = "warning";
 				$scope.processing = true;
 
-                $scope.handleDependenciesInterval = $interval(function(){
-                    $api.request({
-                        module: 'ngrep',
-                        action: 'handleDependenciesStatus'
-                    }, function(response) {
-                        if (response.success === true){
-                            $scope.processing = false;
-                            $interval.cancel($scope.handleDependenciesInterval);
-                            $scope.refreshStatus();
-                        }
-                    });
-                }, 5000);
-            }
-        });
-    });
+				$scope.handleDependenciesInterval = $interval(function() {
+					$api.request({
+						module: 'ngrep',
+						action: 'handleDependenciesStatus'
+					}, function(response) {
+						if (response.success === true) {
+							$scope.processing = false;
+							$interval.cancel($scope.handleDependenciesInterval);
+							$scope.refreshStatus();
+						}
+					});
+				}, 5000);
+			}
+		});
+	});
 
-		$scope.refreshStatus();
+	$scope.refreshStatus();
 }]);
 
 registerController('ngrep_OutputController', ['$api', '$scope', '$rootScope', '$interval', function($api, $scope, $rootScope, $interval) {
-  $scope.output = 'Loading...';
+	$scope.output = 'Loading...';
 	$scope.filter = '';
 
 	$scope.refreshLabelON = "default";
 	$scope.refreshLabelOFF = "danger";
 
-  $scope.refreshOutput = (function() {
+	$scope.refreshOutput = (function() {
 		$api.request({
-            module: "ngrep",
-            action: "refreshOutput",
-						filter: $scope.filter
-        }, function(response) {
-            $scope.output = response;
-        })
-    });
-
-	$scope.clearFilter = (function() {
-				$scope.filter = '';
-				$scope.refreshOutput();
+			module: "ngrep",
+			action: "refreshOutput",
+			filter: $scope.filter
+		}, function(response) {
+			$scope.output = response;
+		})
 	});
 
-  $scope.toggleAutoRefresh = (function() {
-    if($scope.autoRefreshInterval)
-		{
+	$scope.clearFilter = (function() {
+		$scope.filter = '';
+		$scope.refreshOutput();
+	});
+
+	$scope.toggleAutoRefresh = (function() {
+		if ($scope.autoRefreshInterval) {
 			$interval.cancel($scope.autoRefreshInterval);
 			$scope.autoRefreshInterval = null;
 			$scope.refreshLabelON = "default";
 			$scope.refreshLabelOFF = "danger";
-		}
-		else
-		{
+		} else {
 			$scope.refreshLabelON = "success";
 			$scope.refreshLabelOFF = "default";
 
-			$scope.autoRefreshInterval = $interval(function(){
+			$scope.autoRefreshInterval = $interval(function() {
 				$scope.refreshOutput();
-	        }, 5000);
+			}, 5000);
 		}
-    });
+	});
 
-		$scope.refreshOutput();
+	$scope.refreshOutput();
 
-		$rootScope.$watch('status.refreshOutput', function(param) {
-			if(param) {
-				$scope.refreshOutput();
-			}
-		});
+	$rootScope.$watch('status.refreshOutput', function(param) {
+		if (param) {
+			$scope.refreshOutput();
+		}
+	});
 
 }]);
 
@@ -170,52 +167,52 @@ registerController('ngrep_HistoryController', ['$api', '$scope', '$rootScope', f
 	$scope.historyOutput = 'Loading...';
 	$scope.historyDate = 'Loading...';
 
-  $scope.refreshHistory = (function() {
-        $api.request({
-            module: "ngrep",
-            action: "refreshHistory"
-        }, function(response) {
-                $scope.history = response;
-        })
-    });
-
-  $scope.viewHistory = (function(param) {
+	$scope.refreshHistory = (function() {
 		$api.request({
-            module: "ngrep",
-            action: "viewHistory",
+			module: "ngrep",
+			action: "refreshHistory"
+		}, function(response) {
+			$scope.history = response;
+		})
+	});
+
+	$scope.viewHistory = (function(param) {
+		$api.request({
+			module: "ngrep",
+			action: "viewHistory",
 			file: param
-        }, function(response) {
-            $scope.historyOutput = response.output;
+		}, function(response) {
+			$scope.historyOutput = response.output;
 			$scope.historyDate = response.date;
-        })
-    });
+		})
+	});
 
-  $scope.deleteHistory = (function(param) {
+	$scope.deleteHistory = (function(param) {
 		$api.request({
-            module: "ngrep",
-            action: "deleteHistory",
+			module: "ngrep",
+			action: "deleteHistory",
 			file: param
-        }, function(response) {
-            $scope.refreshHistory();
-        })
-    });
+		}, function(response) {
+			$scope.refreshHistory();
+		})
+	});
 
-		$scope.downloadHistory = (function(param) {
-					$api.request({
-							module: 'ngrep',
-							action: 'downloadHistory',
-							file: param
-					}, function(response) {
-							if (response.error === undefined) {
-									window.location = '/api/?download=' + response.download;
-							}
-					});
-			});
+	$scope.downloadHistory = (function(param) {
+		$api.request({
+			module: 'ngrep',
+			action: 'downloadHistory',
+			file: param
+		}, function(response) {
+			if (response.error === undefined) {
+				window.location = '/api/?download=' + response.download;
+			}
+		});
+	});
 
 	$scope.refreshHistory();
 
 	$rootScope.$watch('status.refreshHistory', function(param) {
-		if(param) {
+		if (param) {
 			$scope.refreshHistory();
 		}
 	});
@@ -223,127 +220,128 @@ registerController('ngrep_HistoryController', ['$api', '$scope', '$rootScope', f
 }]);
 
 registerController('ngrep_OptionsController', ['$api', '$scope', '$rootScope', function($api, $scope, $rootScope) {
-		$scope.command = "ngrep ";
+	$scope.command = "ngrep ";
 
-		$scope.interfaces = [];
-		$scope.selectedInterface = "--";
+	$scope.interfaces = [];
+	$scope.selectedInterface = "--";
 
-		$scope.profiles = [];
-		$scope.selectedProfile = "--";
+	$scope.profiles = [];
+	$scope.selectedProfile = "--";
 
-		$scope.filter = "";
-		$scope.expression = "";
-		$scope.format = "--";
+	$scope.filter = "";
+	$scope.expression = "";
+	$scope.format = "--";
 
-		$scope.options = {
-			option1 : false,
-			option2 : false,
-			option3 : false,
-			option4 : false,
-			option5 : false,
-			option6 : false,
-			option7 : false,
-			option8 : false,
-			option9 : false,
-			option10 : false,
-			option11 : false,
-			option12 : false,
-			option13 : false
-		};
+	$scope.options = {
+		option1: false,
+		option2: false,
+		option3: false,
+		option4: false,
+		option5: false,
+		option6: false,
+		option7: false,
+		option8: false,
+		option9: false,
+		option10: false,
+		option11: false,
+		option12: false,
+		option13: false
+	};
 
-		$scope.update = (function(param) {
-				if(updateProfile() != "")
-					$scope.command = "ngrep " + updateInterface() + updateOptions() + updateFormat() + updateProfile();
-				else
-					$scope.command = "ngrep " + updateInterface() + updateOptions() + updateFormat() + updateExpression() + updateFilter();
+	$scope.update = (function(param) {
+		if (updateProfile() != "")
+			$scope.command = "ngrep " + updateInterface() + updateOptions() + updateFormat() + updateProfile();
+		else
+			$scope.command = "ngrep " + updateInterface() + updateOptions() + updateFormat() + updateExpression() + updateFilter();
 
-				$rootScope.command = $scope.command;
+		$rootScope.command = $scope.command;
+	});
+
+	function updateInterface() {
+		var return_value = "";
+
+		if ($scope.selectedInterface != "--")
+			return_value = "-d " + $scope.selectedInterface + " ";
+
+		return return_value;
+	}
+
+	function updateProfile() {
+		var return_value = "";
+
+		if ($scope.selectedProfile != "--")
+			return_value = $scope.selectedProfile + " ";
+
+		return return_value;
+	}
+
+	function updateOptions() {
+		var return_value = "";
+
+		angular.forEach($scope.options, function(value, key) {
+			if (value != false)
+				return_value += value + " ";
 		});
 
-		function updateInterface() {
-			var return_value = "";
+		return return_value;
+	}
 
-			if($scope.selectedInterface != "--")
-				return_value = "-d " + $scope.selectedInterface + " ";
+	function updateFormat() {
+		var return_value = "";
 
-			return return_value;
-		}
+		if ($scope.format != "--")
+			return_value = $scope.format + " ";
 
-		function updateProfile() {
-		    var return_value = "";
+		return return_value;
+	}
 
-			if($scope.selectedProfile != "--")
-				return_value = $scope.selectedProfile + " ";
+	function updateExpression() {
+		var return_value = "";
 
-			return return_value;
-		}
+		if ($scope.expression != "")
+			return_value = "'" + $scope.expression + "' ";
 
-		function updateOptions() {
-			var return_value = "";
+		return return_value;
+	}
 
-			angular.forEach($scope.options, function(value, key) {
-				if(value != false)
-					return_value += value + " ";
-			});
+	function updateFilter() {
+		var return_value = "";
 
-			return return_value;
-		}
+		if ($scope.filter != "")
+			return_value = "'" + $scope.filter + "' ";
 
-		function updateFormat() {
-			var return_value = "";
+		return return_value;
+	}
 
-			if($scope.format != "--")
-				return_value = $scope.format + " ";
-
-			return return_value;
-		}
-
-		function updateExpression() {
-			var return_value = "";
-
-			if($scope.expression != "")
-				return_value = "'" + $scope.expression + "' ";
-
-			return return_value;
-		}
-
-		function updateFilter() {
-			var return_value = "";
-
-			if($scope.filter != "")
-				return_value = "'" + $scope.filter + "' ";
-
-			return return_value;
-		}
-
-		$scope.getInterfaces = (function() {
-	    $api.request({
-	          module: 'ngrep',
-	          action: 'getInterfaces'
-	      }, function(response) {
-	        	$scope.interfaces = response;
-	      });
-	    });
-
-		$scope.getProfiles = (function() {
-	    $api.request({
-	            module: 'ngrep',
-	            action: 'getProfiles'
-	        }, function(response) {
-	        		$scope.profiles = response;
-							$scope.selectedProfile = "--";
-							$rootScope.status.refreshProfiles = false;
-	        });
-	    });
-
-		$scope.getInterfaces();
-		$scope.getProfiles();
-
-		$rootScope.$watch('status.refreshProfiles', function(param) {
-			if(param) {
-				$scope.getProfiles();
-			}
+	$scope.getInterfaces = (function() {
+		$api.request({
+			module: 'ngrep',
+			action: 'getInterfaces'
+		}, function(response) {
+			$scope.interfaces = response;
 		});
+	});
+
+	$scope.getProfiles = (function() {
+		$api.request({
+			module: 'ngrep',
+			action: 'getProfiles'
+		}, function(response) {
+			$scope.profiles = response;
+			$scope.selectedProfile = "--";
+			$rootScope.status.refreshProfiles = false;
+		});
+	});
+
+	$scope.getInterfaces();
+	$scope.getProfiles();
+	$scope.update();
+
+	$rootScope.$watch('status.refreshProfiles', function(param) {
+		if (param) {
+			$scope.getProfiles();
+		}
+	});
 
 }]);
 
@@ -364,29 +362,28 @@ registerController('ngrep_EditorController', ['$api', '$scope', '$rootScope', '$
 
 	$scope.getProfiles = (function(param) {
 		$api.request({
-						module: 'ngrep',
-						action: 'getProfiles'
-				}, function(response) {
-						$scope.profiles = response;
-				});
+			module: 'ngrep',
+			action: 'getProfiles'
+		}, function(response) {
+			$scope.profiles = response;
 		});
+	});
 
 	$scope.showProfile = (function() {
 		$scope.output = "";
 
-		if($scope.selectedProfile != "--") {
+		if ($scope.selectedProfile != "--") {
 			$scope.profileName = $scope.selectedProfile;
 			$scope.saveProfile = "Save Profile";
 
 			$api.request({
-					module: 'ngrep',
-					action: 'showProfile',
-					profile: $scope.selectedProfile
-				}, function(response) {
-							$scope.profileData = response.profileData;
-				});
-		}
-		else {
+				module: 'ngrep',
+				action: 'showProfile',
+				profile: $scope.selectedProfile
+			}, function(response) {
+				$scope.profileData = response.profileData;
+			});
+		} else {
 			$scope.profileName = "";
 			$scope.profileData = "";
 			$scope.saveProfile = "New Profile";
@@ -403,76 +400,73 @@ registerController('ngrep_EditorController', ['$api', '$scope', '$rootScope', '$
 			action: 'deleteProfile',
 			profile: $scope.selectedProfile
 		}, function(response) {
-					$scope.deleteProfileLabel = "success";
-					$scope.deleteProfile = "Deleted";
+			$scope.deleteProfileLabel = "success";
+			$scope.deleteProfile = "Deleted";
 
-					$timeout(function(){
-								$scope.deleteProfileLabel = "danger";
-								$scope.deleteProfile = "Delete Profile";
-								$scope.deleting = false;
-					}, 2000);
+			$timeout(function() {
+				$scope.deleteProfileLabel = "danger";
+				$scope.deleteProfile = "Delete Profile";
+				$scope.deleting = false;
+			}, 2000);
 
-					$scope.getProfiles();
-					$scope.selectedProfile = '--';
-					$scope.profileName = "";
-					$scope.profileData = "";
+			$scope.getProfiles();
+			$scope.selectedProfile = '--';
+			$scope.profileName = "";
+			$scope.profileData = "";
 
-					$scope.saveProfile = "New Profile";
+			$scope.saveProfile = "New Profile";
 
-					$rootScope.status.refreshProfiles = true;
+			$rootScope.status.refreshProfiles = true;
 		});
 	});
 
 	$scope.saveProfileData = (function() {
-		if($scope.selectedProfile != "--" && $scope.profileName != "")
-		{
-				$scope.saveProfileLabel = "warning";
-				$scope.saveProfile = "Saving...";
-				$scope.saving = true;
+		if ($scope.selectedProfile != "--" && $scope.profileName != "") {
+			$scope.saveProfileLabel = "warning";
+			$scope.saveProfile = "Saving...";
+			$scope.saving = true;
 
-				$api.request({
-					module: 'ngrep',
-					action: 'saveProfileData',
-					profileData: $scope.profileData,
-					profile: $scope.selectedProfile
-				}, function(response) {
-								$scope.saveProfileLabel = "success";
-								$scope.saveProfile = "Saved";
+			$api.request({
+				module: 'ngrep',
+				action: 'saveProfileData',
+				profileData: $scope.profileData,
+				profile: $scope.selectedProfile
+			}, function(response) {
+				$scope.saveProfileLabel = "success";
+				$scope.saveProfile = "Saved";
 
-								$timeout(function(){
-										$scope.saveProfileLabel = "primary";
-										$scope.saveProfile = "Save Profile";
-										$scope.saving = false;
-								}, 2000);
-				});
-			}
-			else if($scope.selectedProfile == "--" && $scope.profileName != "")
-			{
-				$scope.saveProfileLabel = "warning";
-				$scope.saveProfile = "Saving...";
-				$scope.saving = true;
+				$timeout(function() {
+					$scope.saveProfileLabel = "primary";
+					$scope.saveProfile = "Save Profile";
+					$scope.saving = false;
+				}, 2000);
+			});
+		} else if ($scope.selectedProfile == "--" && $scope.profileName != "") {
+			$scope.saveProfileLabel = "warning";
+			$scope.saveProfile = "Saving...";
+			$scope.saving = true;
 
-				$api.request({
-					module: 'ngrep',
-					action: 'saveProfileData',
-					profileData: $scope.profileData,
-					profile: $scope.profileName
-				}, function(response) {
-								$scope.saveProfileLabel = "success";
-								$scope.saveProfile = "Saved";
+			$api.request({
+				module: 'ngrep',
+				action: 'saveProfileData',
+				profileData: $scope.profileData,
+				profile: $scope.profileName
+			}, function(response) {
+				$scope.saveProfileLabel = "success";
+				$scope.saveProfile = "Saved";
 
-								$timeout(function(){
-										$scope.saveProfileLabel = "primary";
-										$scope.saveProfile = "Save Profile";
-										$scope.saving = false;
-								}, 2000);
+				$timeout(function() {
+					$scope.saveProfileLabel = "primary";
+					$scope.saveProfile = "Save Profile";
+					$scope.saving = false;
+				}, 2000);
 
-								$scope.getProfiles();
-								$scope.selectedProfile = $scope.profileName;
+				$scope.getProfiles();
+				$scope.selectedProfile = $scope.profileName;
 
-								$rootScope.status.refreshProfiles = true;
-				});
-			}
+				$rootScope.status.refreshProfiles = true;
+			});
+		}
 	});
 
 	$scope.getProfileData = (function() {

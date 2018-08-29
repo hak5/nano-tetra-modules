@@ -2,17 +2,17 @@ registerController('OnlineHashCrack_Controller', ['$api', '$scope', '$rootScope'
 	$scope.title = "Loading...";
 	$scope.version = "Loading...";
 
-  $scope.refreshInfo = (function() {
+	$scope.refreshInfo = (function() {
 		$api.request({
-            module: 'OnlineHashCrack',
-            action: "refreshInfo"
-        }, function(response) {
-						$scope.title = response.title;
-						$scope.version = "v"+response.version;
-        })
-    });
+			module: 'OnlineHashCrack',
+			action: "refreshInfo"
+		}, function(response) {
+			$scope.title = response.title;
+			$scope.version = "v" + response.version;
+		})
+	});
 
-		$scope.refreshInfo();
+	$scope.refreshInfo();
 
 }]);
 
@@ -29,91 +29,91 @@ registerController('OnlineHashCrack_ControlsController', ['$api', '$scope', '$ro
 	$scope.sdAvailable = false;
 
 	$rootScope.status = {
-		installed : false,
-		generated : false,
-		refreshOutput : false,
-		refreshKnownHosts : false
+		installed: false,
+		generated: false,
+		refreshOutput: false,
+		refreshKnownHosts: false
 	};
 
-    $scope.refreshStatus = (function() {
+	$scope.refreshStatus = (function() {
 		$api.request({
-            module: "OnlineHashCrack",
-            action: "refreshStatus"
-        }, function(response) {
+			module: "OnlineHashCrack",
+			action: "refreshStatus"
+		}, function(response) {
 			$rootScope.status.installed = response.installed;
 			$scope.device = response.device;
 			$scope.sdAvailable = response.sdAvailable;
-			if(response.processing) $scope.processing = true;
+			if (response.processing) $scope.processing = true;
 			$scope.install = response.install;
 			$scope.installLabel = response.installLabel;
 
-        })
-    });
+		})
+	});
 
-    $scope.handleDependencies = (function(param) {
-        if(!$rootScope.status.installed)
+	$scope.handleDependencies = (function(param) {
+		if (!$rootScope.status.installed)
 			$scope.install = "Installing...";
 		else
 			$scope.install = "Removing...";
 
 		$api.request({
-            module: 'OnlineHashCrack',
-            action: 'handleDependencies',
-						destination: param
-        }, function(response){
-            if (response.success === true) {
+			module: 'OnlineHashCrack',
+			action: 'handleDependencies',
+			destination: param
+		}, function(response) {
+			if (response.success === true) {
 				$scope.installLabel = "warning";
 				$scope.processing = true;
 
-                $scope.handleDependenciesInterval = $interval(function(){
-                    $api.request({
-                        module: 'OnlineHashCrack',
-                        action: 'handleDependenciesStatus'
-                    }, function(response) {
-                        if (response.success === true){
-                            $scope.processing = false;
+				$scope.handleDependenciesInterval = $interval(function() {
+					$api.request({
+						module: 'OnlineHashCrack',
+						action: 'handleDependenciesStatus'
+					}, function(response) {
+						if (response.success === true) {
+							$scope.processing = false;
 							$scope.refreshStatus();
-                            $interval.cancel($scope.handleDependenciesInterval);
-                        }
-                    });
-                }, 5000);
-            }
-        });
-    });
+							$interval.cancel($scope.handleDependenciesInterval);
+						}
+					});
+				}, 5000);
+			}
+		});
+	});
 
 	$scope.refreshStatus();
 
 }]);
 
 registerController('OnlineHashCrack_OutputController', ['$api', '$scope', '$rootScope', '$interval', function($api, $scope, $rootScope, $interval) {
-    $scope.output = 'Loading...';
+	$scope.output = 'Loading...';
 
-    $scope.refreshOutput = (function() {
+	$scope.refreshOutput = (function() {
 		$api.request({
-            module: "OnlineHashCrack",
-            action: "refreshOutput",
+			module: "OnlineHashCrack",
+			action: "refreshOutput",
 			filter: $scope.filter
-        }, function(response) {
-            $scope.output = response;
-        })
-    });
+		}, function(response) {
+			$scope.output = response;
+		})
+	});
 
-		$scope.clearOutput = (function() {
-			$api.request({
-	            module: "OnlineHashCrack",
-	            action: "clearOutput"
-	        }, function(response) {
-	            $scope.refreshOutput();
-	        })
-	    });
+	$scope.clearOutput = (function() {
+		$api.request({
+			module: "OnlineHashCrack",
+			action: "clearOutput"
+		}, function(response) {
+			$scope.refreshOutput();
+		})
+	});
 
-    $scope.refreshOutput();
+	$scope.refreshOutput();
 
-		$rootScope.$watch('status.refreshOutput', function(param) {
-			if(param) {
-				$scope.refreshOutput();
-			}
-		});
+	$rootScope.$watch('status.refreshOutput', function(param) {
+		if (param) {
+			$scope.refreshOutput();
+		}
+	});
 
 }]);
 
@@ -134,27 +134,27 @@ registerController('OnlineHashCrack_HashController', ['$api', '$scope', '$rootSc
 			action: 'submitHashOnline',
 			hashes: $scope.hashes
 		}, function(response) {
-						$scope.submitHashLabel = "warning";
-						$scope.submitHash = "Working...";
-						$scope.working = true;
+			$scope.submitHashLabel = "warning";
+			$scope.submitHash = "Working...";
+			$scope.working = true;
 
-						$scope.submitHashOnlineInterval = $interval(function(){
-								$api.request({
-										module: 'OnlineHashCrack',
-										action: 'submitHashOnlineStatus'
-								}, function(response) {
-										if (response.success === true){
-												$scope.working = false;
-												$interval.cancel($scope.submitHashOnlineInterval);
+			$scope.submitHashOnlineInterval = $interval(function() {
+				$api.request({
+					module: 'OnlineHashCrack',
+					action: 'submitHashOnlineStatus'
+				}, function(response) {
+					if (response.success === true) {
+						$scope.working = false;
+						$interval.cancel($scope.submitHashOnlineInterval);
 
-												$scope.submitHashLabel = "primary";
-												$scope.submitHash = "Submit";
+						$scope.submitHashLabel = "primary";
+						$scope.submitHash = "Submit";
 
-												$rootScope.status.refreshOutput = true;
-												$rootScope.status.refreshKnownHosts = true;
-										}
-								});
-						}, 5000);
+						$rootScope.status.refreshOutput = true;
+						$rootScope.status.refreshKnownHosts = true;
+					}
+				});
+			}, 5000);
 		});
 	});
 
@@ -172,19 +172,19 @@ registerController('OnlineHashCrack_WPAController', ['$api', '$scope', '$rootSco
 	$scope.files = [];
 
 	$scope.getCapFiles = function() {
-			$api.request({
-					module: 'OnlineHashCrack',
-					action: 'getCapFiles'
-			}, function(response) {
-					$scope.files = response.files;
-			});
+		$api.request({
+			module: 'OnlineHashCrack',
+			action: 'getCapFiles'
+		}, function(response) {
+			$scope.files = response.files;
+		});
 	};
 
 	$scope.submitWPAOnline = (function() {
 		$rootScope.status.refreshOutput = false;
 		$rootScope.status.refreshKnownHosts = false;
 
-		if($scope.selectedFile != '')
+		if ($scope.selectedFile != '')
 			$file = $scope.selectedFile;
 		else
 			$file = $scope.file;
@@ -194,27 +194,27 @@ registerController('OnlineHashCrack_WPAController', ['$api', '$scope', '$rootSco
 			action: 'submitWPAOnline',
 			file: $file
 		}, function(response) {
-						$scope.submitWPALabel = "warning";
-						$scope.submitWPA = "Working...";
-						$scope.working = true;
+			$scope.submitWPALabel = "warning";
+			$scope.submitWPA = "Working...";
+			$scope.working = true;
 
-						$scope.submitWPAOnlineInterval = $interval(function(){
-								$api.request({
-										module: 'OnlineHashCrack',
-										action: 'submitWPAOnlineStatus'
-								}, function(response) {
-										if (response.success === true){
-												$scope.working = false;
-												$interval.cancel($scope.submitWPAOnlineInterval);
+			$scope.submitWPAOnlineInterval = $interval(function() {
+				$api.request({
+					module: 'OnlineHashCrack',
+					action: 'submitWPAOnlineStatus'
+				}, function(response) {
+					if (response.success === true) {
+						$scope.working = false;
+						$interval.cancel($scope.submitWPAOnlineInterval);
 
-												$scope.submitWPALabel = "primary";
-												$scope.submitWPA = "Submit";
+						$scope.submitWPALabel = "primary";
+						$scope.submitWPA = "Submit";
 
-												$rootScope.status.refreshOutput = true;
-												$rootScope.status.refreshKnownHosts = true;
-										}
-								});
-						}, 5000);
+						$rootScope.status.refreshOutput = true;
+						$rootScope.status.refreshKnownHosts = true;
+					}
+				});
+			}, 5000);
 		});
 	});
 
@@ -223,46 +223,46 @@ registerController('OnlineHashCrack_WPAController', ['$api', '$scope', '$rootSco
 }]);
 
 registerController('OnlineHashCrack_SettingsController', ['$api', '$scope', '$rootScope', '$timeout', function($api, $scope, $rootScope, $timeout) {
-		$scope.settings = {
-			email : ""
-		};
+	$scope.settings = {
+		email: ""
+	};
 
-		$scope.saveSettingsLabel = "primary";
-		$scope.saveSettings = "Save";
-		$scope.saving = false;
+	$scope.saveSettingsLabel = "primary";
+	$scope.saveSettings = "Save";
+	$scope.saving = false;
 
-		$scope.getSettings = function() {
-        $api.request({
-            module: 'OnlineHashCrack',
-            action: 'getSettings'
-        }, function(response) {
-            $scope.settings = response.settings;
-        });
-    };
+	$scope.getSettings = function() {
+		$api.request({
+			module: 'OnlineHashCrack',
+			action: 'getSettings'
+		}, function(response) {
+			$scope.settings = response.settings;
+		});
+	};
 
-    $scope.setSettings = function() {
-			$scope.saveSettingsLabel = "warning";
-			$scope.saveSettings = "Saving...";
-			$scope.saving = true;
+	$scope.setSettings = function() {
+		$scope.saveSettingsLabel = "warning";
+		$scope.saveSettings = "Saving...";
+		$scope.saving = true;
 
-			$api.request({
-            module: 'OnlineHashCrack',
-            action: 'setSettings',
-            settings: $scope.settings
-        }, function(response) {
-            $scope.getSettings();
+		$api.request({
+			module: 'OnlineHashCrack',
+			action: 'setSettings',
+			settings: $scope.settings
+		}, function(response) {
+			$scope.getSettings();
 
-						$scope.saveSettingsLabel = "success";
-						$scope.saveSettings = "Saved";
+			$scope.saveSettingsLabel = "success";
+			$scope.saveSettings = "Saved";
 
-						$timeout(function(){
-								$scope.saveSettingsLabel = "primary";
-								$scope.saveSettings = "Save";
-								$scope.saving = false;
-						}, 2000);
-        });
-    };
+			$timeout(function() {
+				$scope.saveSettingsLabel = "primary";
+				$scope.saveSettings = "Save";
+				$scope.saving = false;
+			}, 2000);
+		});
+	};
 
-    $scope.getSettings();
+	$scope.getSettings();
 
 }]);

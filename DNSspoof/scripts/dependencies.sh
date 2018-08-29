@@ -12,8 +12,8 @@ touch /tmp/DNSspoof.progress
 
 if [ "$1" = "install" ]; then
   if [ "$2" = "internal" ]; then
-     opkg update
-     opkg install dnsspoof
+    opkg update
+    opkg install dnsspoof
   elif [ "$2" = "sd" ]; then
     opkg update
     opkg install dnsspoof --dest sd
@@ -28,8 +28,8 @@ if [ "$1" = "install" ]; then
   uci commit dnsspoof.module.installed
 
 elif [ "$1" = "remove" ]; then
-    opkg remove dnsspoof
-    rm -rf /etc/config/dnsspoof
+  opkg remove dnsspoof
+  rm -rf /etc/config/dnsspoof
 fi
 
 rm /tmp/DNSspoof.progress

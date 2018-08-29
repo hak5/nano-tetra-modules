@@ -2,17 +2,17 @@ registerController('Occupineapple_Controller', ['$api', '$scope', '$rootScope', 
 	$scope.title = "Loading...";
 	$scope.version = "Loading...";
 
-  $scope.refreshInfo = (function() {
+	$scope.refreshInfo = (function() {
 		$api.request({
-            module: 'Occupineapple',
-            action: "refreshInfo"
-        }, function(response) {
-						$scope.title = response.title;
-						$scope.version = "v"+response.version;
-        })
-    });
+			module: 'Occupineapple',
+			action: "refreshInfo"
+		}, function(response) {
+			$scope.title = response.title;
+			$scope.version = "v" + response.version;
+		})
+	});
 
-		$scope.refreshInfo();
+	$scope.refreshInfo();
 
 }]);
 
@@ -40,33 +40,33 @@ registerController('Occupineapple_ControlsController', ['$api', '$scope', '$root
 	$scope.sdAvailable = false;
 
 	$rootScope.status = {
-		installed : false,
-		refreshOutput : false,
-		refreshLists : false
+		installed: false,
+		refreshOutput: false,
+		refreshLists: false
 	};
 
-  $scope.refreshStatus = (function() {
+	$scope.refreshStatus = (function() {
 		$api.request({
-            module: 'Occupineapple',
-            action: "refreshStatus"
-        }, function(response) {
-            $scope.status = response.status;
-						$scope.statusLabel = response.statusLabel;
+			module: 'Occupineapple',
+			action: "refreshStatus"
+		}, function(response) {
+			$scope.status = response.status;
+			$scope.statusLabel = response.statusLabel;
 
-						$rootScope.status.installed = response.installed;
-						$scope.device = response.device;
-						$scope.sdAvailable = response.sdAvailable;
-						if(response.processing) $scope.processing = true;
-						$scope.install = response.install;
-						$scope.installLabel = response.installLabel;
+			$rootScope.status.installed = response.installed;
+			$scope.device = response.device;
+			$scope.sdAvailable = response.sdAvailable;
+			if (response.processing) $scope.processing = true;
+			$scope.install = response.install;
+			$scope.installLabel = response.installLabel;
 
-						$scope.bootLabelON = response.bootLabelON;
-						$scope.bootLabelOFF = response.bootLabelOFF;
-        })
-    });
+			$scope.bootLabelON = response.bootLabelON;
+			$scope.bootLabelOFF = response.bootLabelOFF;
+		})
+	});
 
-  $scope.togglemdk3 = (function() {
-		if($scope.status != "Stop")
+	$scope.togglemdk3 = (function() {
+		if ($scope.status != "Stop")
 			$scope.status = "Starting...";
 		else
 			$scope.status = "Stopping...";
@@ -77,169 +77,166 @@ registerController('Occupineapple_ControlsController', ['$api', '$scope', '$root
 		$rootScope.status.refreshOutput = false;
 
 		$api.request({
-		        module: 'Occupineapple',
-		        action: 'togglemdk3',
-		        interface: $scope.selectedInterface,
-						list: $scope.selectedList
-		    }, function(response) {
-		        $timeout(function(){
-							$rootScope.status.refreshOutput = true;
+			module: 'Occupineapple',
+			action: 'togglemdk3',
+			interface: $scope.selectedInterface,
+			list: $scope.selectedList
+		}, function(response) {
+			$timeout(function() {
+				$rootScope.status.refreshOutput = true;
 
-							$scope.starting = false;
-							$scope.refreshStatus();
-							$scope.getInterfaces();
+				$scope.starting = false;
+				$scope.refreshStatus();
+				$scope.getInterfaces();
 
-		        }, 3000);
-		    })
+			}, 3000);
+		})
 	});
 
 	$scope.saveAutostartSettings = (function() {
 		$api.request({
-            module: 'Occupineapple',
-            action: 'saveAutostartSettings',
-						settings: { interface : $scope.selectedInterface, list : $scope.selectedList }
-				}, function(response) {
-					$scope.saveSettingsLabel = "success";
-					$timeout(function(){
-							$scope.saveSettingsLabel = "default";
-					}, 2000);
-	      })
-		});
+			module: 'Occupineapple',
+			action: 'saveAutostartSettings',
+			settings: {
+				interface: $scope.selectedInterface,
+				list: $scope.selectedList
+			}
+		}, function(response) {
+			$scope.saveSettingsLabel = "success";
+			$timeout(function() {
+				$scope.saveSettingsLabel = "default";
+			}, 2000);
+		})
+	});
 
 
-  $scope.togglemdk3OnBoot = (function() {
-    if($scope.bootLabelON == "default")
-		{
+	$scope.togglemdk3OnBoot = (function() {
+		if ($scope.bootLabelON == "default") {
 			$scope.bootLabelON = "success";
 			$scope.bootLabelOFF = "default";
-		}
-		else
-		{
+		} else {
 			$scope.bootLabelON = "default";
 			$scope.bootLabelOFF = "danger";
 		}
 
 		$api.request({
-            module: 'Occupineapple',
-            action: 'togglemdk3OnBoot',
-        }, function(response) {
-					$scope.refreshStatus();
-        })
-    });
+			module: 'Occupineapple',
+			action: 'togglemdk3OnBoot',
+		}, function(response) {
+			$scope.refreshStatus();
+		})
+	});
 
-  $scope.handleDependencies = (function(param) {
-    if(!$rootScope.status.installed)
+	$scope.handleDependencies = (function(param) {
+		if (!$rootScope.status.installed)
 			$scope.install = "Installing...";
 		else
 			$scope.install = "Removing...";
 
 		$api.request({
-            module: 'Occupineapple',
-            action: 'handleDependencies',
-						destination: param
-        }, function(response){
-            if (response.success === true) {
+			module: 'Occupineapple',
+			action: 'handleDependencies',
+			destination: param
+		}, function(response) {
+			if (response.success === true) {
 				$scope.installLabel = "warning";
 				$scope.processing = true;
 
-                $scope.handleDependenciesInterval = $interval(function(){
-                    $api.request({
-                        module: 'Occupineapple',
-                        action: 'handleDependenciesStatus'
-                    }, function(response) {
-                        if (response.success === true){
-                            $scope.processing = false;
-                            $interval.cancel($scope.handleDependenciesInterval);
-                            $scope.refreshStatus();
-                        }
-                    });
-                }, 5000);
-            }
-        });
-    });
-
-		$scope.getLists = (function(param) {
-			$api.request({
-							module: 'Occupineapple',
-							action: 'getLists'
+				$scope.handleDependenciesInterval = $interval(function() {
+					$api.request({
+						module: 'Occupineapple',
+						action: 'handleDependenciesStatus'
 					}, function(response) {
-							$scope.lists = response.lists;
-							if(response.selected != "")
-								$scope.selectedList = response.selected;
-							else
-								$scope.selectedList = $scope.lists[0];
-
-							$rootScope.status.refreshLists = false;
+						if (response.success === true) {
+							$scope.processing = false;
+							$interval.cancel($scope.handleDependenciesInterval);
+							$scope.refreshStatus();
+						}
 					});
-			});
-
-		$scope.getInterfaces = (function() {
-	    $api.request({
-	            module: 'Occupineapple',
-	            action: 'getInterfaces'
-	        }, function(response) {
-	        		$scope.interfaces = response.interfaces;
-							if(response.selected != "")
-								$scope.selectedInterface = response.selected;
-							else
-								$scope.selectedInterface = $scope.interfaces[0];
-	        });
-	    });
-
-		$scope.refreshStatus();
-		$scope.getInterfaces();
-		$scope.getLists();
-
-		$rootScope.$watch('status.refreshLists', function(param) {
-			if(param) {
-				$scope.getLists();
+				}, 5000);
 			}
 		});
+	});
+
+	$scope.getLists = (function(param) {
+		$api.request({
+			module: 'Occupineapple',
+			action: 'getLists'
+		}, function(response) {
+			$scope.lists = response.lists;
+			if (response.selected != "")
+				$scope.selectedList = response.selected;
+			else
+				$scope.selectedList = $scope.lists[0];
+
+			$rootScope.status.refreshLists = false;
+		});
+	});
+
+	$scope.getInterfaces = (function() {
+		$api.request({
+			module: 'Occupineapple',
+			action: 'getInterfaces'
+		}, function(response) {
+			$scope.interfaces = response.interfaces;
+			if (response.selected != "")
+				$scope.selectedInterface = response.selected;
+			else
+				$scope.selectedInterface = $scope.interfaces[0];
+		});
+	});
+
+	$scope.refreshStatus();
+	$scope.getInterfaces();
+	$scope.getLists();
+
+	$rootScope.$watch('status.refreshLists', function(param) {
+		if (param) {
+			$scope.getLists();
+		}
+	});
 
 }]);
 
 registerController('Occupineapple_OutputController', ['$api', '$scope', '$rootScope', '$interval', function($api, $scope, $rootScope, $interval) {
-  $scope.output = 'Loading...';
+	$scope.output = 'Loading...';
 	$scope.filter = '';
 
 	$scope.refreshLabelON = "default";
 	$scope.refreshLabelOFF = "danger";
 
-  $scope.refreshOutput = (function() {
+	$scope.refreshOutput = (function() {
 		$api.request({
-            module: 'Occupineapple',
-            action: "refreshOutput"
-        }, function(response) {
-            $scope.output = response;
-        })
-    });
+			module: 'Occupineapple',
+			action: "refreshOutput"
+		}, function(response) {
+			$scope.output = response;
+		})
+	});
 
-  $scope.toggleAutoRefresh = (function() {
-    if($scope.autoRefreshInterval)
-		{
+	$scope.toggleAutoRefresh = (function() {
+		if ($scope.autoRefreshInterval) {
 			$interval.cancel($scope.autoRefreshInterval);
 			$scope.autoRefreshInterval = null;
 			$scope.refreshLabelON = "default";
 			$scope.refreshLabelOFF = "danger";
-		}
-		else
-		{
+		} else {
 			$scope.refreshLabelON = "success";
 			$scope.refreshLabelOFF = "default";
 
-			$scope.autoRefreshInterval = $interval(function(){
+			$scope.autoRefreshInterval = $interval(function() {
 				$scope.refreshOutput();
-	        }, 5000);
+			}, 5000);
 		}
-    });
+	});
 
-		$scope.refreshOutput();
+	$scope.refreshOutput();
 
-		$rootScope.$watch('status.refreshOutput', function(param) {
-			if(param) {
-				$scope.refreshOutput();
-			}
-		});
+	$rootScope.$watch('status.refreshOutput', function(param) {
+		if (param) {
+			$scope.refreshOutput();
+		}
+	});
 
 }]);
 
@@ -260,29 +257,28 @@ registerController('Occupineapple_EditorController', ['$api', '$scope', '$rootSc
 
 	$scope.getLists = (function(param) {
 		$api.request({
-						module: 'Occupineapple',
-						action: 'getLists'
-				}, function(response) {
-						$scope.lists = response.lists;
-				});
+			module: 'Occupineapple',
+			action: 'getLists'
+		}, function(response) {
+			$scope.lists = response.lists;
 		});
+	});
 
 	$scope.showList = (function() {
 		$scope.output = "";
 
-		if($scope.selectedList != "--") {
+		if ($scope.selectedList != "--") {
 			$scope.listName = $scope.selectedList;
 			$scope.saveList = "Save List";
 
 			$api.request({
-					module: 'Occupineapple',
-					action: 'showList',
-					list: $scope.selectedList
-				}, function(response) {
-							$scope.listData = response.listData;
-				});
-		}
-		else {
+				module: 'Occupineapple',
+				action: 'showList',
+				list: $scope.selectedList
+			}, function(response) {
+				$scope.listData = response.listData;
+			});
+		} else {
 			$scope.listName = "";
 			$scope.listData = "";
 			$scope.saveList = "New List";
@@ -299,79 +295,76 @@ registerController('Occupineapple_EditorController', ['$api', '$scope', '$rootSc
 			action: 'deleteList',
 			list: $scope.selectedList
 		}, function(response) {
-					$scope.deleteListLabel = "success";
-					$scope.deleteList = "Deleted";
+			$scope.deleteListLabel = "success";
+			$scope.deleteList = "Deleted";
 
-					$timeout(function(){
-								$scope.deleteListLabel = "danger";
-								$scope.deleteList = "Delete List";
-								$scope.deleting = false;
-					}, 2000);
+			$timeout(function() {
+				$scope.deleteListLabel = "danger";
+				$scope.deleteList = "Delete List";
+				$scope.deleting = false;
+			}, 2000);
 
-					$scope.getLists();
-					$scope.selectedList = '--';
-					$scope.listName = "";
-					$scope.listData = "";
+			$scope.getLists();
+			$scope.selectedList = '--';
+			$scope.listName = "";
+			$scope.listData = "";
 
-					$scope.saveList = "New List";
+			$scope.saveList = "New List";
 
-					$rootScope.status.refreshLists = true;
+			$rootScope.status.refreshLists = true;
 		});
 	});
 
 	$scope.saveListData = (function() {
-		if($scope.selectedList != "--" && $scope.listName != "")
-		{
-				$scope.saveListLabel = "warning";
-				$scope.saveList = "Saving...";
-				$scope.saving = true;
+		if ($scope.selectedList != "--" && $scope.listName != "") {
+			$scope.saveListLabel = "warning";
+			$scope.saveList = "Saving...";
+			$scope.saving = true;
 
-				$api.request({
-					module: 'Occupineapple',
-					action: 'saveListData',
-					listData: $scope.listData,
-					list: $scope.selectedList
-				}, function(response) {
-								$scope.saveListLabel = "success";
-								$scope.saveList = "Saved";
+			$api.request({
+				module: 'Occupineapple',
+				action: 'saveListData',
+				listData: $scope.listData,
+				list: $scope.selectedList
+			}, function(response) {
+				$scope.saveListLabel = "success";
+				$scope.saveList = "Saved";
 
-								$timeout(function(){
-										$scope.saveListLabel = "primary";
-										$scope.saveList = "Save List";
-										$scope.saving = false;
-								}, 2000);
-				});
-			}
-			else if($scope.selectedList == "--" && $scope.listName != "")
-			{
-				$scope.saveListLabel = "warning";
-				$scope.saveList = "Saving...";
-				$scope.saving = true;
+				$timeout(function() {
+					$scope.saveListLabel = "primary";
+					$scope.saveList = "Save List";
+					$scope.saving = false;
+				}, 2000);
+			});
+		} else if ($scope.selectedList == "--" && $scope.listName != "") {
+			$scope.saveListLabel = "warning";
+			$scope.saveList = "Saving...";
+			$scope.saving = true;
 
-				if($scope.listName.search(".list") == -1 && $scope.listName.search(".mlist") == -1)
-					$scope.listName = $scope.listName + ".list";
+			if ($scope.listName.search(".list") == -1 && $scope.listName.search(".mlist") == -1)
+				$scope.listName = $scope.listName + ".list";
 
-				$api.request({
-					module: 'Occupineapple',
-					action: 'saveListData',
-					listData: $scope.listData,
-					list: $scope.listName
-				}, function(response) {
-								$scope.saveListLabel = "success";
-								$scope.saveList = "Saved";
+			$api.request({
+				module: 'Occupineapple',
+				action: 'saveListData',
+				listData: $scope.listData,
+				list: $scope.listName
+			}, function(response) {
+				$scope.saveListLabel = "success";
+				$scope.saveList = "Saved";
 
-								$timeout(function(){
-										$scope.saveListLabel = "primary";
-										$scope.saveList = "Save List";
-										$scope.saving = false;
-								}, 2000);
+				$timeout(function() {
+					$scope.saveListLabel = "primary";
+					$scope.saveList = "Save List";
+					$scope.saving = false;
+				}, 2000);
 
-								$scope.getLists();
-								$scope.selectedList = $scope.listName;
+				$scope.getLists();
+				$scope.selectedList = $scope.listName;
 
-								$rootScope.status.refreshLists = true;
-				});
-			}
+				$rootScope.status.refreshLists = true;
+			});
+		}
 	});
 
 	$scope.getListData = (function() {
@@ -388,52 +381,52 @@ registerController('Occupineapple_EditorController', ['$api', '$scope', '$rootSc
 }]);
 
 registerController('Occupineapple_SettingsController', ['$api', '$scope', '$rootScope', '$timeout', function($api, $scope, $rootScope, $timeout) {
-		$scope.settings = {
-			speed : "",
-			channel : "",
-			adHoc : false,
-			wepBit : false,
-			wpaTKIP : false,
-			wpaAES : false,
-			validMAC : false
-		};
+	$scope.settings = {
+		speed: "",
+		channel: "",
+		adHoc: false,
+		wepBit: false,
+		wpaTKIP: false,
+		wpaAES: false,
+		validMAC: false
+	};
 
-		$scope.saveSettingsLabel = "primary";
-		$scope.saveSettings = "Save";
-		$scope.saving = false;
+	$scope.saveSettingsLabel = "primary";
+	$scope.saveSettings = "Save";
+	$scope.saving = false;
 
-		$scope.getSettings = function() {
-        $api.request({
-            module: 'Occupineapple',
-            action: 'getSettings'
-        }, function(response) {
-            $scope.settings = response.settings;
-        });
-    };
+	$scope.getSettings = function() {
+		$api.request({
+			module: 'Occupineapple',
+			action: 'getSettings'
+		}, function(response) {
+			$scope.settings = response.settings;
+		});
+	};
 
-    $scope.setSettings = function() {
-			$scope.saveSettingsLabel = "warning";
-			$scope.saveSettings = "Saving...";
-			$scope.saving = true;
+	$scope.setSettings = function() {
+		$scope.saveSettingsLabel = "warning";
+		$scope.saveSettings = "Saving...";
+		$scope.saving = true;
 
-			$api.request({
-            module: 'Occupineapple',
-            action: 'setSettings',
-            settings: $scope.settings
-        }, function(response) {
-            $scope.getSettings();
+		$api.request({
+			module: 'Occupineapple',
+			action: 'setSettings',
+			settings: $scope.settings
+		}, function(response) {
+			$scope.getSettings();
 
-						$scope.saveSettingsLabel = "success";
-						$scope.saveSettings = "Saved";
+			$scope.saveSettingsLabel = "success";
+			$scope.saveSettings = "Saved";
 
-						$timeout(function(){
-								$scope.saveSettingsLabel = "primary";
-								$scope.saveSettings = "Save";
-								$scope.saving = false;
-						}, 2000);
-        });
-    };
+			$timeout(function() {
+				$scope.saveSettingsLabel = "primary";
+				$scope.saveSettings = "Save";
+				$scope.saving = false;
+			}, 2000);
+		});
+	};
 
-    $scope.getSettings();
+	$scope.getSettings();
 
 }]);

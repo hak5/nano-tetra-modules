@@ -11,6 +11,6 @@ if [ "$1" = "start" ]; then
 	eval ${MYCMD}
 	rm -rf /tmp/tcpdump.run
 elif [ "$1" = "stop" ]; then
-  killall tcpdump
+  	killall -9 tcpdump
 	rm -rf /tmp/tcpdump.run
 fi

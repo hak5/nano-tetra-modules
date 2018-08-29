@@ -48,9 +48,9 @@ if [ "$1" = "install" ]; then
   uci commit responder.module.installed
 
 elif [ "$1" = "remove" ]; then
-    opkg remove python-logging
-    opkg remove python-openssl
-    rm -rf /etc/config/responder
+  opkg remove python-logging
+  opkg remove python-openssl
+  rm -rf /etc/config/responder
 fi
 
 rm /tmp/Responder.progress
