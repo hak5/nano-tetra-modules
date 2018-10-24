@@ -67,7 +67,6 @@ class Where extends Module
 	public function getIPFromFile()
 	{
 		$this->makeIPDir();
-		exec("echo !{$this->request->ip}! > /pineapple/ip");
 		$file = $this->touchIPFile($this->request->ip);
 		$json = $this->getIPFile($file);
 		$this->response = $json;
