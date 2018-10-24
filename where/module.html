@@ -9,7 +9,7 @@
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<h5 class="panel-title"><a href="javascript:;" data-toggle="collapse" data-parent="#accordion"
-												   data-target="#collapseLibrary" class="text-muted">IP's</a></h5>
+												   data-target="#collapseLibrary" class="text-muted">where</a></h5>
 					</div>
    
 				 <div id="collapseLibrary" class="panel-collapse collapse in">
@@ -32,7 +32,7 @@
 								<div class="table-responsive">
 									<table class="table table-striped" align="center">
 										<thead>
-											<th>Address</th>
+											<th>History</th>
 										</thead>
 
 					<tbody>
@@ -57,7 +57,7 @@
 							</div>
 	
 							<div ng-show="currentIP != false">
-								<button type="submit" class="btn btn-default btn-sm" ng-click="currentIP = false">Back</button>
+								<button type="submit" class="btn btn-default btn-sm" ng-click="reloadPage()">Back</button>
 								<hr />
 								<h3>{{ currentIP }}</h3>
 	
@@ -140,9 +140,6 @@
 						</tr>
 	
 						<div class="modal-footer">
-						<button type="button" class="btn btn-default pull-right" data-dismiss="modal"
-							ng-click="currentIP = false">Close
-						</button>
 						</div>
 									</table>
 								</div>

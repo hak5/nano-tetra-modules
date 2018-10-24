@@ -30,6 +30,11 @@ registerController("WhereController", ['$api', '$scope','$window','$route', '$ht
 		});	
 	};
 
+	$scope.reloadPage = function () {
+		$scope.currentIP = false;
+		$window.location.reload()
+	};
+
 	$scope.getIPFromFile = function (ip) {
 		ip = ip.replace(/(\r\n\t|\n|\r\t)/gm,"");
 		$scope.ipToLookup = ip;
