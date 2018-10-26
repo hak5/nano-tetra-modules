@@ -7,8 +7,8 @@
 class Locate extends Module
 {
 	// CONSTANTS
-	private $IP_DIR = '/pineapple/modules/locate/ips';
-	private $ALL_IP_FILE = '/pineapple/modules/locate/ips/all';
+	private $IP_DIR = '/pineapple/modules/Locate/ips';
+	private $ALL_IP_FILE = '/pineapple/modules/Locate/ips/all';
 	
 	public function route()
 	{

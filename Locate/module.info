@@ -4,7 +4,7 @@
         "nano",
         "tetra"
     ],
-    "title": "locate",
+    "title": "Locate",
     "description": "geolocate IP addresses over HTTPS via ipapi",
     "version": "1.0"
 }

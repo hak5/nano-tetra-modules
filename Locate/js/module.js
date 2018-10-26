@@ -1,4 +1,4 @@
-registerController("WhereController", ['$api', '$scope','$window','$route', '$http', function ($api, $scope, $window, $route, $http) {
+registerController("LocateController", ['$api', '$scope','$window','$route', '$http', function ($api, $scope, $window, $route, $http) {
 
 	/*
 	 * Author: trashbo4t (github.com/trashbo4t)
@@ -16,7 +16,7 @@ registerController("WhereController", ['$api', '$scope','$window','$route', '$ht
 
 	function getIPs() {
 		$api.request({
-			module: "locate",
+			module: "Locate",
 			action: "getIPs"
 		}, function (response) {
 			console.log("getIPs", response);
@@ -40,7 +40,7 @@ registerController("WhereController", ['$api', '$scope','$window','$route', '$ht
 		$scope.ipToLookup = ip;
 
 		$api.request({
-			module: "locate",
+			module: "Locate",
 			action: "getIPFromFile",
 			ip: $scope.ipToLookup
 		}, function (response) {
@@ -69,7 +69,7 @@ registerController("WhereController", ['$api', '$scope','$window','$route', '$ht
 		$scope.ipToLookup = ip;
 
 		$api.request({
-			module: "locate",
+			module: "Locate",
 			action: "lookupIP",
 			ip: $scope.ipToLookup
 		}, function (response) {
