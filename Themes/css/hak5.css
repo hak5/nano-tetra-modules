@@ -224,7 +224,7 @@ body {
 }
 
 .btn {
-    background-color: white;
+    background-color: red;
     font-family: webkit-pictograph;
 }
 
@@ -378,7 +378,15 @@ textarea.form-control {
 }
 
 .brand-text::after {
-    content: "pineapple";
+    content: "Wifi Pineapple | Hak5";
+    padding-top: 3px;
+    padding-left: 5px;
+    float: right;
+    color:#ff0066;
+}
+
+.brand-text::after {
+    content: "Wifi Pineapple | Hak5";
     padding-top: 3px;
     padding-left: 5px;
     float: right;
