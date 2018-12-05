@@ -8,10 +8,6 @@ MYTIME=`date +%s`
 
 killall sslsplit
 
-if [ ! -d /pineapple/modules/SSLsplit/log ]; then
-	mkdir /pineapple/modules/SSLsplit/log
-fi
-
 if [ "$1" = "start" ]; then
 
 	echo '1' > /proc/sys/net/ipv4/ip_forward

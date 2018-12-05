@@ -16,10 +16,11 @@ parser.add_argument('--stripjs', action='store_true', dest='stripjs', help='Stri
 parser.add_argument('--stripcss', action='store_true', dest='stripcss', help='Strip inline CSS from the cloned portal', required=False)
 parser.add_argument('--striplinks', action='store_true', dest='striplinks', help='Strip links from the cloned portal', required=False)
 parser.add_argument('--stripforms', action='store_true', dest='stripforms', help='Strip form elements from the cloned portal', required=False)
+parser.add_argument('--targeted', action='store_true', dest='targeted', help='Clone to a targeted portal', required=False)
 args = parser.parse_args()
 
 
-cloner = PortalCloner(args.portalName, args.portalArchive, args.injectionSet)
+cloner = PortalCloner(args.portalName, args.portalArchive, args.injectionSet, args.targeted)
 cloner.fetchPage(args.url)
 cloner.cloneResources()
 

@@ -38,6 +38,6 @@ if [ "$1" = "start" ]; then
 	fi
 
 elif [ "$1" = "stop" ]; then
-  killall -9 dump1090
+  	killall -9 dump1090
 	killall -9 nc
 fi

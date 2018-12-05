@@ -1,0 +1,3 @@
+include README.rst CHANGES LICENSE tox.ini .coveragerc tinycss/speedups.c
+recursive-include docs *
+prune docs/_build

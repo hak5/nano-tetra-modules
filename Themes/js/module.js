@@ -1,5 +1,8 @@
 registerController("ThemesController", ['$api', '$scope','$window','$route', '$http', function ($api, $scope, $window, $route, $http) {
 
+    /*
+     * Author: trashbo4t (github.com/trashbo4t)
+     */
     getThemes();
     getCurrentTheme();
     backupFiles();
@@ -36,8 +39,8 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
     $scope.dashboardcontrastBrightness     = 'normal';
     $scope.reconcontrastText               = 'light';
     $scope.reconcontrastBrightness         = 'normal';
-    $scope.profilingcontrastText           = 'light';
-    $scope.profilingcontrastBrightness     = 'normal';
+    $scope.notescontrastText               = 'light';
+    $scope.notescontrastBrightness         = 'normal';
     $scope.clientscontrastText             = 'light';
     $scope.clientscontrastBrightness       = 'normal';
     $scope.modulescontrastText             = 'light';
@@ -196,15 +199,15 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
             }
         });
     };
-    $scope.changeProfiling = function(){
+    $scope.changeNotes = function(){
         $api.request({
             module: "Themes",
             action: "replaceImage",
-            img: 'Profiling',
-            color: $scope.profilingcontrastText,
-            brightness: $scope.profilingcontrastBrightness
+            img: 'Notes',
+            color: $scope.notescontrastText,
+            brightness: $scope.notescontrastBrightness
         }, function(response) {
-            $scope.sendMessage("Profiling Icon", "set to " + $scope.profilingcontrastText + " (" + $scope.profilingcontrastBrightness + ")");
+            $scope.sendMessage("Notes Icon", "set to " + $scope.notescontrastText + " (" + $scope.notescontrastBrightness + ")");
             log("changeDashboard", "Success? " + response.success + " " + response.message);
             if ($scope.autoRefresh) {
                 $window.location.reload();
@@ -405,8 +408,8 @@ registerController("ThemesController", ['$api', '$scope','$window','$route', '$h
             $scope.dashboardcontrastBrightness     = response.dashboardbrightness;
             $scope.reconcontrastText               = response.recon;
             $scope.reconcontrastBrightness         = response.reconbrightness;
-            $scope.profilingcontrastText           = response.profiling;
-            $scope.profilingcontrastBrightness     = response.profilingbrightness;
+            $scope.notescontrastText               = response.notes;
+            $scope.notescontrastBrightness         = response.notesbrightness;
             $scope.clientscontrastText             = response.clients;
             $scope.clientscontrastBrightness       = response.clientsbrightness;
             $scope.modulescontrastText             = response.modulemanager;

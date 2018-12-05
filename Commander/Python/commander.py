@@ -20,6 +20,7 @@ import errno
 
 class Commander(object):
 	print "[*] WiFi Pineapple Commander Module"
+	print "[*] peace to: sebkinne & tesla"
 	
 	def run(self):
 		while True:

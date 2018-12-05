@@ -12,8 +12,8 @@ touch /tmp/Deauth.progress
 
 if [ "$1" = "install" ]; then
   if [ "$2" = "internal" ]; then
-	   opkg update
-     opkg install mdk3
+	opkg update
+    opkg install mdk3
   elif [ "$2" = "sd" ]; then
     opkg update
     opkg install mdk3 --dest sd

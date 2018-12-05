@@ -27,9 +27,8 @@ if [ "$1" = "install" ]; then
   uci commit onlinehashcrack.module.installed
 
 elif [ "$1" = "remove" ]; then
-	opkg remove curl
-
-	rm -rf /etc/config/onlinehashcrack
+  opkg remove curl
+  rm -rf /etc/config/onlinehashcrack
 fi
 
 rm /tmp/OnlineHashCrack.progress

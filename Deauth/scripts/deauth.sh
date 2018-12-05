@@ -101,7 +101,7 @@ if [ "$1" = "start" ]; then
 	mdk3 ${MYMONITOR} d ${SPEED} ${CHANNEL} ${MODE} >> ${LOG} &
 
 elif [ "$1" = "stop" ]; then
-  killall -9 mdk3
+  	killall -9 mdk3
 	rm ${TMPBLACKLIST}
 	rm ${TMPWHITELIST}
 	rm ${LOG}

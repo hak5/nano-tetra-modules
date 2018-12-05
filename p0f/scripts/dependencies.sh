@@ -32,8 +32,8 @@ if [ "$1" = "install" ]; then
   uci commit p0f.module.installed
 
 elif [ "$1" = "remove" ]; then
-    opkg remove p0f
-    rm -rf /etc/config/p0f
+  opkg remove p0f
+  rm -rf /etc/config/p0f
 fi
 
 rm /tmp/p0f.progress

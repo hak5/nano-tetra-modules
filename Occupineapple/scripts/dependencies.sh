@@ -29,8 +29,8 @@ if [ "$1" = "install" ]; then
   uci commit occupineapple.module.installed
 
 elif [ "$1" = "remove" ]; then
-    opkg remove mdk3
-    rm -rf /etc/config/occupineapple
+  opkg remove mdk3
+  rm -rf /etc/config/occupineapple
 fi
 
 rm /tmp/Occupineapple.progress

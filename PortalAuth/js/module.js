@@ -50,6 +50,7 @@ registerController('PortalAuthController', ['$api', '$scope', '$sce', '$interval
 	$scope.cloner_injectJS			= true;
 	$scope.cloner_injectCSS			= true;
 	$scope.cloner_injectHTML		= true;
+	$scope.cloner_targetedPortal	= false;
 	
 	// PASS elements
 	$scope.passStatus				= "Disabled";
@@ -502,6 +503,7 @@ registerController('PortalAuthController', ['$api', '$scope', '$sce', '$interval
 			clonerOpts += $scope.cloner_injectJS ? "injectjs;" : "";
 			clonerOpts += $scope.cloner_injectCSS ? "injectcss;" : "";
 			clonerOpts += $scope.cloner_injectHTML ? "injecthtml;" : "";
+			clonerOpts += $scope.cloner_targetedPortal ? "targeted;" : "";
 			clonerOpts = clonerOpts.slice(0,-1);
 			
 			$api.request({
@@ -538,6 +540,7 @@ registerController('PortalAuthController', ['$api', '$scope', '$sce', '$interval
 		$scope.cloner_injectJS			= true;
 		$scope.cloner_injectCSS			= true;
 		$scope.cloner_injectHTML		= true;
+		$scope.cloner_targetedPortal	= false;
 	});
 	$scope.swapDiv = (function(div){
 		if (div == "pass") {
@@ -741,7 +744,7 @@ registerController('PortalAuthController', ['$api', '$scope', '$sce', '$interval
 	// Init functions
 	$scope.init();
 	$scope.depends("-check");
-	$scope.isOnline();
+	//$scope.isOnline();
 	$scope.checkTestServerConfig();
 	$scope.checkPortalExists();
 	$scope.getConfigs();

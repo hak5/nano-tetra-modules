@@ -46,8 +46,8 @@ if [ "$1" = "install" ]; then
   uci commit ettercap.module.installed
 
 elif [ "$1" = "remove" ]; then
-    opkg remove ettercap
-    rm -rf /etc/config/ettercap
+  opkg remove ettercap
+  rm -rf /etc/config/ettercap
 fi
 
 rm /tmp/ettercap.progress

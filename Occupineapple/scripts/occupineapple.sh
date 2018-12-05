@@ -105,7 +105,7 @@ if [ "$1" = "start" ]; then
 	mdk3 ${MYMONITOR} b ${SPEED} ${CHANNEL} ${OPTIONS} ${MYLIST} >> ${LOG} &
 
 elif [ "$1" = "stop" ]; then
-  killall mdk3
+  	killall -9 mdk3
 	rm -rf /tmp/occupineapple.run
 	rm ${LOG}
 fi
