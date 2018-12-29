@@ -34,6 +34,13 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 	$scope.dependsProcessing		= false;
 	$scope.selectedFiles			= [];
 	$scope.uploading				= false;
+	$scope.selectedKey				= '';
+	$scope.certDecryptPassword		= '';
+	$scope.encrypting				= false;
+	$scope.decrypting				= false;
+	$scope.viewCert					= '';
+	$scope.selectedCert				= '';
+	$scope.loadingCert				= false;
 
 	$scope.checkDepends = (function(){
 		$api.request({
@@ -159,12 +166,101 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 				action: 'buildCert',
 				parameters: params
 			},function(response) {
+				$scope.certKeyName = '';
 				$scope.getLogs();
 				$scope.showBuildThrobber = false;
 				$scope.loadCertificates();
 				$api.reloadNavbar();
 			});
 		}
+	});
+	
+	$scope.loadCertProps = (function(cert){
+		
+		$scope.loadingCert = true;
+		$scope.viewCert = '';
+		$scope.selectedCert = cert;
+		
+		$api.request({
+			module: 'Papers',
+			action: 'loadCertProps',
+			certName: cert
+		},function(response){
+			$scope.loadingCert = false;
+			if (response === false) {
+				$('#viewCert').modal('hide');
+				return;
+			}
+			$scope.viewCert = response.data;
+		});
+	});
+	
+	$scope.selectKey = (function(key, type) {
+		$scope.certEncryptAlgo = "aes256";
+		$scope.certEncryptPassword = '';
+		$scope.selectedKey = key;
+		$scope.selectedKeyType = type;
+	});
+	
+	$scope.encryptKey = (function(name, type, algo, pass) {
+		
+		if (pass.length == 0) {
+			return;
+		}
+		
+		$scope.encrypting = true;
+		
+		$api.request({
+			module: 'Papers',
+			action: 'encryptKey',
+			keyName: name,
+			keyType: type,
+			keyAlgo: algo,
+			keyPass: pass
+		},function(response){
+			
+			$scope.encrypting = false;
+			$scope.certEncryptPassword = '';
+			
+			if (response.success === false) {
+				alert("Failed to encrypt key.  Check the logs for more info.");
+				$scope.getLogs();
+				return;
+			}
+			$scope.loadCertificates();
+			$('#encryptModal').modal('hide');
+		});
+	});
+	
+	$scope.decryptKey = (function(name, type, pass) {
+		
+		if (pass.length == 0) {
+			return;
+		}
+		
+		$scope.decrypting = true;
+		
+		$api.request({
+			module: 'Papers',
+			action: 'decryptKey',
+			keyName: name,
+			keyType: type,
+			keyPass: pass
+		},function(response){
+			
+			$scope.decrypting = false;
+			$scope.certDecryptPassword = '';
+			
+			if (response.success === false) {
+				alert("Failed to decrypt key.  Ensure you have entered the password correctly.");
+				$scope.getLogs();
+				return;
+			}
+			$scope.loadCertificates();
+			$('#decryptModal').modal('hide');
+		});
+		
+		
 	});
 
 	$scope.clearForm = (function() {
@@ -263,7 +359,6 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 				}
 			} else {
 				// Alert error
-				alert(response.message);
 			}
 			$scope.loadCertificates();
 		});
@@ -350,6 +445,7 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 			parameters: log,
 			type: type
 		},function(response){
+			console.log(response);
 			if (response.success === true) {
 				$scope.currentLogData = $sce.trustAsHtml(response.data);
 			}
