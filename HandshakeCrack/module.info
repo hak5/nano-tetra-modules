@@ -1,0 +1,9 @@
+{
+    "author": "n3d.b0y",
+    "description": "Web service www.onlinehashcrack.com in your pineapple",
+    "devices": [
+        "tetra"
+    ],
+    "title": "Handshake Crack",
+    "version": "1.0"
+}

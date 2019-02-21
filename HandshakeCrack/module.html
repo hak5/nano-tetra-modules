@@ -1,0 +1,179 @@
+<div ng-controller="HandshakeCrack_IsConnected">
+    <div class="alert alert-danger" role="alert" ng-show="$root.isConnected">
+        Internet connection required for this module to work!
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-default" ng-controller="HandshakeCrack_Dependencies">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Controls</h3>
+                </div>
+                <div class="panel-body">
+                    <table style="width:100%">
+                        <tr>
+                            <td style="padding-bottom: .5em;" class="text-muted">Dependencies</td>
+                            <td style="text-align:right;padding-bottom: .5em;">
+                                <button type="button" style="width: 90px;" class="btn btn-{{installLabel}} btn-xs"
+                                        ng-click="managerDependencies()" ng-disabled="processing || $root.noDependencies">{{install}}
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8" ng-show="!$root.status.installed">
+            <div class="panel panel-default" ng-controller="HandshakeCrack_Settings">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Setting</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="input-group">
+                                <span class="input-group-addon input-sm">Email</span>
+                                <input type="text" class="form-control input-sm" ng-model="settings.email">
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <button class="btn btn-{{saveSettingsLabel}} btn-sm btn-block" ng-disabled="saving"
+                                    ng-click="setSettings()">{{saveSettings}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" ng-show="!$root.status.installed" ng-controller="HandshakeCrack_Files">
+        <div class="col-md-6">
+            <div class="panel panel-default" ng-controller="HandshakeCrack_Crack">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Upload your WPA(2) capture file
+                        <span class="badge ng-binding pull-right">{{countHandshake}}</span>
+                        <div class="clearfix"></div>
+                    </h4>
+                </div>
+
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <span class="input-group-addon">File</span>
+                                    <select class="form-control input-sm handshake-select"
+                                            ng-change="refreshHandshakeInfo()"
+                                            ng-model="fileHandshake">
+                                        <option ng-repeat="file in files">{{ file }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-{{btnClass}} btn-sm btn-block"
+                                        ng-disabled="countHandshake == 0 || working || $root.isConnected"
+                                        ng-click="send()">
+                                    {{btnText}}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px;" class="info" ng-show="$root.handshakeInfo">
+                        <div class="form-group">
+                            <label style="padding-left: 0;" class="col-sm-2 control-label">BSSID:</label>
+                            <div class="col-sm-10">
+                                <p style="margin: 0 0 5px;">{{bssid}}</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="padding-left: 0;" class="col-sm-2 control-label">ESSID:</label>
+                            <div class="col-sm-10">
+                                <p style="margin: 0 0 5px;">{{essid}}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <strong class="pull-right">Log</strong>
+                        <div class="clearfix"></div>
+                        <pre class="scrollable-pre log-pre">{{output}}</pre>
+                    </div>
+
+                    <a href="https://www.onlinehashcrack.com/wpa" target="_blank" class="btn btn-default">Dashboard</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="panel panel-default" ng-controller="HandshakeCrack_Convert">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Cap to hccapx Converter</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div ng-show="massages.length > 0" class="alert alert-success" role="alert">
+                                {{massages}}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <span class="input-group-addon">File</span>
+                                    <select class="form-control input-sm handshake-select"
+                                            ng-change="refreshHandshakeInfo()"
+                                            ng-model="fileHandshake">
+                                        <option ng-repeat="file in files">{{ file }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-{{btnClass}} btn-sm btn-block"
+                                        ng-disabled="countHandshake == 0 || working || $root.isConnected"
+                                        ng-click="send()">
+                                    {{btnText}}
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-12" style="margin-top: 15px;">
+                            <a ng-click="btnDownload()" href="{{link}}" ng-show="link.length > 0" class="btn btn-success">Download</a>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 10px">
+                        <fieldset>
+                            <legend>Notes</legend>
+                            <ul>
+                                <li>Uploaded files (.cap) will be deleted immediately. We do NOT store your .cap files</li>
+                                <li>Converted files (.hccapx) will be stored for 2 days before being deleted</li>
+                                <li>This site is using the best-in-class tool <a href="https://github.com/ZerBea/hcxtools">hcxtools</a>
+                                    to onvert cap files
+                                </li>
+                                <li>The goal of this page is to make it very easy to convert .cap files to .hccapx</li>
+                            </ul>
+                        </fieldset>
+                        <fieldset>
+                            <legend>How to use?</legend>
+                            <p>More than easy, just select and upload your .(p)cap file. If valid, the file will be
+                                converted
+                                into a .hccapx file, which is readable by Hashcat.</p>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Explanation of the format</legend>
+                            <p>hccapx is a custom format, specifically developed for Hashcat, to be used for hash type -m
+                                2500 =
+                                WPA/WPA2
+                                A nexhaustive description of this custom format can be found on their <a
+                                        href="https://hashcat.net/wiki/doku.php?id=hccapx">official wiki</a>.</p>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
