@@ -109,6 +109,18 @@ body {
     background-color: #131313;
 }
 
+.well {
+    min-height: 20px;
+    padding: 19px;
+    margin-bottom: 20px;
+    background-color: #0c0c0c;
+    border: 1px solid #e3e3e3;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+}
+
+
 @media(min-width:768px) {
     .sidebar {
         z-index: 1;
@@ -196,10 +208,19 @@ body {
 }
 
 .brand-text::after {
-    content: "WiFi Pineapple";
+    content: "Wifi Pineapple | Rainy Day";
     padding-top: 3px;
     padding-left: 5px;
     float: right;
+    color: #b6cbee;
+}
+
+.brand-text::after {
+    content: "Wifi Pineapple | Rainy Day";
+    padding-top: 3px;
+    padding-left: 5px;
+    float: right;
+    color: #b6cbee;
 }
 
 .navbar-default {

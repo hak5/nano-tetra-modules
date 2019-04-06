@@ -83,6 +83,17 @@ body {
     background-color: #0c0c0c;
 }
 
+.well {
+    min-height: 20px;
+    padding: 19px;
+    margin-bottom: 20px;
+    background-color: #0c0c0c;
+    border: 1px solid #16F1B4;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+}
+
 .logout {
     cursor: pointer;
 }
@@ -196,10 +207,19 @@ body {
 }
 
 .brand-text::after {
-    content: "WiFi Pineapple";
+    content: "WiFi Pineapple  | Dark Green";
     padding-top: 3px;
     padding-left: 5px;
     float: right;
+    color: #16F1B4;
+}
+
+.brand-text::after {
+    content: "WiFi Pineapple  | Dark Green";
+    padding-top: 3px;
+    padding-left: 5px;
+    float: right;
+    color: #16F1B4;
 }
 
 .navbar-default {

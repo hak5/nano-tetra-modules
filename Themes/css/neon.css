@@ -123,6 +123,17 @@ table {
 }
 
 
+.well {
+    min-height: 20px;
+    padding: 19px;
+    margin-bottom: 20px;
+    background-color: #0c0c0c;
+    border: 1px solid lime;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+}
+
 .fixed-addon-width-3 {
     min-width: 110px;
     text-align: left;
@@ -377,7 +388,15 @@ textarea.form-control {
 }
 
 .brand-text::after {
-    content: "Neon Pineapple";
+    content: "Wifi Pineapple | Neon";
+    padding-top: 3px;
+    padding-left: 5px;
+    float: right;
+    color:lime;
+}
+
+.brand-text::after {
+    content: "Wifi Pineapple | Neon";
     padding-top: 3px;
     padding-left: 5px;
     float: right;
