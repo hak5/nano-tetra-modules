@@ -575,6 +575,8 @@ class EvilPortal extends Module
         exec("iptables -A INPUT -s 172.16.42.1 -j ACCEPT");
         exec("iptables -A OUTPUT -s 172.16.42.1 -j ACCEPT");
 
+        //Block https till login 
+        exec("iptables -t nat -A PREROUTING -i br-lan -p tcp --dport 443 -j DNAT --to-destination 172.16.42.1:80");
         //exec("iptables -A INPUT -i br-lan -p tcp --dport 443 -j DROP");
         //exec("iptables -t nat -A PREROUTING -i br-lan -j DROP");
 
@@ -610,6 +612,7 @@ class EvilPortal extends Module
         }
 
         exec("iptables -t nat -D PREROUTING -i br-lan -p tcp --dport 80 -j DNAT --to-destination 172.16.42.1:80");
+        exec("iptables -t nat -D PREROUTING -i br-lan -p tcp --dport 443 -j DNAT --to-destination 172.16.42.1:80"); //enable https again
         exec("iptables -D INPUT -p tcp --dport 53 -j ACCEPT");
         exec("iptables -D INPUT -j DROP");
 
