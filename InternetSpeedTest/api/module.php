@@ -75,8 +75,8 @@ class InternetSpeedTest extends Module
 
 	//
 	// runSpeedTest
-	// this function will execute the wget command download a 50 MB worth of data from the hak5 repo on github.com
-	// and return the formatted output of @getSpeedTestFile 
+	// this function will execute a wget command and download 50 MB worth of data 
+	// from the hak5 repo on github.com returning the formatted output of @getSpeedTestFile 
 	//
 	public function runSpeedTest($file)
 	{
@@ -103,7 +103,7 @@ class InternetSpeedTest extends Module
 
 	//
 	// getSpeedTestFile
-	// this function will return the contents of a speed tests file
+	// this function will return the contents of a speed test file
 	//
 	public function getSpeedTestFile($file)
 	{
@@ -115,7 +115,7 @@ class InternetSpeedTest extends Module
 
 	//
 	//  getSpeedTestFromFile
-	//  return the wget output associated with a speed test via file contents
+	//  return the wget output associated with a speed test via the file contents
 	//
 	public function getSpeedTestFromFile()
 	{
