@@ -75,8 +75,8 @@ class InternetSpeedTest extends Module
 
 	//
 	// runSpeedTest
-	// this function will execute the wget command download a 500mb file from softlayer.com
-	// as and return the output of @getSpeedTestFile 
+	// this function will execute the wget command download a 50 MB worth of data from the hak5 repo on github.com
+	// and return the formatted output of @getSpeedTestFile 
 	//
 	public function runSpeedTest($file)
 	{
