@@ -79,7 +79,7 @@ registerController("InternetSpeedTestController", ['$api', '$scope','$window','$
 	};	
 	
 	$scope.startSpeedTest = function () {
-		$scope.loading = "Loading"; 
+		$scope.loading = "Running Test"; 
 		$scope.working = "Your Internet Speed Test is running. Please be patient, this may take a minute to finish depending on your internet speed."; 
 		$scope.throbber = true;
 			
