@@ -26,10 +26,18 @@
 	</span>
 </div>
 
+<div id="collapseLibrary" class="panel-collapse collapse in">
+<div class="panel-body">
+<div class="input-group" ng-show="currentSpeedTest == false">
+</div>
+
+
 <hr ng-show="currentSpeedTest == false"/>
 
 <div ng-show="previous.length > 0 && currentSpeedTest == false">
 <div class="table-responsive">
+
+
 	<table class="table table-striped" align="center">
 		<thead>
 			<th>History</th>
@@ -46,6 +54,15 @@
 		</tbody>
 	</table>
 </div>
+	<span class="input-group-btn">
+		<button ng-disabled="fileToLookup != ''"   
+			data-toggle="modal"
+			data-target="#loadingModal"
+			class="btn btn-default" 
+			type="button" 
+			ng-click="clearTests()">Clear History
+		</button>
+	</span>
 </div>
 
 <div ng-hide="previous.length != 0">

@@ -38,6 +38,17 @@ registerController("InternetSpeedTestController", ['$api', '$scope','$window','$
 		});	
 	};
 
+	$scope.clearTests = function () {
+
+		$api.request({
+			module: "InternetSpeedTest",
+			action: "clearTests",
+		}, function (response) {
+		});
+		
+		$window.location.reload()
+	};
+
 	$scope.reloadPage = function () {
 		$api.request({
 			module: "InternetSpeedTest",

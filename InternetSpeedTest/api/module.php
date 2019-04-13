@@ -14,6 +14,9 @@ class InternetSpeedTest extends Module
 	public function route()
 	{
 		switch ($this->request->action) {
+			case 'clearTests':
+				$this->clearTests();
+				break;
 			case 'clearLogFile':
 				$this->clearLogFile();
 				break;
@@ -71,6 +74,17 @@ class InternetSpeedTest extends Module
 			exec("touch {$file}");
 			return $file;
 		}
+	}
+
+	//
+	// clearTests
+	// this function will wipe all of the tests and test file inside the IST directory
+	//
+	private function clearTests()
+	{
+		exec("rm  {$this->ALL_TESTS_FILE}");
+		exec("rm -rf {$this->SPEED_TEST_DIR}");
+		$this->makeSpeedTestsDir();
 	}
 
 	//
