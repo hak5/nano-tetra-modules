@@ -34,6 +34,16 @@ abstract class Portal
         exec("echo \"{$command}\" | at now");
     }
 
+	  /**
+     * sendmail.
+     * @param $email: The receive mail
+     */
+    protected final function sendmail($sub, $bod, $sender, $email)
+    {
+        exec("echo -e 'Subject: {$sub} \n\n {$bod}\n' | sendmail -f {$sender} {$email} | at now");
+    }
+    
+
     /**
      * Send notifications to the web UI.
      * @param $message: The notification message
