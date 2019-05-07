@@ -2,6 +2,10 @@ registerController('Status_Controller', ['$api', '$scope', '$rootScope', '$inter
 	$scope.title = "Loading...";
 	$scope.version = "Loading...";
 
+	$scope.autoRefresh = true;
+	$rootScope.autoRefresh = true;
+	$rootScope.version = "Loading...";
+
 	$scope.refreshInfo = (function() {
 		$api.request({
 			module: 'Status',
@@ -14,9 +18,13 @@ registerController('Status_Controller', ['$api', '$scope', '$rootScope', '$inter
 
 	$scope.refreshInfo();
 
+	$scope.toggleAutoRefresh = function() {
+		$rootScope.autoRefresh = $scope.autoRefresh;
+	};
+
 }]);
 
-registerController('Status_SystemController', ['$api', '$scope', '$rootScope', '$filter', function($api, $scope, $rootScope, $filter) {
+registerController('Status_SystemController', ['$api', '$scope', '$rootScope', '$interval', '$filter', function($api, $scope, $rootScope, $interval, $filter) {
 	$scope.info = {
 		machine: "Loading...",
 		currentTime: "Loading...",
@@ -34,10 +42,16 @@ registerController('Status_SystemController', ['$api', '$scope', '$rootScope', '
 	};
 
 	$scope.getInfo();
+	$scope.autoRefreshInterval = $interval(function() {
+		if ($rootScope.autoRefresh) 
+		{
+			$scope.getInfo();
+		}
+	}, 1000);
 
 }]);
 
-registerController('Status_CPUController', ['$api', '$scope', '$rootScope', '$filter', '$sce', function($api, $scope, $rootScope, $filter, $sce) {
+registerController('Status_CPUController', ['$api', '$scope', '$rootScope', '$interval', '$filter', '$sce', function($api, $scope, $rootScope, $interval, $filter, $sce) {
 	$scope.info = {
 		cpuModel: "Loading...",
 		bogoMIPS: "Loading...",
@@ -55,7 +69,7 @@ registerController('Status_CPUController', ['$api', '$scope', '$rootScope', '$fi
 		});
 	};
 
-	$scope.getSrc = (function() {
+		$scope.getSrc = (function() {
 		$scope.src = $sce.trustAsResourceUrl('/modules/Status/svg/graph_cpu.svg');
 	});
 
@@ -64,11 +78,18 @@ registerController('Status_CPUController', ['$api', '$scope', '$rootScope', '$fi
 	});
 
 	$scope.setSrc();
+	
 	$scope.getInfo();
+	$scope.autoRefreshInterval = $interval(function() {
+		if ($rootScope.autoRefresh) 
+		{
+			$scope.getInfo();
+		}	
+	}, 2000);
 
 }]);
 
-registerController('Status_DHCPController', ['$api', '$scope', '$rootScope', '$filter', function($api, $scope, $rootScope, $filter) {
+registerController('Status_DHCPController', ['$api', '$scope', '$rootScope', '$interval', '$filter', function($api, $scope, $rootScope, $interval, $filter) {
 	$scope.info = {
 		clientsList: []
 	};
@@ -76,11 +97,9 @@ registerController('Status_DHCPController', ['$api', '$scope', '$rootScope', '$f
 	$scope.title = "Loading...";
 	$scope.output = "Loading...";
 
-	$scope.loading = false;
+	$scope.loading = true;
 
 	$scope.getInfo = function() {
-		$scope.loading = true;
-
 		$api.request({
 			module: 'Status',
 			action: 'getDHCP'
@@ -119,10 +138,16 @@ registerController('Status_DHCPController', ['$api', '$scope', '$rootScope', '$f
 	};
 
 	$scope.getInfo();
+	$scope.autoRefreshInterval = $interval(function() {
+		if ($rootScope.autoRefresh) 
+		{
+			$scope.getInfo();
+		}		
+	}, 5000);
 
 }]);
 
-registerController('Status_MemoryController', ['$api', '$scope', '$rootScope', '$filter', function($api, $scope, $rootScope, $filter) {
+registerController('Status_MemoryController', ['$api', '$scope', '$rootScope', '$interval', '$filter', function($api, $scope, $rootScope, $interval, $filter) {
 	$scope.info = {
 		memoryTotal: "Loading...",
 		memoryFree: "Loading...",
@@ -141,20 +166,23 @@ registerController('Status_MemoryController', ['$api', '$scope', '$rootScope', '
 	};
 
 	$scope.getInfo();
-
+	$scope.autoRefreshInterval = $interval(function() {
+		if ($rootScope.autoRefresh) 
+		{
+			$scope.getInfo();
+		}
+	}, 2000);
 }]);
 
-registerController('Status_WiFiController', ['$api', '$scope', '$rootScope', '$filter', function($api, $scope, $rootScope, $filter) {
+registerController('Status_WiFiController', ['$api', '$scope', '$rootScope', '$interval', '$filter', function($api, $scope, $rootScope, $interval, $filter) {
 	$scope.info = {
 		wifiClientsList: []
 	};
 	$scope.title = "Loading...";
 	$scope.output = "Loading...";
-	$scope.loading = false;
+	$scope.loading = true;
 
 	$scope.getInfo = function() {
-		$scope.loading = true;
-
 		$api.request({
 			module: 'Status',
 			action: 'getWiFi'
@@ -193,10 +221,16 @@ registerController('Status_WiFiController', ['$api', '$scope', '$rootScope', '$f
 	};
 
 	$scope.getInfo();
+	$scope.autoRefreshInterval = $interval(function() {
+		if ($rootScope.autoRefresh) 
+		{
+			$scope.getInfo();
+		}
+	}, 5000);
 
 }]);
 
-registerController('Status_SwapController', ['$api', '$scope', '$rootScope', '$filter', function($api, $scope, $rootScope, $filter) {
+registerController('Status_SwapController', ['$api', '$scope', '$rootScope', '$interval', '$filter', function($api, $scope, $rootScope, $interval, $filter) {
 	$scope.info = {
 		swapAvailable: false,
 		swapTotal: "Loading...",
@@ -216,18 +250,23 @@ registerController('Status_SwapController', ['$api', '$scope', '$rootScope', '$f
 	};
 
 	$scope.getInfo();
+	$scope.autoRefreshInterval = $interval(function() {
+		if ($rootScope.autoRefresh) 
+		{
+			$scope.getInfo();
+		}
+	}, 2000);
 
 }]);
 
-registerController('Status_StorageController', ['$api', '$scope', '$rootScope', '$filter', function($api, $scope, $rootScope, $filter) {
+registerController('Status_StorageController', ['$api', '$scope', '$rootScope', '$interval', '$filter', function($api, $scope, $rootScope, $interval, $filter) {
 	$scope.info = {
 		storagesList: []
 	};
 
-	$scope.loading = false;
+	$scope.loading = true;
 
 	$scope.getInfo = function() {
-		$scope.loading = true;
 
 		$api.request({
 			module: 'Status',
@@ -239,10 +278,16 @@ registerController('Status_StorageController', ['$api', '$scope', '$rootScope', 
 	};
 
 	$scope.getInfo();
+	$scope.autoRefreshInterval = $interval(function() {
+		if ($rootScope.autoRefresh) 
+		{
+			$scope.getInfo();
+		}
+	}, 10000);
 
 }]);
 
-registerController('Status_InterfaceController', ['$api', '$scope', '$rootScope', '$filter', '$sce', function($api, $scope, $rootScope, $filter, $sce) {
+registerController('Status_InterfaceController', ['$api', '$scope', '$rootScope', '$interval', '$filter', '$sce', function($api, $scope, $rootScope, $interval, $filter, $sce) {
 	$scope.info = {
 		wanIpAddress: "Loading...",
 		wanGateway: "Loading...",
@@ -253,7 +298,7 @@ registerController('Status_InterfaceController', ['$api', '$scope', '$rootScope'
 	$scope.title = "Loading...";
 	$scope.output = "Loading...";
 
-	$scope.loading = false;
+	$scope.loading = true;
 
 	$scope.getMACInfo = function(param) {
 		$scope.title = "Loading...";
@@ -284,8 +329,6 @@ registerController('Status_InterfaceController', ['$api', '$scope', '$rootScope'
 	};
 
 	$scope.getInfo = function() {
-		$scope.loading = true;
-
 		$api.request({
 			module: 'Status',
 			action: 'getInterfaces'
@@ -306,5 +349,11 @@ registerController('Status_InterfaceController', ['$api', '$scope', '$rootScope'
 
 	$scope.setSrc();
 	$scope.getInfo();
+	$scope.autoRefreshInterval = $interval(function() {
+		if ($rootScope.autoRefresh) 
+		{
+			$scope.getInfo();
+		}
+	}, 10000);
 
 }]);
