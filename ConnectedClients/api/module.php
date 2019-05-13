@@ -49,10 +49,11 @@ class ConnectedClients extends Module
 	}
 
 	private function getConnectedClients() {
-		exec("iw dev wlan0 station dump | grep Station | awk '{print $2}'", $wlan0clients);
-		exec("iw dev wlan0-1 station dump | grep Station | awk '{print $2}'", $wlan01clients);
-		exec("iw dev wlan1 station dump | grep Station | awk '{print $2}'", $wlan1clients);
-		$this->response = array('wlan0clients' => $wlan0clients, 'wlan01clients' => $wlan01clients, 'wlan1clients' => $wlan1clients);
+		exec("iwconfig 2>/dev/null | grep IEEE | awk '{print $1}'", $wlandev);
+		exec("iw dev $wlandev[0] station dump | grep Station | awk '{print $2}'", $wlan0clients);
+		exec("iw dev $wlandev[1] station dump | grep Station | awk '{print $2}'", $wlan01clients);
+		exec("iw dev $wlandev[2] station dump | grep Station | awk '{print $2}'", $wlan1clients);
+		$this->response = array('wlan0clients' => $wlan0clients, 'wlan01clients' => $wlan01clients, 'wlan1clients' => $wlan1clients, 'wlandev' => $wlandev);
 	}
 
 	private function removeMacAddress() {
