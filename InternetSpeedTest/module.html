@@ -1,0 +1,124 @@
+<!-- Author			-->
+<!-- trashbo4t			-->
+<!-- (github.com/trashbo4t) 	-->
+
+<div class="row" ng-controller="InternetSpeedTestController">
+<div class="panel-group" id="accordion">
+<div class="col-md-9">
+
+<!-- Library panel -->
+<div class="panel panel-default">
+<div class="panel-heading">
+	<h5 class="panel-title"><a href="javascript:;" data-toggle="collapse" data-parent="#accordion" data-target="#collapseLibrary" class="text-muted">Internet Speed Test</a></h5>
+</div>
+
+<div id="collapseLibrary" class="panel-collapse collapse in">
+<div class="panel-body">
+<div class="input-group" ng-show="currentSpeedTest == false">
+	<span class="input-group-btn">
+		<button ng-disabled="fileToLookup != ''"   
+			data-toggle="modal"
+			data-target="#loadingModal"
+			class="btn btn-default" 
+			type="button" 
+			ng-click="startSpeedTest()">Start Test
+		</button>
+	</span>
+</div>
+
+<div id="collapseLibrary" class="panel-collapse collapse in">
+<div class="panel-body">
+<div class="input-group" ng-show="currentSpeedTest == false">
+</div>
+
+
+<hr ng-show="currentSpeedTest == false"/>
+
+<div ng-show="previous.length > 0 && currentSpeedTest == false">
+<div class="table-responsive">
+
+
+	<table class="table table-striped" align="center">
+		<thead>
+			<th>History</th>
+		</thead>
+		<tbody>
+			<tr ng-repeat="file in previousDisplay">
+				<td>
+					<a href="javascript:;" ng-click="getSpeedTestFromFile(file)">
+						Speed Test: {{ file }} <b>(Click to view)</b>
+					</a>
+				</td>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+	<span class="input-group-btn">
+		<button ng-disabled="fileToLookup != ''"   
+			data-toggle="modal"
+			data-target="#loadingModal"
+			class="btn btn-default" 
+			type="button" 
+			ng-click="clearTests()">Clear History
+		</button>
+	</span>
+</div>
+
+<div ng-hide="previous.length != 0">
+	<p class="text-muted text-center">
+		<i>Looks like there are no tests to display...</i>
+	</p>
+</div>
+
+<div ng-show="currentSpeedTest != false">
+	<button type="submit" class="btn btn-default btn-sm" ng-click="reloadPage()">Back</button>
+	<hr/>
+	<h3>Internet Speed Test Result: {{ currentSpeedTest }}</h3>
+
+<div class="table-responsive">
+	<table class="table table-striped" align="center">
+		<thead>
+			<th>Information</th>
+		</thead>
+		<tbody>
+			<tr>
+			<td>Result</td>
+			<td> {{ currentSpeedTestData }} </td>
+			</tr>
+		</tbody>
+		<tr>
+		<td>
+		</td>
+		</tr>
+		</tr>
+
+<div class="modal-footer">
+</div>
+	</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!--- Loading -->
+<div id="loadingModal" class="modal fade" role="dialog" >
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+	<h4 class="modal-title"> {{ loading }} </h4>
+</div>
+
+<div class="modal-body">
+<div class="panel-title">
+	<img src="/img/throbber.gif" ng-show="throbber" align="middle" class="center"/>
+	<p><b>{{ working }}</b></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+	
