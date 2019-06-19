@@ -1,7 +1,7 @@
 registerController('meterpreterCtrl', ['$api', '$scope', function($api, $scope) {
   $scope.running = false
   $scope.enabled = false
-  $scope.config = ""
+  $scope.config = {}
   getState()
 
   $scope.startMeterpreter = function () {
