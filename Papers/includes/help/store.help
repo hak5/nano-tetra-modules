@@ -1,5 +1,5 @@
 <strong>Encrypted</strong><br />
-Displays if the private key (.pem) is encrypted.  Does not include encryption on .pfx containers.
+Displays if the private key is encrypted.  Does not include encryption on .pfx containers.
 <br /><br />
 
 <strong>PineSSL / PineSSH</strong><br />
@@ -12,6 +12,15 @@ For SSH key pairs this button has two modes (the state does not change for TLS/S
 	<li><img src="/modules/Papers/includes/icons/glyphicons-205-unlock.png"/>&nbsp;&nbsp;Revoke key from /root/.ssh/authorized_keys to deny connections from those who use the private key.
 </ul>
 <br />
+
+<strong>Encrypt / Decrypt</strong><br />
+If this icon is highlighted green the private key is encrypted.  Click the icon and enter the key's password to decrypt it.<br />
+If the icon is not highlighted it is not encrypted.  Click the icon, select an algorithm, and enter a password to encrypt it.
+<br /><br />
+
+<strong>View Certificate</strong><br />
+View the human readable properties of the certificate.
+<br /><br />
 
 <strong>Download</strong><br />
 Packages the keys in the selected row into a zip archive and downloads it.

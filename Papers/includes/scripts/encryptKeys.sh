@@ -5,6 +5,7 @@
 
 # Location of SSL keys
 ssl_store="/pineapple/modules/Papers/includes/ssl/";
+ssh_store="/pineapple/modules/Papers/includes/ssh/";
 
 help() {
 	echo "Encryption/Export script for OpenSSL certificates";
@@ -21,6 +22,7 @@ help() {
 	echo 'Encryption Options:';
 	echo '';
 	echo -e '\t--encrypt:\tMust be supplied to encrypt keys';
+	echo -e '\t--ssh:\tThe key to encrypt is in the SSH store';
 	echo -e '\t-a:\t\tAlgorithm to use for key encryption (aes256, 3des, camellia256, etc)';
 	echo -e '\t-p:\t\tPassword to use for encryption';
 	echo '';
@@ -66,8 +68,11 @@ fi
 if [[ "$1" == "--encrypt" ]]; then
 	ENCRYPT_KEYS=true;
 fi
+if [[ "$1" == "--ssh" ]]; then
+	ssl_store=$ssh_store;
+fi
 if [[ "$1" == "-a" ]]; then
-        ALGO="$2";
+	ALGO="$2";
 fi
 if [[ "$1" == "-k" ]]; then
 	KEY="$2";

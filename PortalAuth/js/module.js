@@ -113,7 +113,7 @@ registerController('PortalAuthController', ['$api', '$scope', '$sce', '$interval
 			configs['dataExpected'] = $scope.dataExpected;
 			configs['p_archive'] = $scope.portalArchive;
 		} else {
-			configs['testSite'] = "https://www.puffycode.com/cptest.html";
+			configs['testSite'] = "https://portalauth.s3.us-east-2.amazonaws.com/cptest.html";
 			configs['dataExpected'] = "No Captive Portal";
 			configs['p_archive'] = "/root/portals/";
 		}
