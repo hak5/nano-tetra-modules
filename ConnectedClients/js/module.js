@@ -5,6 +5,7 @@ registerController('ConnectedClientsController', ['$api', '$scope', function($ap
 	$scope.wlan0clients = [];
 	$scope.wlan01clients = [];
 	$scope.wlan1clients = [];
+	$scope.wlandev = [];
 	$scope.dhcplength = 0;
 	$scope.dhcpleases = [];
 	$scope.blacklistlength = 0;
@@ -31,6 +32,7 @@ registerController('ConnectedClientsController', ['$api', '$scope', function($ap
 			$scope.wlan0clients = response.wlan0clients;
 			$scope.wlan01clients = response.wlan01clients;
 			$scope.wlan1clients = response.wlan1clients;
+			$scope.wlandev = response.wlandev;
 		});
 	});
 
