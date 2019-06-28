@@ -153,23 +153,26 @@ class PortalCloner:
 		# Search for CSS files linked with the @import statement and remove
 		for style in self.soup.find_all("style"):
 			parser = tinycss.make_parser('page3')
-			stylesheet = parser.parse_stylesheet(style.string)
-			for rule in stylesheet.rules:
-				if rule.at_keyword == "@import":
-				
-					# Get the name of the resource
-					fname = str(rule.uri).split("/")[-1]
+			try:
+				stylesheet = parser.parse_stylesheet(style.string)
+				for rule in stylesheet.rules:
+					if rule.at_keyword == "@import":
 					
-					# Download the resource
-					resourceURLs.append([rul.uri, fname])
-					
-					# Parse the CSS to get image links
-					_key = "resources/" + fname
-					self.css_urls[_key] = self.parseCSS(urlparse.urljoin(self.url, rule.uri))
-					
-					# Replace the old link of the CSS with the new one
-					modStyle = style.string
-					style.string.replace_with(modStyle.replace(rule.uri, "resources/" + fname))
+						# Get the name of the resource
+						fname = str(rule.uri).split("/")[-1]
+						
+						# Download the resource
+						resourceURLs.append([rule.uri, fname])
+						
+						# Parse the CSS to get image links
+						_key = "resources/" + fname
+						self.css_urls[_key] = self.parseCSS(urlparse.urljoin(self.url, rule.uri))
+						
+						# Replace the old link of the CSS with the new one
+						modStyle = style.string
+						style.string.replace_with(modStyle.replace(rule.uri, "resources/" + fname))
+			except:
+				pass
 		
 		
 		# Find and download all images and CSS files linked with <link>
