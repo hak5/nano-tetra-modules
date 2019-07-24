@@ -2,5 +2,9 @@
     "title": "SSID Manager",
     "description": "Manage SSID Pools for PineAP",
     "version": "1.0",
-    "author": "noncenz"
+    "author": "noncenz",
+    "devices": [
+     	"nano",
+	 	"tetra"
+	 ]
 }

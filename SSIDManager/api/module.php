@@ -1,5 +1,9 @@
 <?php namespace pineapple;
 
+define('__MODULE_LOCATION__', "/pineapple/modules/SSIDManager/");
+define('__SSID_FILES__', __MODULE_LOCATION__ . "SSID_Files/");
+define('__MODULE_INFO__', __MODULE_LOCATION__ . "module.info");
+
 /* The class name must be the name of your module, without spaces. */
 /* It must also extend the "Module" class. This gives your module access to API functions */
 class SSIDManager extends Module
@@ -36,16 +40,15 @@ class SSIDManager extends Module
 
     private function SSIDDirectoryPath()
     {
-        $path = '/pineapple/modules/SSIDManager/SSID_Files/';
-        if (!file_exists($path)) {
-            exec("mkdir ".$path);
+        if (!file_exists(__SSID_FILES__)) {
+            mkdir(__SSID_FILES__, 0755, true);
         }
-        return '/pineapple/modules/SSIDManager/SSID_Files/';
+        return __SSID_FILES__;
     }
 
     private function getContents()
     {
-        $moduleInfo = @json_decode(file_get_contents("/pineapple/modules/SSIDManager/module.info"));
+        $moduleInfo = @json_decode(file_get_contents(__MODULE_INFO__));
 
         $this->response = array("success" => true,
                     "version" => "version " . $moduleInfo->version,
@@ -79,7 +82,7 @@ class SSIDManager extends Module
 
     private function deleteSSIDFile()
     {
-        exec("rm -rf " . $this->SSIDDirectoryPath() ."'" . $this->request->file . "'");
+        unlink($this->SSIDDirectoryPath() . $this->request->file);
         $this->response = array("success" => true);
     }
 
