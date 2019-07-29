@@ -1,5 +1,5 @@
 #!/bin/sh
-#2015 - Whistle Master
+#2018 - Whistle Master + Small fix by Zylla
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sd/lib:/sd/usr/lib
 export PATH=$PATH:/sd/usr/bin:/sd/usr/sbin
@@ -18,7 +18,7 @@ if [ "$1" = "install" ]; then
     opkg update
     opkg install ngrep --dest sd
   fi
-  
+
   if [ ! -f /usr/lib/libpcap.so ] && [ -f /usr/lib/libpcap.so.1.3 ]; then
   	ln -s /usr/lib/libpcap.so /usr/lib/libpcap.so.1.3
   fi
