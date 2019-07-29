@@ -42,13 +42,16 @@ registerController('Status_SystemController', ['$api', '$scope', '$rootScope', '
 	};
 
 	$scope.getInfo();
-	$scope.autoRefreshInterval = $interval(function() {
+	$scope.statusRefreshInterval = $interval(function() {
 		if ($rootScope.autoRefresh) 
 		{
 			$scope.getInfo();
 		}
 	}, 1000);
 
+	$scope.$on('$destroy', function() {
+		$interval.cancel($scope.statusRefreshInterval);
+	});
 }]);
 
 registerController('Status_CPUController', ['$api', '$scope', '$rootScope', '$interval', '$filter', '$sce', function($api, $scope, $rootScope, $interval, $filter, $sce) {
@@ -80,13 +83,16 @@ registerController('Status_CPUController', ['$api', '$scope', '$rootScope', '$in
 	$scope.setSrc();
 	
 	$scope.getInfo();
-	$scope.autoRefreshInterval = $interval(function() {
+	$scope.statusRefreshInterval = $interval(function() {
 		if ($rootScope.autoRefresh) 
 		{
 			$scope.getInfo();
 		}	
 	}, 2000);
 
+	$scope.$on('$destroy', function() {
+		$interval.cancel($scope.statusRefreshInterval);
+	});
 }]);
 
 registerController('Status_DHCPController', ['$api', '$scope', '$rootScope', '$interval', '$filter', function($api, $scope, $rootScope, $interval, $filter) {
@@ -138,12 +144,16 @@ registerController('Status_DHCPController', ['$api', '$scope', '$rootScope', '$i
 	};
 
 	$scope.getInfo();
-	$scope.autoRefreshInterval = $interval(function() {
+	$scope.statusRefreshInterval = $interval(function() {
 		if ($rootScope.autoRefresh) 
 		{
 			$scope.getInfo();
 		}		
 	}, 5000);
+
+	$scope.$on('$destroy', function() {
+		$interval.cancel($scope.statusRefreshInterval);
+	});
 
 }]);
 
@@ -166,12 +176,17 @@ registerController('Status_MemoryController', ['$api', '$scope', '$rootScope', '
 	};
 
 	$scope.getInfo();
-	$scope.autoRefreshInterval = $interval(function() {
+	$scope.statusRefreshInterval = $interval(function() {
 		if ($rootScope.autoRefresh) 
 		{
 			$scope.getInfo();
 		}
 	}, 2000);
+
+	$scope.$on('$destroy', function() {
+		$interval.cancel($scope.statusRefreshInterval);
+	});
+
 }]);
 
 registerController('Status_WiFiController', ['$api', '$scope', '$rootScope', '$interval', '$filter', function($api, $scope, $rootScope, $interval, $filter) {
@@ -221,12 +236,16 @@ registerController('Status_WiFiController', ['$api', '$scope', '$rootScope', '$i
 	};
 
 	$scope.getInfo();
-	$scope.autoRefreshInterval = $interval(function() {
+	$scope.statusRefreshInterval = $interval(function() {
 		if ($rootScope.autoRefresh) 
 		{
 			$scope.getInfo();
 		}
 	}, 5000);
+
+	$scope.$on('$destroy', function() {
+		$interval.cancel($scope.statusRefreshInterval);
+	});
 
 }]);
 
@@ -250,12 +269,16 @@ registerController('Status_SwapController', ['$api', '$scope', '$rootScope', '$i
 	};
 
 	$scope.getInfo();
-	$scope.autoRefreshInterval = $interval(function() {
+	$scope.statusRefreshInterval = $interval(function() {
 		if ($rootScope.autoRefresh) 
 		{
 			$scope.getInfo();
 		}
 	}, 2000);
+
+	$scope.$on('$destroy', function() {
+		$interval.cancel($scope.statusRefreshInterval);
+	});
 
 }]);
 
@@ -267,7 +290,6 @@ registerController('Status_StorageController', ['$api', '$scope', '$rootScope', 
 	$scope.loading = true;
 
 	$scope.getInfo = function() {
-
 		$api.request({
 			module: 'Status',
 			action: 'getStorage'
@@ -278,12 +300,16 @@ registerController('Status_StorageController', ['$api', '$scope', '$rootScope', 
 	};
 
 	$scope.getInfo();
-	$scope.autoRefreshInterval = $interval(function() {
+	$scope.statusRefreshInterval = $interval(function() {
 		if ($rootScope.autoRefresh) 
 		{
 			$scope.getInfo();
 		}
 	}, 10000);
+
+	$scope.$on('$destroy', function() {
+		$interval.cancel($scope.statusRefreshInterval);
+	});
 
 }]);
 
@@ -349,11 +375,15 @@ registerController('Status_InterfaceController', ['$api', '$scope', '$rootScope'
 
 	$scope.setSrc();
 	$scope.getInfo();
-	$scope.autoRefreshInterval = $interval(function() {
+	$scope.statusRefreshInterval = $interval(function() {
 		if ($rootScope.autoRefresh) 
 		{
 			$scope.getInfo();
 		}
 	}, 10000);
+
+	$scope.$on('$destroy', function() {
+		$interval.cancel($scope.statusRefreshInterval);
+	});
 
 }]);
