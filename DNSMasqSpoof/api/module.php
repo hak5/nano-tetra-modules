@@ -1,8 +1,5 @@
 <?php namespace pineapple;
 
-putenv('LD_LIBRARY_PATH='.getenv('LD_LIBRARY_PATH').':/sd/lib:/sd/usr/lib');
-putenv('PATH='.getenv('PATH').':/sd/usr/bin:/sd/usr/sbin');
-
 class DNSMasqSpoof extends Module
 {
     public function route()
@@ -44,9 +41,9 @@ class DNSMasqSpoof extends Module
         }
     }
 
-    protected function checkDependency($dependencyName)
+    protected function checkDep($dependencyName)
     {
-        return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("dnsmasqspoof.module.installed")));
+        return ($this->checkDependency($dependencyName) && ($this->uciGet("dnsmasqspoof.module.installed")));
     }
 
     protected function getDevice()
@@ -67,7 +64,7 @@ class DNSMasqSpoof extends Module
 
     private function handleDependencies()
     {
-        if (!$this->checkDependency("dnsmasq")) {
+        if (!$this->checkDep("dnsmasq")) {
             $this->execBackground("/pineapple/modules/DNSMasqSpoof/scripts/dependencies.sh install ".$this->request->destination);
             $this->response = array('success' => true);
         } else {
