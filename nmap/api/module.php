@@ -1,7 +1,7 @@
 <?php namespace pineapple;
 
-//putenv('LD_LIBRARY_PATH='.getenv('LD_LIBRARY_PATH').':/sd/lib:/sd/usr/lib');
-//putenv('PATH='.getenv('PATH').':/sd/usr/bin:/sd/usr/sbin');
+putenv('LD_LIBRARY_PATH='.getenv('LD_LIBRARY_PATH').':/sd/lib:/sd/usr/lib');
+putenv('PATH='.getenv('PATH').':/sd/usr/bin:/sd/usr/sbin');
 
 class nmap extends Module
 {
@@ -44,15 +44,15 @@ class nmap extends Module
         }
     }
 
-    protected function checkDep($dependencyName)
+    protected function checkDependency($dependencyName)
     {
-        return ($this->checkDependency($dependencyName) && ($this->uciGet("nmap.module.installed")));
+        return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("nmap.module.installed")));
     }
 
-//    protected function getDevice()
-//    {
-//        return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
-//    }
+    protected function getDevice()
+    {
+        return trim(exec("cat /proc/cpuinfo | grep machine | awk -F: '{print $2}'"));
+    }
 
     protected function refreshInfo()
     {
@@ -62,7 +62,6 @@ class nmap extends Module
 
     private function handleDependencies()
     {
-        error_log("handleDependencies()");
         if (!$this->checkDependency("nmap")) {
             $this->execBackground("/pineapple/modules/nmap/scripts/dependencies.sh install ".$this->request->destination);
             $this->response = array('success' => true);
@@ -93,11 +92,9 @@ class nmap extends Module
     private function togglenmap()
     {
         if (!$this->checkRunning("nmap")) {
-            error_log("nmap not running");
             $full_cmd = $this->request->command . " -oN /tmp/nmap.scan 2>&1";
             shell_exec("echo -e \"{$full_cmd}\" > /tmp/nmap.run");
 
-            error_log("calling run script");
             $this->execBackground("/pineapple/modules/nmap/scripts/nmap.sh start");
         } else {
             $this->execBackground("/pineapple/modules/nmap/scripts/nmap.sh stop");
