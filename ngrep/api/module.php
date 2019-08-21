@@ -1,8 +1,5 @@
 <?php namespace pineapple;
 
-putenv('LD_LIBRARY_PATH='.getenv('LD_LIBRARY_PATH').':/sd/lib:/sd/usr/lib');
-putenv('PATH='.getenv('PATH').':/sd/usr/bin:/sd/usr/sbin');
-
 class ngrep extends Module
 {
     public function route()
@@ -56,9 +53,9 @@ class ngrep extends Module
         }
     }
 
-    protected function checkDependency($dependencyName)
+    protected function checkDeps($dependencyName)
     {
-        return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("ngrep.module.installed")));
+        return ($this->checkDependency($dependencyName) && ($this->uciGet("ngrep.module.installed")));
     }
 
     protected function getDevice()
@@ -74,7 +71,7 @@ class ngrep extends Module
 
     private function handleDependencies()
     {
-        if (!$this->checkDependency("ngrep")) {
+        if (!$this->checkDeps("ngrep")) {
             $this->execBackground("/pineapple/modules/ngrep/scripts/dependencies.sh install ".$this->request->destination);
             $this->response = array('success' => true);
         } else {
@@ -107,7 +104,7 @@ class ngrep extends Module
     private function refreshStatus()
     {
         if (!file_exists('/tmp/ngrep.progress')) {
-            if (!$this->checkDependency("ngrep")) {
+            if (!$this->checkDeps("ngrep")) {
                 $installed = false;
                 $install = "Not installed";
                 $installLabel = "danger";
@@ -147,7 +144,7 @@ class ngrep extends Module
 
     private function refreshOutput()
     {
-        if ($this->checkDependency("ngrep")) {
+        if ($this->checkDeps("ngrep")) {
             if ($this->checkRunning("ngrep")) {
                 $path = "/pineapple/modules/ngrep/log";
 

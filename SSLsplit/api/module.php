@@ -1,7 +1,6 @@
 <?php namespace pineapple;
 
-putenv('LD_LIBRARY_PATH='.getenv('LD_LIBRARY_PATH').':/sd/lib:/sd/usr/lib');
-putenv('PATH='.getenv('PATH').':/sd/usr/bin:/sd/usr/sbin');
+
 
 class SSLsplit extends Module
 {
@@ -56,9 +55,9 @@ class SSLsplit extends Module
         }
     }
 
-    protected function checkDependency($dependencyName)
+    protected function checkDeps($dependencyName)
     {
-        return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("sslsplit.module.installed")));
+        return ($this->checkDependency($dependencyName) && ($this->uciGet("sslsplit.module.installed")));
     }
 
     protected function getDevice()
@@ -94,7 +93,7 @@ class SSLsplit extends Module
 
     private function handleDependencies()
     {
-        if (!$this->checkDependency("sslsplit")) {
+        if (!$this->checkDeps("sslsplit")) {
             $this->execBackground("/pineapple/modules/SSLsplit/scripts/dependencies.sh install ".$this->request->destination);
             $this->response = array('success' => true);
         } else {
@@ -135,7 +134,7 @@ class SSLsplit extends Module
     private function refreshStatus()
     {
         if (!file_exists('/tmp/SSLsplit.progress')) {
-            if (!$this->checkDependency("sslsplit")) {
+            if (!$this->checkDeps("sslsplit")) {
                 $installed = false;
                 $install = "Not installed";
                 $installLabel = "danger";
@@ -215,7 +214,7 @@ class SSLsplit extends Module
 
     private function refreshOutput()
     {
-        if ($this->checkDependency("sslsplit")) {
+        if ($this->checkDeps("sslsplit")) {
             if ($this->checkRunning("sslsplit")) {
                 if (file_exists("/pineapple/modules/SSLsplit/connections.log")) {
                     if ($this->request->filter != "") {

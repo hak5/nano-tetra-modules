@@ -1,8 +1,5 @@
 <?php namespace pineapple;
 
-putenv('LD_LIBRARY_PATH='.getenv('LD_LIBRARY_PATH').':/sd/lib:/sd/usr/lib');
-putenv('PATH='.getenv('PATH').':/sd/usr/bin:/sd/usr/sbin');
-
 require_once('/pineapple/modules/SiteSurvey/api/iwlist_parser.php');
 
 class SiteSurvey extends Module
@@ -70,9 +67,9 @@ class SiteSurvey extends Module
         }
     }
 
-    protected function checkDependency($dependencyName)
+    protected function checkDeps($dependencyName)
     {
-        return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("sitesurvey.module.installed")));
+        return ($this->checkDependency($dependencyName) && ($this->uciGet("sitesurvey.module.installed")));
     }
 
     protected function getDevice()
@@ -93,7 +90,7 @@ class SiteSurvey extends Module
 
     private function handleDependencies()
     {
-        if (!$this->checkDependency("mdk3")) {
+        if (!$this->checkDeps("mdk3")) {
             $this->execBackground("/pineapple/modules/SiteSurvey/scripts/dependencies.sh install ".$this->request->destination);
             $this->response = array('success' => true);
         } else {
@@ -114,7 +111,7 @@ class SiteSurvey extends Module
     private function refreshStatus()
     {
         if (!file_exists('/tmp/SiteSurvey.progress')) {
-            if (!$this->checkDependency("iwlist")) {
+            if (!$this->checkDeps("iwlist")) {
                 $installed = false;
                 $install = "Not installed";
                 $installLabel = "danger";

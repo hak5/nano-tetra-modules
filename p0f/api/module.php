@@ -1,8 +1,5 @@
 <?php namespace pineapple;
 
-putenv('LD_LIBRARY_PATH='.getenv('LD_LIBRARY_PATH').':/sd/lib:/sd/usr/lib');
-putenv('PATH='.getenv('PATH').':/sd/usr/bin:/sd/usr/sbin');
-
 class p0f extends Module
 {
     public function route()
@@ -50,9 +47,9 @@ class p0f extends Module
         }
     }
 
-    protected function checkDependency($dependencyName)
+    protected function checkDeps($dependencyName)
     {
-        return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("p0f.module.installed")));
+        return ($this->checkDependency($dependencyName) && ($this->uciGet("p0f.module.installed")));
     }
 
     protected function getDevice()
@@ -68,7 +65,7 @@ class p0f extends Module
 
     private function handleDependencies()
     {
-        if (!$this->checkDependency("p0f")) {
+        if (!$this->checkDeps("p0f")) {
             $this->execBackground("/pineapple/modules/p0f/scripts/dependencies.sh install ".$this->request->destination);
             $this->response = array('success' => true);
         } else {
@@ -120,7 +117,7 @@ class p0f extends Module
     private function refreshStatus()
     {
         if (!file_exists('/tmp/p0f.progress')) {
-            if (!$this->checkDependency("p0f")) {
+            if (!$this->checkDeps("p0f")) {
                 $installed = false;
                 $install = "Not installed";
                 $installLabel = "danger";
@@ -175,7 +172,7 @@ class p0f extends Module
 
     private function refreshOutput()
     {
-        if ($this->checkDependency("p0f")) {
+        if ($this->checkDeps("p0f")) {
             if ($this->checkRunning("p0f")) {
                 $path = "/pineapple/modules/p0f/log";
 

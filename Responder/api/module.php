@@ -1,8 +1,5 @@
 <?php namespace pineapple;
 
-putenv('LD_LIBRARY_PATH='.getenv('LD_LIBRARY_PATH').':/sd/lib:/sd/usr/lib');
-putenv('PATH='.getenv('PATH').':/sd/usr/bin:/sd/usr/sbin');
-
 class Responder extends Module
 {
     public function route()
@@ -56,9 +53,9 @@ class Responder extends Module
         }
     }
 
-    protected function checkDependency($dependencyName)
+    protected function checkDeps($dependencyName)
     {
-        return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("responder.module.installed")));
+        return ($this->checkDependency($dependencyName) && ($this->uciGet("responder.module.installed")));
     }
 
     protected function checkRunning($processName)
@@ -79,7 +76,7 @@ class Responder extends Module
 
     private function handleDependencies()
     {
-        if (!$this->checkDependency("python")) {
+        if (!$this->checkDeps("python")) {
             $this->execBackground("/pineapple/modules/Responder/scripts/dependencies.sh install ".$this->request->destination);
             $this->response = array('success' => true);
         } else {
@@ -131,7 +128,7 @@ class Responder extends Module
     private function refreshStatus()
     {
         if (!file_exists('/tmp/Responder.progress')) {
-            if (!$this->checkDependency("python")) {
+            if (!$this->checkDeps("python")) {
                 $installed = false;
                 $install = "Not installed";
                 $installLabel = "danger";
@@ -186,7 +183,7 @@ class Responder extends Module
 
     private function refreshOutput()
     {
-        if ($this->checkDependency("python")) {
+        if ($this->checkDeps("python")) {
             if ($this->checkRunning("Responder.py")) {
                 if (file_exists("/pineapple/modules/Responder/dep/responder/logs/Responder-Session.log")) {
                     if ($this->request->filter != "") {

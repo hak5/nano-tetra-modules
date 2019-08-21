@@ -1,9 +1,6 @@
 #!/bin/sh
 #2015 - Whistle Master
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sd/lib:/sd/usr/lib
-export PATH=$PATH:/sd/usr/bin:/sd/usr/sbin
-
 if grep addn-hosts /etc/dnsmasq.conf &> /dev/null; then
     /etc/init.d/dnsmasq stop && /etc/init.d/dnsmasq start
   else
