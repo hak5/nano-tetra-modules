@@ -1,5 +1,8 @@
 <?php namespace pineapple;
 
+putenv('LD_LIBRARY_PATH='.getenv('LD_LIBRARY_PATH').':/sd/lib:/sd/usr/lib');
+putenv('PATH='.getenv('PATH').':/sd/usr/bin:/sd/usr/sbin');
+
 require_once('/pineapple/modules/wps/api/iwlist_parser.php');
 
 class wps extends Module
@@ -67,9 +70,9 @@ class wps extends Module
         }
     }
 
-    protected function checkDeps($dependencyName)
+    protected function checkDependency($dependencyName)
     {
-        return ($this->checkDependency($dependencyName) && ($this->uciGet("wps.module.installed")));
+        return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("wps.module.installed")));
     }
 
     protected function getDevice()
@@ -90,7 +93,7 @@ class wps extends Module
 
     private function handleDependencies()
     {
-        if (!$this->checkDeps("reaver")) {
+        if (!$this->checkDependency("reaver")) {
             $this->execBackground("/pineapple/modules/wps/scripts/dependencies.sh install ".$this->request->destination);
             $this->response = array('success' => true);
         } else {
@@ -111,7 +114,7 @@ class wps extends Module
     private function refreshStatus()
     {
         if (!file_exists('/tmp/wps.progress')) {
-            if (!$this->checkDeps("iwlist")) {
+            if (!$this->checkDependency("iwlist")) {
                 $installed = false;
                 $install = "Not installed";
                 $installLabel = "danger";
@@ -163,7 +166,7 @@ class wps extends Module
 
     private function refreshOutput()
     {
-        if ($this->checkDeps("reaver") && $this->checkDeps("bully")) {
+        if ($this->checkDependency("reaver") && $this->checkDependency("bully")) {
             if ($this->checkRunning("reaver") || $this->checkRunning("bully")) {
                 $path = "/pineapple/modules/wps/log";
 

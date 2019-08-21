@@ -1,6 +1,7 @@
 <?php namespace pineapple;
 
-
+putenv('LD_LIBRARY_PATH='.getenv('LD_LIBRARY_PATH').':/sd/lib:/sd/usr/lib');
+putenv('PATH='.getenv('PATH').':/sd/usr/bin:/sd/usr/sbin');
 
 class tcpdump extends Module
 {
@@ -46,9 +47,9 @@ class tcpdump extends Module
         }
     }
 
-    protected function checkDeps($dependencyName)
+    protected function checkDependency($dependencyName)
     {
-        return ($this->checkDependency($dependencyName) && ($this->uciGet("tcpdump.module.installed")));
+        return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("tcpdump.module.installed")));
     }
 
     protected function getDevice()
@@ -64,7 +65,7 @@ class tcpdump extends Module
 
     private function handleDependencies()
     {
-        if (!$this->checkDeps("tcpdump")) {
+        if (!$this->checkDependency("tcpdump")) {
             $this->execBackground("/pineapple/modules/tcpdump/scripts/dependencies.sh install ".$this->request->destination);
             $this->response = array('success' => true);
         } else {
@@ -97,7 +98,7 @@ class tcpdump extends Module
     private function refreshStatus()
     {
         if (!file_exists('/tmp/tcpdump.progress')) {
-            if (!$this->checkDeps("tcpdump")) {
+            if (!$this->checkDependency("tcpdump")) {
                 $installed = false;
                 $install = "Not installed";
                 $installLabel = "danger";
@@ -137,7 +138,7 @@ class tcpdump extends Module
 
     private function refreshOutput()
     {
-        if ($this->checkDeps("tcpdump")) {
+        if ($this->checkDependency("tcpdump")) {
             if (file_exists("/tmp/tcpdump_capture.log")) {
                 $output = file_get_contents("/tmp/tcpdump_capture.log");
                 if (!empty($output)) {

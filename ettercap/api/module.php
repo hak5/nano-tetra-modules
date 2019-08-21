@@ -1,6 +1,7 @@
 <?php namespace pineapple;
 
-
+putenv('LD_LIBRARY_PATH='.getenv('LD_LIBRARY_PATH').':/sd/lib:/sd/usr/lib');
+putenv('PATH='.getenv('PATH').':/sd/usr/bin:/sd/usr/sbin');
 
 class ettercap extends Module
 {
@@ -63,7 +64,7 @@ class ettercap extends Module
 
     protected function checkDependency($dependencyName)
     {
-        return ($this->checkDependency($dependencyName) && ($this->uciGet("ettercap.module.installed")));
+        return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("ettercap.module.installed")));
     }
 
     protected function getDevice()

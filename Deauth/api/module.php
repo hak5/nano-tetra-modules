@@ -1,7 +1,7 @@
 <?php namespace pineapple;
 
-//putenv('LD_LIBRARY_PATH='.getenv('LD_LIBRARY_PATH').':/sd/lib:/sd/usr/lib');
-//putenv('PATH='.getenv('PATH').':/sd/usr/bin:/sd/usr/sbin');
+putenv('LD_LIBRARY_PATH='.getenv('LD_LIBRARY_PATH').':/sd/lib:/sd/usr/lib');
+putenv('PATH='.getenv('PATH').':/sd/usr/bin:/sd/usr/sbin');
 
 class Deauth extends Module
 {
@@ -53,9 +53,9 @@ class Deauth extends Module
         }
     }
 
-    protected function checkDep($dependencyName)
+    protected function checkDependency($dependencyName)
     {
-        return ($this->checkDependency($dependencyName) && ($this->uciGet("deauth.module.installed")));
+        return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("deauth.module.installed")));
     }
 
     protected function getDevice()
@@ -71,7 +71,7 @@ class Deauth extends Module
 
     private function handleDependencies()
     {
-        if (!$this->checkDep("mdk3")) {
+        if (!$this->checkDependency("mdk3")) {
             $this->execBackground("/pineapple/modules/Deauth/scripts/dependencies.sh install ".$this->request->destination);
             $this->response = array('success' => true);
         } else {
@@ -116,7 +116,7 @@ class Deauth extends Module
     private function refreshStatus()
     {
         if (!file_exists('/tmp/Deauth.progress')) {
-            if (!$this->checkDep("mdk3")) {
+            if (!$this->checkDependency("mdk3")) {
                 $installed = false;
                 $install = "Not installed";
                 $installLabel = "danger";

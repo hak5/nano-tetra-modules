@@ -1,6 +1,9 @@
 #!/bin/sh
 #2015 - Whistle Master
 
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sd/lib:/sd/usr/lib
+export PATH=$PATH:/sd/usr/bin:/sd/usr/sbin
+
 if [ "$1" = "start" ]; then
 	echo "no-dhcp-interface=" >> /etc/dnsmasq.conf
 	echo "server=8.8.8.8" >> /etc/dnsmasq.conf
