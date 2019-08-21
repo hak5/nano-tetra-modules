@@ -1,6 +1,4 @@
 <?php namespace pineapple;
-putenv('LD_LIBRARY_PATH='.getenv('LD_LIBRARY_PATH').':/sd/lib:/sd/usr/lib');
-putenv('PATH='.getenv('PATH').':/sd/usr/bin:/sd/usr/sbin');
 
 class OnlineHashCrack extends Module
 {
@@ -49,9 +47,9 @@ class OnlineHashCrack extends Module
         }
     }
 
-	protected function checkDependency($dependencyName)
+	protected function checkDeps($dependencyName)
 	{
-		return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("onlinehashcrack.module.installed")));
+		return ($this->checkDependency($dependencyName) && ($this->uciGet("onlinehashcrack.module.installed")));
 	}
 
 	protected function getDevice()
@@ -67,9 +65,9 @@ class OnlineHashCrack extends Module
 
     private function handleDependencies()
     {
-		if(!$this->checkDependency("curl"))
+		if(!$this->checkDeps("curl"))
 		{
-					$this->execBackground("/pineapple/modules/OnlineHashCrack/scripts/dependencies.sh install ".$this->request->destination);
+		    $this->execBackground("/pineapple/modules/OnlineHashCrack/scripts/dependencies.sh install ".$this->request->destination);
 	        $this->response = array('success' => true);
 		}
 		else
@@ -95,7 +93,7 @@ class OnlineHashCrack extends Module
     {
 	    if (!file_exists('/tmp/OnlineHashCrack.progress'))
 		{
-			if(!$this->checkDependency("curl"))
+			if(!$this->checkDeps("curl"))
 			{
 				$installed = false;
 				$install = "Not installed";

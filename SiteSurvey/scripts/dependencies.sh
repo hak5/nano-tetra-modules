@@ -1,8 +1,7 @@
 #!/bin/sh
 #2015 - Whistle Master
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sd/lib:/sd/usr/lib
-export PATH=$PATH:/sd/usr/bin:/sd/usr/sbin
+logger "== SITESURVEY INSTALL SCRIPT"
 
 [[ -f /tmp/SiteSurvey.progress ]] && {
   exit 0
@@ -13,8 +12,10 @@ touch /tmp/SiteSurvey.progress
 if [ "$1" = "install" ]; then
   if [ "$2" = "internal" ]; then
 	   opkg update
+	   opkg install mdk3
   elif [ "$2" = "sd" ]; then
-    opkg update
+        opkg update
+        opkg install mdk3 --dest=sd
   fi
 
   touch /etc/config/sitesurvey

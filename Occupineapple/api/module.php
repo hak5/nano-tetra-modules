@@ -1,8 +1,5 @@
 <?php namespace pineapple;
 
-putenv('LD_LIBRARY_PATH='.getenv('LD_LIBRARY_PATH').':/sd/lib:/sd/usr/lib');
-putenv('PATH='.getenv('PATH').':/sd/usr/bin:/sd/usr/sbin');
-
 class Occupineapple extends Module
 {
     public function route()
@@ -56,9 +53,9 @@ class Occupineapple extends Module
         }
     }
 
-    protected function checkDependency($dependencyName)
+    protected function checkDeps($dependencyName)
     {
-        return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("occupineapple.module.installed")));
+        return ($this->checkDependency($dependencyName) && ($this->uciGet("occupineapple.module.installed")));
     }
 
     protected function getDevice()
@@ -74,7 +71,7 @@ class Occupineapple extends Module
 
     private function handleDependencies()
     {
-        if (!$this->checkDependency("mdk3")) {
+        if (!$this->checkDeps("mdk3")) {
             $this->execBackground("/pineapple/modules/Occupineapple/scripts/dependencies.sh install ".$this->request->destination);
             $this->response = array('success' => true);
         } else {
@@ -121,7 +118,7 @@ class Occupineapple extends Module
     private function refreshStatus()
     {
         if (!file_exists('/tmp/Occupineapple.progress')) {
-            if (!$this->checkDependency("mdk3")) {
+            if (!$this->checkDeps("mdk3")) {
                 $installed = false;
                 $install = "Not installed";
                 $installLabel = "danger";
@@ -175,7 +172,7 @@ class Occupineapple extends Module
 
     private function refreshOutput()
     {
-        if ($this->checkDependency("mdk3")) {
+        if ($this->checkDeps("mdk3")) {
             if ($this->checkRunning("mdk3")) {
                 exec("cat /tmp/occupineapple.log", $output);
                 if (!empty($output)) {

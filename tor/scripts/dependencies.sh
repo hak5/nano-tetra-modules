@@ -2,8 +2,7 @@
 # author: catatonicprime
 # date: March 2018
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sd/lib:/sd/usr/lib
-export PATH=$PATH:/sd/usr/bin:/sd/usr/sbin
+
 
 touch /tmp/tor.progress
 

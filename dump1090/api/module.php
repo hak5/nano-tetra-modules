@@ -1,8 +1,5 @@
 <?php namespace pineapple;
 
-putenv('LD_LIBRARY_PATH='.getenv('LD_LIBRARY_PATH').':/sd/lib:/sd/usr/lib');
-putenv('PATH='.getenv('PATH').':/sd/usr/bin:/sd/usr/sbin');
-
 class dump1090 extends Module
 {
     public function route()
@@ -53,9 +50,9 @@ class dump1090 extends Module
         }
     }
 
-    protected function checkDependency($dependencyName)
+    protected function checkDep($dependencyName)
     {
-        return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("dump1090.module.installed")));
+        return ($this->checkDependency($dependencyName) && ($this->uciGet("dump1090.module.installed")));
     }
 
     protected function getDevice()
@@ -71,7 +68,7 @@ class dump1090 extends Module
 
     private function handleDependencies()
     {
-        if (!$this->checkDependency("dump1090")) {
+        if (!$this->checkDep("dump1090")) {
             $this->execBackground("/pineapple/modules/dump1090/scripts/dependencies.sh install ".$this->request->destination);
             $this->response = array('success' => true);
         } else {

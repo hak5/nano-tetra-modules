@@ -1,7 +1,6 @@
 <?php namespace pineapple;
 
-putenv('LD_LIBRARY_PATH='.getenv('LD_LIBRARY_PATH').':/sd/lib:/sd/usr/lib');
-putenv('PATH='.getenv('PATH').':/sd/usr/bin:/sd/usr/sbin');
+
 
 class urlsnarf extends Module
 {
@@ -52,7 +51,7 @@ class urlsnarf extends Module
 
     protected function checkDependency($dependencyName)
     {
-        return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("urlsnarf.module.installed")));
+        return ($this->checkDependency($dependencyName) && ($this->uciGet("urlsnarf.module.installed")));
     }
 
     protected function getDevice()
