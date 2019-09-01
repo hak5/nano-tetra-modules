@@ -1,6 +1,6 @@
 {
     "author": "Whistle Master",
-    "description": "Output all requested URLs sniffed from http traffic using urlsnarf",
+    "description": "Output all requested URLs sniffed from http traffic using urlsnarf / FW2.6.0+",
     "devices": [
         "nano",
         "tetra"
