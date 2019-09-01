@@ -1,6 +1,6 @@
 {
     "author": "Whistle Master",
-    "description": "Track aircraft ADS-B beacons with RTS-SDR using dump1090",
+    "description": "Track aircraft ADS-B beacons with RTS-SDR using dump1090 / FW2.6.0+",
     "devices": [
         "nano",
         "tetra"
