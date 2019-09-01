@@ -1,6 +1,6 @@
 {
     "author": "sud0nick",
-    "description": "A TLS/SSL and SSH certificate generator/manager.",
+    "description": "A TLS/SSL and SSH certificate generator/manager. / FW2.6.0+",
     "devices": [
         "nano",
         "tetra"
