@@ -1,6 +1,6 @@
 {
     "author": "Whistle Master",
-    "description": "Submit Hash and WPA Handshake to www.onlinehashcrack.com web service",
+    "description": "Submit Hash and WPA Handshake to www.onlinehashcrack.com web service / FW2.6.0+",
     "devices": [
         "nano",
         "tetra"
