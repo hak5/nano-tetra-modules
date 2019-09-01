@@ -1,6 +1,6 @@
 {
     "author": "Whistle Master",
-    "description": "Dump traffic on network using tcpdump",
+    "description": "Dump traffic on network using tcpdump / FW2.6.0+",
     "devices": [
         "nano",
         "tetra"
