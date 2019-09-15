@@ -43,7 +43,7 @@ registerController('openVPNConnectController', ['$api', '$scope', '$timeout', '$
 
                 $timeout(function() {$window.location.reload();}, 5000);
             }
-            //console.log(response) //Log the response to the console, this is useful for debugging.
+           //console.log(response) //Log the response to the console, this is useful for debugging.
         });
 
     }
