@@ -1,6 +1,6 @@
 {
     "author": "Whistle Master",
-    "description": "Manage all modules logs",
+    "description": "Manage all modules logs / FW2.6.0+",
     "devices": [
         "nano",
         "tetra"

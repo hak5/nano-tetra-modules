@@ -1,6 +1,6 @@
 {
     "author": "Whistle Master",
-    "description": "GUI for security scanner nmap",
+    "description": "GUI for security scanner nmap / FW2.6.0+",
     "devices": [
         "nano",
         "tetra"

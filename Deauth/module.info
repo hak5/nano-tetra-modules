@@ -1,6 +1,6 @@
 {
     "author": "Whistle Master",
-    "description": "Deauthentication attacks of all devices connected to APs nearby",
+    "description": "Deauthentication attacks of all devices connected to APs nearby / FW2.6.0+",
     "devices": [
         "nano",
         "tetra"

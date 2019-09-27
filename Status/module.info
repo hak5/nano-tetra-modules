@@ -1,6 +1,6 @@
 {
     "author": "Whistle Master",
-    "description": "Display status information of the device",
+    "description": "Display status information of the device / FW2.6.0+",
     "devices": [
         "nano",
         "tetra"

@@ -1,6 +1,6 @@
 {
     "author": "Whistle Master",
-    "description": "Passive traffic fingerprinting using p0f",
+    "description": "Passive traffic fingerprinting using p0f / FW2.6.0+",
     "devices": [
         "nano",
         "tetra"

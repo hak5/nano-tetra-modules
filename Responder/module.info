@@ -1,6 +1,6 @@
 {
     "author": "Whistle Master",
-    "description": "LLMNR, NBT-NS and MDNS poisoner with built-in HTTP, SMB, MSSQL, FTP and LDAP rogue authentication server using Responder",
+    "description": "LLMNR, NBT-NS and MDNS poisoner with built-in HTTP, SMB, MSSQL, FTP and LDAP rogue authentication server using Responder / FW2.6.0+",
     "devices": [
         "nano",
         "tetra"

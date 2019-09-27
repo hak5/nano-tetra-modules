@@ -1,6 +1,6 @@
 {
     "author": "3ndG4me",
-    "description": "OpenVPN Connection Utility",
+    "description": "OpenVPN Connection Utility / FW2.6.0+",
     "devices": [
         "nano",
         "tetra"

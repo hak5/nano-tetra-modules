@@ -1,6 +1,6 @@
 {
     "author": "Whistle Master",
-    "description": "Forge replies to arbitrary DNS queries using DNSMasq",
+    "description": "Forge replies to arbitrary DNS queries using DNSMasq / FW 2.6.0+",
     "devices": [
         "nano",
         "tetra"

@@ -1,6 +1,6 @@
 {
     "author": "Whistle Master",
-    "description": "Match data part of packets on the network using ngrep",
+    "description": "Match data part of packets on the network using ngrep / FW2.6.0+",
     "devices": [
         "nano",
         "tetra"

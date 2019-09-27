@@ -1,6 +1,6 @@
 {
     "author":"catatonicprime",
-    "description":"Connect device to tor network, manage hidden services, etc.",
+    "description":"Connect device to tor network, manage hidden services, etc. / FW2.6.0+",
     "devices": [ "nano", "tetra" ],
     "title":"tor",
     "version":"1.0"
