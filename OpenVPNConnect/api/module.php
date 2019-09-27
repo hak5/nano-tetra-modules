@@ -27,7 +27,7 @@ class OpenVPNConnect extends Module{
                 $this->initializeModule();
                 break;
             case 'handleDependencies':
-                $this->handleDependencies();
+                $this->handleDependencies(false);
                 break;
             case 'handleDependenciesSDCard':
                 $this->handleDependenciesSDCard();
@@ -103,7 +103,6 @@ class OpenVPNConnect extends Module{
 
     // Handles dependency installation and removal
     private function handleDependencies($sd){
-    
 
         if($this->checkDependency('openvpn')){
             $this->execBackground('opkg remove openvpn-openssl');
@@ -158,7 +157,7 @@ class OpenVPNConnect extends Module{
         $open_vpn_cmd = "openvpn --log /pineapple/modules/OpenVPNConnect/log/vpn.log --status /pineapple/modules/OpenVPNConnect/log/status.log --config ";
         
         if($inputData[0] != ''){
-            $config_name = $inputData[0];
+            $config_name = escapeshellcmd($inputData[0]);
             $open_vpn_cmd .= "/root/vpn_config/" . $config_name . " ";
         }else{
             $this->response = array("success" => false,
@@ -189,7 +188,7 @@ class OpenVPNConnect extends Module{
 
 
         if($inputData[3] != ''){
-            $openvpn_flags = $inputData[3];
+            $openvpn_flags = escapeshellcmd($inputData[3]);
             $open_vpn_cmd .= $openvpn_flags;
         }
 
