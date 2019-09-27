@@ -1,10 +1,10 @@
 {
     "author": "Whistle Master",
-    "description": "Output all requested URLs sniffed from http traffic using urlsnarf",
+    "description": "(FW2.5.4 or below) Output all requested URLs sniffed from http traffic using urlsnarf",
     "devices": [
         "nano",
         "tetra"
     ],
     "title": "urlsnarf",
-    "version": "1.6"
+    "version": "1.7"
 }
