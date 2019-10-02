@@ -49,7 +49,7 @@ class urlsnarf extends Module
         }
     }
 
-    protected function checkDependency($dependencyName)
+    protected function checkDep($dependencyName)
     {
         return ($this->checkDependency($dependencyName) && ($this->uciGet("urlsnarf.module.installed")));
     }
@@ -67,7 +67,7 @@ class urlsnarf extends Module
 
     private function handleDependencies()
     {
-        if (!$this->checkDependency("urlsnarf")) {
+        if (!$this->checkDep("urlsnarf")) {
             $this->execBackground("/pineapple/modules/urlsnarf/scripts/dependencies.sh install ".$this->request->destination);
             $this->response = array('success' => true);
         } else {
@@ -119,7 +119,7 @@ class urlsnarf extends Module
     private function refreshStatus()
     {
         if (!file_exists('/tmp/urlsnarf.progress')) {
-            if (!$this->checkDependency("urlsnarf")) {
+            if (!$this->checkDep("urlsnarf")) {
                 $installed = false;
                 $install = "Not installed";
                 $installLabel = "danger";
@@ -173,7 +173,7 @@ class urlsnarf extends Module
 
     private function refreshOutput()
     {
-        if ($this->checkDependency("urlsnarf")) {
+        if ($this->checkDep("urlsnarf")) {
             if ($this->checkRunning("urlsnarf")) {
                 $path = "/pineapple/modules/urlsnarf/log";
 
