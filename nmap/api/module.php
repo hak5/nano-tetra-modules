@@ -142,7 +142,10 @@ class nmap extends Module
         $device = $this->getDevice();
         $sdAvailable = $this->isSDAvailable();
 
-        $this->response = array("device" => $device, "sdAvailable" => $sdAvailable, "status" => $status, "statusLabel" => $statusLabel, "installed" => $installed, "install" => $install, "installLabel" => $installLabel, "processing" => $processing);
+        // 2143000 is the installed size of nmap.
+        $internalAvailable = (disk_free_space("/") - 64000) > 2143000;
+
+        $this->response = array("device" => $device, "internalAvailable" => $internalAvailable, "sdAvailable" => $sdAvailable, "status" => $status, "statusLabel" => $statusLabel, "installed" => $installed, "install" => $install, "installLabel" => $installLabel, "processing" => $processing);
     }
 
     private function refreshOutput()

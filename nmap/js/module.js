@@ -27,6 +27,7 @@ registerController('nmap_ControlsController', ['$api', '$scope', '$rootScope', '
 
 	$scope.device = '';
 	$scope.sdAvailable = false;
+	$scope.internalAvailable = false;
 
 	$rootScope.status = {
 		installed: false,
@@ -45,6 +46,7 @@ registerController('nmap_ControlsController', ['$api', '$scope', '$rootScope', '
 			$rootScope.status.installed = response.installed;
 			$scope.device = response.device;
 			$scope.sdAvailable = response.sdAvailable;
+			$scope.internalAvailable = response.internalAvailable;
 			if (response.processing) $scope.processing = true;
 			$scope.install = response.install;
 			$scope.installLabel = response.installLabel;
