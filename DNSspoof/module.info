@@ -1,6 +1,6 @@
 {
     "author": "Whistle Master",
-    "description": "(FW2.5.4 or below) Forge replies to arbitrary DNS queries using DNSspoof",
+    "description": "Forge replies to arbitrary DNS queries using DNSspoof",
     "devices": [
         "nano",
         "tetra"
