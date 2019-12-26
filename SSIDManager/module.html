@@ -1,0 +1,86 @@
+<!-- This HTML has bootstrap classes such as "col-md-12" and "jumbotron". For more information, see http://getbootstrap.com/css/ -->
+<!-- This HTML makes use of AngularJS data-bindings and controllers. For more information, see https://docs.angularjs.org/api/ -->
+<!-- Don't forget to look at the module.js and module.php files too! -->
+<!-- This HTML is a template for generated modules via the Module Maker. -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+    <title></title>
+</head>
+
+<body>
+    <div ng-controller="SSIDManagerController">
+        <div class='col-md-12'>
+            <div class='row'>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title pull-left">SSID Manager</h4><span class="pull-right">{{version}}</span>
+
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class='panel panel-default'>
+                    <div class="panel-heading">
+                        <h4 class="panel-title">SSID File Editor</h4>
+                    </div>
+
+                    <div class="panel-body">
+                        <textarea ng-model="ssidPool" rows="12" style="width:100%"></textarea>
+                        <div class="row">
+                            <div class='col-md-6'>
+                                <button class="btn btn-warning" ng-click="clearPool()" style="width: 100%; margin-top:5px">Clear Editor</button>
+                            </div>
+
+                            <div class='col-md-6'>
+                                <button class="btn btn-success" ng-click="setPool()" ng-disabled="pineAPssidPool == ssidPool" style="width: 100%; margin-top:5px">Update PineAP</button>
+                            </div>
+                        </div>
+                         <p class="alert well-sm alert-success" style="margin-top: 8px" ng-show="updatedPineAP">PineAP updated successfully</p>
+                    </div>
+                   
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class='panel panel-default'>
+                    <div class="panel-heading">
+                        <h4 class="panel-title">Store Pool</h4>
+                    </div>
+
+                    <div class="panel-body">
+                        Filename: &nbsp;<input style="margin: 10px" ng-model="storeFileName"> 
+                        <button class="btn btn-primary" ng-click="archivePool()" ng-disabled="storeFileName=='' || ssidPool == ''">Store SSIDs</button>
+                        <p class="alert well-sm alert-success" style="margin-top: 5px" ng-show="storedSSIDFile">SSID file stored successfully</p>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">Stored SSID Files</h4>
+                    </div>
+
+                    <div class="panel-body">
+                        <select name="fileSelect" id="fileSelect" style="margin: 10px" ng-model="selectedFile" ng-disabled="ssidFilesList==''" size="1" style="width:40%">
+                            <option ng-repeat="f in ssidFilesList" value="{{f}}">
+                                {{f}}
+                            </option>
+                        </select> 
+                        <span class="text-nowrap">
+                        	<button class="btn btn-primary" ng-click="loadSSIDFile()" ng-disabled="selectedFile==null">Load to Editor</button> 
+							<button class="btn btn-secondary" ng-click="downloadSSIDFile()" ng-disabled="selectedFile==null">Download</button>
+							<button class="btn btn-danger" ng-click="deleteSSIDFile()" ng-disabled="selectedFile==null">Delete</button>
+							<p class="alert well-sm alert-success" style="margin-top: 5px" ng-show="deletedSSIDFile">SSID file deleted successfully</p>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -3,32 +3,34 @@
 	<div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Cabinet File Manager: Current Directory {{ currentDirectory }}</h3>
+                <h3 class="panel-title">{{ currentDirectory }}</h3>
             </div>
 
             <div class="panel-body">
-				<form class="form-inline" role="form">
-					<div class="form-group">
-						<label for="userDirectory">Change Directory:</label>
-						<input type="text" class="form-control" ng-model="userDirectory">
+				<form class="form-inline pull-right" role="form">
+					<div class="input-group">
+						<input type="text" placeholder="Change Directory" class="form-control" ng-model="userDirectory">
+						<span class="input-group-btn">
+							<button type="submit" class="btn btn-default" ng-click="getDirectoryContents(userDirectory)">Go</button>
+						</span>
 					</div>
-					<button type="submit" class="btn btn-default" ng-click="getDirectoryContents(userDirectory)">Go</button>
 				</form>
+				<span class="input-group-btn pull-left">
+					<button type="button" class="btn btn-default btn-sm" ng-show="currentDirectory == '/'" disabled>Back</button>
+					<button type="button" class="btn btn-default btn-sm" ng-click="goToParentDirctory()" ng-hide="currentDirectory == '/'">Back</button>
+					<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#fileModal">New File</button>
+					<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#folderModal">New Folder</button>
+					<button type="button" class="btn btn-default btn-sm" ng-click="getDirectoryContents(currentDirectory)">Refresh</button>
+				</span>
+				<br />
 				<hr/>
-				<form class="form-inline" role="form">
-					<button type="submit" class="btn btn-default btn-sm" ng-show="currentDirectory == '/'" disabled>Go Back</button>
-					<button type="submit" class="btn btn-default btn-sm" ng-click="goToParentDirctory()" ng-hide="currentDirectory == '/'">Go Back</button>
-					<button type="submit" class="btn btn-default btn-sm" data-toggle="modal" data-target="#fileModal">New File</button>
-					<button type="submit" class="btn btn-default btn-sm" data-toggle="modal" data-target="#folderModal">New Folder</button>
-					<button type="submit" class="btn btn-default btn-sm" ng-click="getDirectoryContents(currentDirectory)">Refresh</button>
-				</form>
 				<div class="table-responsive">
 					<table class="table table-striped" align="center">
 						<thead>
 							<th>File Name</th>
 							<th>Location</th>
 							<th>Permissions</th>
-							<th>Bytes</th>
+							<th>Size</th>
 							<th>Delete</th>
 							<th>Edit</th>
 						</thead>
@@ -51,6 +53,36 @@
 
     <!-- Edit file Modal -->
 	<div id="fileModal" class="modal fade" role="dialog">
+
+		<script type="text/javascript">
+            // Thanks to sud0nick on forums.hak5.org for this snippet
+            $(document).delegate('#cabinetEditor', 'keydown', function(e) {
+                var keyCode = e.keyCode || e.which;
+                if (keyCode == 9) {
+                    for (var i = 0; i < 4; i++) {
+                        // get caret position/selection
+                        var start = this.selectionStart;
+                        var end = this.selectionEnd;
+
+                        var $this = $(this);
+                        var value = $this.val();
+
+                        // set textarea value to: text before caret + tab + text after caret
+                        $this.val(value.substring(0, start)
+                            + " "
+                            + value.substring(end));
+
+                        // put caret at right position again (add one for the tab)
+                        this.selectionStart = this.selectionEnd = start + 1;
+
+                        // prevent the focus lose
+                        e.preventDefault();
+                    }
+                }
+            });
+
+		</script>
+
 		<div class="modal-dialog">
 
 			<!-- Modal content-->
@@ -60,20 +92,19 @@
 					<h4 class="modal-title">File Editor {{ editFile.name }}</h4>
 				</div>
 				<div class="modal-body">
-					<form class="form-horizontal">
-						<div class="form-group">
-							<label class="control-label">File Name</label>
-							<input type="text" class="form-control" ng-model="editFile.name" placeholder="Notes.txt">
-						</div>
-						<div class="form-group">
-							<label class="control-label">File Contents</label> <a href="javascript:;" ng-click="editFile.content = ''">Clear</a>
-							<textarea class="form-control" rows="10" ng-model="editFile.content" placeholder="Write some text here"></textarea>
-						</div>
-					</form>
+						<label class="control-label">File Name</label>
+						<input type="text" class="form-control" ng-model="editFile.name" placeholder="Notes.txt">
+						<br />
+						<label class="control-label">File Contents</label>
+						<a href="javascript:;" ng-click="editFile.content = ''" class="pull-right">Clear</a>
+						<textarea class="form-control" rows="10" id="cabinetEditor" ng-model="editFile.content" placeholder="Write some text here"></textarea>
+						<label class="control-label pull-right">File Size: {{ editFile.size }}</label>
+						<a href="javascript:;" class="pull-left" ng-click="download(editFile.path)">Download</a>
+						<br />
 				</div>
 				<div class="modal-footer">
-					<button type="button" ng-click="sendEditFile()" class="btn btn-success pull-left" data-dismiss="modal">Save</button>
-					<button type="button" class="btn btn-default pull-right" data-dismiss="modal" ng-click="editFile = {}">Cancel</button>
+					<button type="button" ng-click="sendEditFile()" class="btn btn-success pull-right" data-dismiss="modal">Save</button>
+					<button type="button" class="btn btn-default pull-left" data-dismiss="modal" ng-click="editFile = {}">Cancel</button>
 				</div>
 			</div>
 		</div>
@@ -95,8 +126,8 @@
 					<p><b>Are you absolutely sure you want to delete {{ deleteFile.name }} located at {{ deleteFile.path }}?</b></p>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-primary pull-left" data-dismiss="modal" ng-click="deleteFile = {}">Cancel</button>
-					<button type="button" class="btn btn-danger pull-right" data-dismiss="modal" ng-click="sendDeleteFile()">Delete</button>
+					<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" ng-click="deleteFile = {}">Cancel</button>
+					<button type="button" class="btn btn-danger pull-left" data-dismiss="modal" ng-click="sendDeleteFile()">Delete</button>
 				</div>
 			</div>
 		</div>

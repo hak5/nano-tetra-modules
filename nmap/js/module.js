@@ -2,17 +2,17 @@ registerController('nmap_Controller', ['$api', '$scope', '$rootScope', '$interva
 	$scope.title = "Loading...";
 	$scope.version = "Loading...";
 
-  $scope.refreshInfo = (function() {
+	$scope.refreshInfo = (function() {
 		$api.request({
-            module: 'nmap',
-            action: "refreshInfo"
-        }, function(response) {
-						$scope.title = response.title;
-						$scope.version = "v"+response.version;
-        })
-    });
+			module: 'nmap',
+			action: "refreshInfo"
+		}, function(response) {
+			$scope.title = response.title;
+			$scope.version = "v" + response.version;
+		})
+	});
 
-		$scope.refreshInfo();
+	$scope.refreshInfo();
 
 }]);
 
@@ -27,32 +27,34 @@ registerController('nmap_ControlsController', ['$api', '$scope', '$rootScope', '
 
 	$scope.device = '';
 	$scope.sdAvailable = false;
+	$scope.internalAvailable = false;
 
 	$rootScope.status = {
-		installed : false,
-		refreshOutput : false,
-		refreshHistory : false
+		installed: false,
+		refreshOutput: false,
+		refreshHistory: false
 	};
 
-  $scope.refreshStatus = (function() {
+	$scope.refreshStatus = (function() {
 		$api.request({
-            module: "nmap",
-            action: "refreshStatus"
-        }, function(response) {
-            $scope.status = response.status;
+			module: "nmap",
+			action: "refreshStatus"
+		}, function(response) {
+			$scope.status = response.status;
 			$scope.statusLabel = response.statusLabel;
 
 			$rootScope.status.installed = response.installed;
 			$scope.device = response.device;
 			$scope.sdAvailable = response.sdAvailable;
-			if(response.processing) $scope.processing = true;
+			$scope.internalAvailable = response.internalAvailable;
+			if (response.processing) $scope.processing = true;
 			$scope.install = response.install;
 			$scope.installLabel = response.installLabel;
-        })
-    });
+		})
+	});
 
-  $scope.togglenmap = (function() {
-		if($scope.status != "Stop")
+	$scope.togglenmap = (function() {
+		if ($scope.status != "Stop")
 			$scope.status = "Starting...";
 		else
 			$scope.status = "Stopping...";
@@ -61,111 +63,108 @@ registerController('nmap_ControlsController', ['$api', '$scope', '$rootScope', '
 		$scope.starting = true;
 
 		$api.request({
-		        module: 'nmap',
-		        action: 'togglenmap',
-		        command: $rootScope.command
-		    }, function(response) {
-		        $timeout(function(){
-							$rootScope.status.refreshOutput = true;
-							$rootScope.status.refreshHistory = false;
+			module: 'nmap',
+			action: 'togglenmap',
+			command: $rootScope.command
+		}, function(response) {
+			$timeout(function() {
+				$rootScope.status.refreshOutput = true;
+				$rootScope.status.refreshHistory = false;
 
-							$scope.starting = false;
-							$scope.refreshStatus();
+				$scope.starting = false;
+				$scope.refreshStatus();
 
-							$scope.scanInterval = $interval(function(){
-									$api.request({
-											module: 'nmap',
-											action: 'scanStatus'
-									}, function(response) {
-											if (response.success === true){
-													$interval.cancel($scope.scanInterval);
-													$rootScope.status.refreshOutput = false;
-													$rootScope.status.refreshHistory = true;
-											}
-											$scope.refreshStatus();
-									});
-							}, 5000);
+				$scope.scanInterval = $interval(function() {
+					$api.request({
+						module: 'nmap',
+						action: 'scanStatus'
+					}, function(response) {
+						if (response.success === true) {
+							$interval.cancel($scope.scanInterval);
+							$rootScope.status.refreshOutput = false;
+							$rootScope.status.refreshHistory = true;
+						}
+						$scope.refreshStatus();
+					});
+				}, 5000);
 
-		        }, 2000);
-		    })
+			}, 2000);
+		})
 	});
 
-  $scope.handleDependencies = (function(param) {
-    if(!$rootScope.status.installed)
+	$scope.handleDependencies = (function(param) {
+		if (!$rootScope.status.installed)
 			$scope.install = "Installing...";
 		else
 			$scope.install = "Removing...";
 
 		$api.request({
-            module: 'nmap',
-            action: 'handleDependencies',
-						destination: param
-        }, function(response){
-            if (response.success === true) {
+			module: 'nmap',
+			action: 'handleDependencies',
+			destination: param
+		}, function(response) {
+			if (response.success === true) {
 				$scope.installLabel = "warning";
 				$scope.processing = true;
 
-                $scope.handleDependenciesInterval = $interval(function(){
-                    $api.request({
-                        module: 'nmap',
-                        action: 'handleDependenciesStatus'
-                    }, function(response) {
-                        if (response.success === true){
-                            $scope.processing = false;
-                            $interval.cancel($scope.handleDependenciesInterval);
-                            $scope.refreshStatus();
-                        }
-                    });
-                }, 5000);
-            }
-        });
-    });
+				$scope.handleDependenciesInterval = $interval(function() {
+					$api.request({
+						module: 'nmap',
+						action: 'handleDependenciesStatus'
+					}, function(response) {
+						if (response.success === true) {
+							$scope.processing = false;
+							$interval.cancel($scope.handleDependenciesInterval);
+							$scope.refreshStatus();
+						}
+					});
+				}, 5000);
+			}
+		});
+	});
 
 	$scope.refreshStatus();
 }]);
 
 registerController('nmap_OutputController', ['$api', '$scope', '$rootScope', '$interval', function($api, $scope, $rootScope, $interval) {
-  $scope.output = 'Loading...';
+	$scope.output = 'Loading...';
 	$scope.filter = '';
 
 	$scope.refreshLabelON = "default";
 	$scope.refreshLabelOFF = "danger";
 
-  $scope.refreshOutput = (function() {
+	$scope.refreshOutput = (function() {
 		$api.request({
-            module: "nmap",
-            action: "refreshOutput"
-        }, function(response) {
-            $scope.output = response;
-        })
-    });
+			module: "nmap",
+			action: "refreshOutput"
+		}, function(response) {
+			$scope.output = response;
+		})
+	});
 
-  $scope.toggleAutoRefresh = (function() {
-    if($scope.autoRefreshInterval)
-		{
+	$scope.toggleAutoRefresh = (function() {
+		if ($scope.autoRefreshInterval) {
 			$interval.cancel($scope.autoRefreshInterval);
 			$scope.autoRefreshInterval = null;
 			$scope.refreshLabelON = "default";
 			$scope.refreshLabelOFF = "danger";
-		}
-		else
-		{
+		} else {
 			$scope.refreshLabelON = "success";
 			$scope.refreshLabelOFF = "default";
 
-			$scope.autoRefreshInterval = $interval(function(){
+			$scope.autoRefreshInterval = $interval(function() {
 				$scope.refreshOutput();
-	        }, 5000);
+			}, 5000);
 		}
-    });
+	});
 
-    $scope.refreshOutput();
+	$scope.refreshOutput();
 
-		$rootScope.$watch('status.refreshOutput', function(param) {
-			if(param) {
-				$scope.refreshOutput();
-			}
-		});
+	$rootScope.$watch('status.refreshOutput', function(param) {
+		if (param) {
+			$scope.refreshOutput();
+		}
+	});
 
 }]);
 
@@ -174,52 +173,52 @@ registerController('nmap_HistoryController', ['$api', '$scope', '$rootScope', fu
 	$scope.historyOutput = 'Loading...';
 	$scope.historyDate = 'Loading...';
 
-  $scope.refreshHistory = (function() {
-        $api.request({
-            module: "nmap",
-            action: "refreshHistory"
-        }, function(response) {
-                $scope.history = response;
-        })
-    });
-
-  $scope.viewHistory = (function(param) {
+	$scope.refreshHistory = (function() {
 		$api.request({
-            module: "nmap",
-            action: "viewHistory",
+			module: "nmap",
+			action: "refreshHistory"
+		}, function(response) {
+			$scope.history = response;
+		})
+	});
+
+	$scope.viewHistory = (function(param) {
+		$api.request({
+			module: "nmap",
+			action: "viewHistory",
 			file: param
-        }, function(response) {
-            $scope.historyOutput = response.output;
+		}, function(response) {
+			$scope.historyOutput = response.output;
 			$scope.historyDate = response.date;
-        })
-    });
+		})
+	});
 
-  $scope.deleteHistory = (function(param) {
+	$scope.deleteHistory = (function(param) {
 		$api.request({
-            module: "nmap",
-            action: "deleteHistory",
+			module: "nmap",
+			action: "deleteHistory",
 			file: param
-        }, function(response) {
-            $scope.refreshHistory();
-        })
-    });
+		}, function(response) {
+			$scope.refreshHistory();
+		})
+	});
 
-		$scope.downloadHistory = (function(param) {
-					$api.request({
-							module: 'nmap',
-							action: 'downloadHistory',
-							file: param
-					}, function(response) {
-							if (response.error === undefined) {
-									window.location = '/api/?download=' + response.download;
-							}
-					});
-			});
+	$scope.downloadHistory = (function(param) {
+		$api.request({
+			module: 'nmap',
+			action: 'downloadHistory',
+			file: param
+		}, function(response) {
+			if (response.error === undefined) {
+				window.location = '/api/?download=' + response.download;
+			}
+		});
+	});
 
 	$scope.refreshHistory();
 
 	$rootScope.$watch('status.refreshHistory', function(param) {
-		if(param) {
+		if (param) {
 			$scope.refreshHistory();
 		}
 	});
@@ -227,118 +226,118 @@ registerController('nmap_HistoryController', ['$api', '$scope', '$rootScope', fu
 }]);
 
 registerController('nmap_OptionsController', ['$api', '$scope', '$rootScope', function($api, $scope, $rootScope) {
-		$scope.command = "nmap ";
-		$scope.target = "";
+	$scope.command = "nmap ";
+	$scope.target = "";
 
-		$scope.profile = "--";
-		$scope.timing = "--";
-		$scope.tcp = "--";
-		$scope.nontcp = "--";
+	$scope.profile = "--";
+	$scope.timing = "--";
+	$scope.tcp = "--";
+	$scope.nontcp = "--";
 
-		$scope.scanOptions = {
-			option1 : false,
-			option2 : false,
-			option3 : false,
-			option4 : false,
-			option5 : false
-		};
+	$scope.scanOptions = {
+		option1: false,
+		option2: false,
+		option3: false,
+		option4: false,
+		option5: false
+	};
 
-		$scope.pingOptions = {
-			option1 : false,
-			option2 : false,
-			option3 : false,
-			option4 : false
-		};
+	$scope.pingOptions = {
+		option1: false,
+		option2: false,
+		option3: false,
+		option4: false
+	};
 
-		$scope.targetOptions = {
-			option1 : false
-		};
+	$scope.targetOptions = {
+		option1: false
+	};
 
-		$scope.otherOptions = {
-			option1 : false,
-			option2 : false,
-			option3 : false,
-			option4 : false
-		};
+	$scope.otherOptions = {
+		option1: false,
+		option2: false,
+		option3: false,
+		option4: false
+	};
+
+	$scope.update = (function(param) {
+		if (updateProfile() != "")
+			$scope.command = "nmap " + updateProfile() + updateTarget();
+		else
+			$scope.command = "nmap " + updateTiming() + updateTcp() + updateNontcp() + updateOptions() + updateTarget();
 
 		$rootScope.command = $scope.command;
+	});
 
-		$scope.update = (function(param) {
-				if(updateProfile() != "")
-						$scope.command = "nmap " + updateProfile() + updateTarget();
-				else
-						$scope.command = "nmap " + updateTiming() + updateTcp() + updateNontcp() + updateOptions() + updateTarget();
+	function updateOptions() {
+		var return_value = "";
 
-				$rootScope.command = $scope.command;
+		angular.forEach($scope.scanOptions, function(value, key) {
+			if (value != false)
+				return_value += value + " ";
 		});
 
-		function updateOptions() {
-			var return_value = "";
+		angular.forEach($scope.pingOptions, function(value, key) {
+			if (value != false)
+				return_value += value + " ";
+		});
 
-			angular.forEach($scope.scanOptions, function(value, key) {
-				if(value != false)
-					return_value += value + " ";
-			});
+		angular.forEach($scope.targetOptions, function(value, key) {
+			if (value != false)
+				return_value += value + " ";
+		});
 
-			angular.forEach($scope.pingOptions, function(value, key) {
-				if(value != false)
-					return_value += value + " ";
-			});
+		angular.forEach($scope.otherOptions, function(value, key) {
+			if (value != false)
+				return_value += value + " ";
+		});
 
-			angular.forEach($scope.targetOptions, function(value, key) {
-				if(value != false)
-					return_value += value + " ";
-			});
+		return return_value;
+	}
 
-			angular.forEach($scope.otherOptions, function(value, key) {
-				if(value != false)
-					return_value += value + " ";
-			});
+	function updateTarget() {
+		var return_value = "";
 
-			return return_value;
-		}
+		return_value = $scope.target;
 
-		function updateTarget() {
-			var return_value = "";
+		return return_value;
+	}
 
-			return_value = $scope.target;
+	function updateProfile() {
+		var return_value = "";
 
-			return return_value;
-		}
+		if ($scope.profile != "--")
+			return_value = $scope.profile + " ";
 
-		function updateProfile() {
-		    var return_value = "";
+		return return_value;
+	}
 
-			if($scope.profile != "--")
-				return_value = $scope.profile + " ";
+	function updateTiming() {
+		var return_value = "";
 
-			return return_value;
-		}
+		if ($scope.timing != "--")
+			return_value = $scope.timing + " ";
 
-		function updateTiming() {
-		    var return_value = "";
+		return return_value;
+	}
 
-			if($scope.timing != "--")
-				return_value = $scope.timing + " ";
+	function updateTcp() {
+		var return_value = "";
 
-			return return_value;
-		}
+		if ($scope.tcp != "--")
+			return_value = $scope.tcp + " ";
 
-		function updateTcp() {
-		    var return_value = "";
+		return return_value;
+	}
 
-			if($scope.tcp != "--")
-				return_value = $scope.tcp + " ";
+	function updateNontcp() {
+		var return_value = "";
 
-			return return_value;
-		}
+		if ($scope.nontcp != "--")
+			return_value = $scope.nontcp + " ";
 
-		function updateNontcp() {
-		    var return_value = "";
-
-			if($scope.nontcp != "--")
-				return_value = $scope.nontcp + " ";
-
-			return return_value;
-		}
+		return return_value;
+	}
+	
+	$scope.update();
 }]);

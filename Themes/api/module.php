@@ -1,5 +1,9 @@
 <?php namespace pineapple;
 
+/*
+ * Author: trashbo4t (github.com/trashbo4t)
+ */
+
 class Themes extends Module
 {
     // CONSTANTS
@@ -26,7 +30,6 @@ class Themes extends Module
     private $ALL_MODULES = array(
         "Dashboard",
         "Recon",
-        "Profiling",
         "Clients",
         "ModuleManager",
         "Filters",
@@ -37,6 +40,7 @@ class Themes extends Module
         "Networking",
         "Configuration",
         "Advanced",
+        "Notes",
         "Help",
     );
     /*
@@ -200,6 +204,9 @@ class Themes extends Module
     * $moduleName -> String name of module, can be any format (nEtWoRkIng) because it gets formatted
     * $color -> string name of the color, used for index of mapping
     * $brightness -> string name of brightness, used for map selection
+    *
+    * This is a neat little technique to change image colors, since the images are SVG we search and 
+    * replace the original RBG colors in the image file with the new RBG hex values.
     */
     public function replaceModuleImage($moduleName, $color, $brightness)
     {

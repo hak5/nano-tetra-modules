@@ -13,17 +13,17 @@
 			<div class="clearfix"></div>
 		</div>
 		<div id="ClientsContainer" class="panel-collapse collapse in">
-			<h3 class="text-center">wlan0</h3>
+			<h3 class="text-center">{{ wlandev[0] }}</h3>
 			<table class="table table-striped table-bordered text-center">
 				<tr><th class="text-center">Mac Address</th><th class="text-center">Disassociate</th><th class="text-center">Deauthenticate</th><th class="text-center">Blacklist</th></tr>
 				<tr ng-repeat="wlan0 in wlan0clients"><td>{{ wlan0 }}</td><td><button type="button" class="btn btn-danger" ng-click="disassociateMac(wlan0)">Disassociate</button></td><td><button type="button" class="btn btn-danger" ng-click="deauthenticateMac(wlan0)">Deauthenticate</button></td><td><button type="button" class="btn btn-danger" ng-click="addMacAddress(wlan0)">Blacklist</button></td></tr>
 			</table>
-			<h3 class="text-center">wlan0-1</h3>
+			<h3 class="text-center">{{ wlandev[1] }}</h3>
 			<table class="table table-striped table-bordered text-center">
 				<tr><th class="text-center">Mac Address</th><th class="text-center">Disassociate</th><th class="text-center">Deauthenticate</th><th class="text-center">Blacklist</th></tr>
 				<tr ng-repeat="wlan01 in wlan01clients"><td>{{ wlan01 }}</td><td><button type="button" class="btn btn-danger" ng-click="disassociateMac(wlan01)">Disassociate</button></td><td><button type="button" class="btn btn-danger" ng-click="deauthenticateMac(wlan01)">Deauthenticate</button></td><td><button type="button" class="btn btn-danger" ng-click="addMacAddress(wlan01)">Blacklist</button></td></tr>
 			</table>
-			<h3 class="text-center">wlan1</h3>
+			<h3 class="text-center">{{ wlandev[2] }}</h3>
 			<table class="table table-striped table-bordered text-center">
 				<tr><th class="text-center">Mac Address</th><th class="text-center">Disassociate</th><th class="text-center">Deauthenticate</th><th class="text-center">Blacklist</th></tr>
 				<tr ng-repeat="wlan1 in wlan1clients"><td>{{ wlan1 }}</td><td><button type="button" class="btn btn-danger" ng-click="disassociateMac(wlan1)">Disassociate</button></td><td><button type="button" class="btn btn-danger" ng-click="deauthenticateMac(wlan1)">Deauthenticate</button></td><td><button type="button" class="btn btn-danger" ng-click="addMacAddress(wlan1)">Blacklist</button></td></tr>

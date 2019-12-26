@@ -1,0 +1,171 @@
+<!-- Author 			-->
+<!-- trashbo4t				-->
+<!-- (github.com/trashbo4t) -->
+
+<div class="row" ng-controller="LocateController">
+	 <div class="panel-group" id="accordion">
+			<div class="col-md-9">
+				<!-- Library panel -->
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h5 class="panel-title"><a href="javascript:;" data-toggle="collapse" data-parent="#accordion"
+												   data-target="#collapseLibrary" class="text-muted">Locate</a></h5>
+					</div>
+   
+				 <div id="collapseLibrary" class="panel-collapse collapse in">
+						<div class="panel-body">
+				<div class="input-group" ng-show="currentIP == false">
+								<input type="text" class="form-control" placeholder="IP" name="ipToLookup" ng-model="ipToLookup">
+								<span class="input-group-btn">
+									<button ng-disabled="ipToLookup == ''"   
+						data-toggle="modal"
+						data-target="#loadingModal"
+						class="btn btn-default" 
+						type="button" 
+						ng-click="lookupIP(ipToLookup)">Lookup</button>
+								</span>
+							</div>
+
+				<hr ng-show="currentIP == false"/>
+
+							<div ng-show="ips.length > 0 && currentIP == false">
+								<div class="table-responsive">
+									<table class="table table-striped" align="center">
+										<thead>
+											<th>History</th>
+										</thead>
+
+					<tbody>
+											<tr ng-repeat="ip in ips">
+												<td>
+								<a href="javascript:;" ng-click="getIPFromFile(ip)">
+															<b>{{ ip }}</b>
+									</a>
+							</td>
+											
+							</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+	
+							<div ng-hide="ips.length != 0">
+								<p class="text-muted text-center">
+									<i>Looks like there are no IPs to display...</i>
+								</p>
+							</div>
+	
+							<div ng-show="currentIP != false">
+								<button type="submit" class="btn btn-default btn-sm" ng-click="reloadPage()">Back</button>
+								<hr />
+								<h3>{{ currentIP }}</h3>
+	
+								<div class="table-responsive">
+									<table class="table table-striped" align="center">
+										<thead>
+											<th>Information</th>
+										</thead>
+					<tbody>
+												<tr>
+								<td>IP</td>
+								<td> {{ currentIPData["ip"] }} </td>
+							</tr>
+										   		
+							<tr><td>City</td>
+								<td> {{ currentIPData["city"] }} </td>
+							</tr>
+							
+							<tr><td>Region</td>
+								<td> {{ currentIPData["region"] }} </td>
+							</tr>
+							
+							<tr><td>Region Code</td>
+								<td> {{ currentIPData["region_code"] }} </td>
+							</tr>
+							
+							<tr><td>Country</td>
+								<td> {{ currentIPData["country"] }} </td>
+							</tr>
+	
+							<tr><td>Country Name</td>
+								<td> {{ currentIPData["country_name"] }} </td>
+							</tr>
+
+							<tr><td>Continent Code</td>
+								<td> {{ currentIPData["continent_code"] }} </td>
+							</tr>
+							
+							<tr><td>EU</td>
+								<td> {{ currentIPData["in_eu"] }} </td>
+							</tr>
+							
+							<tr><td>Postal</td>
+								<td> {{ currentIPData["postal"] }} </td>
+							</tr>
+							
+							<tr><td>Latitude</td>
+								<td> {{ currentIPData["latitude"] }} </td>
+							</tr>
+							
+							<tr><td>Longitude</td>
+								<td> {{ currentIPData["longitude"] }} </td>
+							</tr>
+							
+							<tr><td>Timezone</td>
+								<td> {{ currentIPData["timezone"] }} </td>
+							</tr>
+							
+							<tr><td>UTC Offset</td>
+								<td> {{ currentIPData["utc_offset"] }} </td>
+							</tr>
+							
+							<tr><td>Country Calling Code</td>
+								<td> {{ currentIPData["country_calling_code"] }} </td>
+							</tr>
+							
+							<tr><td>Currency</td>
+								<td> {{ currentIPData["currency"] }} </td>
+							</tr>
+							
+							<tr>
+								<td>Languages</td>
+								<td> {{ currentIPData["languages"] }} </td>
+							</tr>
+										</tbody>
+		<tr>
+								   			<td>
+	   						</td>
+						</tr>
+						</tr>
+	
+						<div class="modal-footer">
+						</div>
+									</table>
+								</div>
+	
+							</div>
+						</div>
+					</div>
+				</div>
+
+	</div>
+</div>
+
+<!--- Loading --->
+<div id="loadingModal" class="modal fade" role="dialog" >
+	<div class="modal-dialog">
+			<div class="modal-content">
+					<div class="modal-header">
+				<h4 class="modal-title"> {{ loading }} </h4>
+					</div>
+			
+				<div class="modal-body">
+							<div class="panel-title"><img src="/img/throbber.gif" ng-show="throbber"/>
+								<p><b>{{ working }}</b></p>
+  						</div>
+					</div>
+		</div>
+	</div>
+</div>
+	

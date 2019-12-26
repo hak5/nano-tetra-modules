@@ -1,8 +1,7 @@
 #!/bin/sh
 #2015 - Whistle Master
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sd/lib:/sd/usr/lib
-export PATH=$PATH:/sd/usr/bin:/sd/usr/sbin
+logger "== DNSSpoof Dependencies Installer"
 
 [[ -f /tmp/DNSspoof.progress ]] && {
   exit 0
@@ -12,8 +11,8 @@ touch /tmp/DNSspoof.progress
 
 if [ "$1" = "install" ]; then
   if [ "$2" = "internal" ]; then
-     opkg update
-     opkg install dnsspoof
+    opkg update
+    opkg install dnsspoof
   elif [ "$2" = "sd" ]; then
     opkg update
     opkg install dnsspoof --dest sd
@@ -28,8 +27,8 @@ if [ "$1" = "install" ]; then
   uci commit dnsspoof.module.installed
 
 elif [ "$1" = "remove" ]; then
-    opkg remove dnsspoof
-    rm -rf /etc/config/dnsspoof
+  opkg remove dnsspoof
+  rm -rf /etc/config/dnsspoof
 fi
 
 rm /tmp/DNSspoof.progress

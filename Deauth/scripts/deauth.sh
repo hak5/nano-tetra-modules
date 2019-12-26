@@ -1,8 +1,7 @@
 #!/bin/sh
 #2015 - Whistle Master
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sd/lib:/sd/usr/lib
-export PATH=$PATH:/sd/usr/bin:/sd/usr/sbin
+
 
 LOG=/tmp/deauth.log
 MYPATH='/pineapple/modules/Deauth/'
@@ -101,7 +100,7 @@ if [ "$1" = "start" ]; then
 	mdk3 ${MYMONITOR} d ${SPEED} ${CHANNEL} ${MODE} >> ${LOG} &
 
 elif [ "$1" = "stop" ]; then
-  killall -9 mdk3
+  	killall -9 mdk3
 	rm ${TMPBLACKLIST}
 	rm ${TMPWHITELIST}
 	rm ${LOG}

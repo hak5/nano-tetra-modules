@@ -1,8 +1,7 @@
 #!/bin/sh
 #2015 - Whistle Master
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sd/lib:/sd/usr/lib
-export PATH=$PATH:/sd/usr/bin:/sd/usr/sbin
+
 
 MYTIME=`date +%s`
 
@@ -20,9 +19,5 @@ iptables -P OUTPUT ACCEPT
 sh /pineapple/modules/SSLsplit/rules/iptables
 
 iptables -t nat -A POSTROUTING -j MASQUERADE
-
-if [ ! -d /pineapple/modules/SSLsplit/log ]; then
-	mkdir /pineapple/modules/SSLsplit/log
-fi
 
 sslsplit -D -l /pineapple/modules/SSLsplit/connections.log -L /pineapple/modules/SSLsplit/log/output_${MYTIME}.log -k /pineapple/modules/SSLsplit/cert/certificate.key -c /pineapple/modules/SSLsplit/cert/certificate.crt ssl 0.0.0.0 8443 tcp 0.0.0.0 8080

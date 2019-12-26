@@ -13,7 +13,8 @@
 						<div class="panel-body">
 							<div class="form-group">
 								<label class="control-label text-center">Dependencies:</label>
-								<button type="button" style="width: 90px;" class="btn btn-{{installLabel}} btn-xs" ng-click="handleDependencies()">{{installLabelText}}</button>
+								<button type="button" style="width: {{installButtonWidth}};" class="btn btn-{{installLabel}} btn-xs" ng-click="handleDependencies()">{{installLabelText}}</button>
+								<button type="button" style="width: 160px;" class="btn btn-{{installLabel}} btn-xs" ng-hide="hideSDDependency" ng-click="handleDependenciesSDCard()">{{installSDLabelText}}</button>
 							</div>
 							<div class="form-group">
 								<label class="control-label text-center">Setup Status</label>
@@ -58,7 +59,12 @@
 									<p>
 										<input class="form-control" ng-model="workspace.config" placeholder="Enter input"></input>
 									</p>
-									<label class="control-label text-center">VPN Config Password (Optional):</label>
+									<label class="control-label text-center">VPN Config User (Optional, makes use of --auth-user-pass):</label>
+									<a href="javascript:;" ng-click="workspace.user = ''">Clear</a>
+									<p>
+										<input class="form-control" ng-model="workspace.user" placeholder="Enter input"></input>
+									</p>
+									<label class="control-label text-center">VPN Config Password (Optional, falls back to --askpass if no user is provided):</label>
 									<a href="javascript:;" ng-click="workspace.pass = ''">Clear</a>
 									<p>
 										<input class="form-control" type="password" ng-model="workspace.pass" placeholder="Enter input"></input>
@@ -135,7 +141,27 @@
 								</div>
 								<div id="collapseChangelog" class="panel-collapse collapse">
 									<div class="panel-body">
-										<ul>
+											<ul>
+											<li>
+												<b>1.3 </b>
+											</li>
+											<ul>
+												<li class="text-muted">Now with no RCEs :D...Fixed a major RCE caused by not sanitizing user input when passing in certain OpenVPN parameters.</li>
+                                                <li class="text-muted">Added stability improvements for package management for those with fresh upgrades to 2.6.X WiFi Pineapple firmware.</li>
+                                                <li class="text-muted">Lastly, revised the revision numbers to fall in line with the formal releases.</li>
+											</ul>
+											<li>
+												<b>1.2 </b>
+											</li>
+											<ul>
+												<li class="text-muted">Added in current status when revisiting page, logging, and ability to install dependencies to SD card or local storage. Also squashed some bugs :)</li>
+											</ul>
+											<li>
+												<b>1.1 </b>
+											</li>
+											<ul>
+												<li class="text-muted">Minor Revisions: Added better iptables management with dynamic gateway and the ability to use auth-user-pass. Unofficial Release (Github Only)</li>
+											</ul>
 											<li>
 												<b>1.0</b>
 											</li>

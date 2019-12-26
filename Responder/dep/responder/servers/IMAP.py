@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-# This file is part of Responder
-# Original work by Laurent Gaffie - Trustwave Holdings
-#
+# This file is part of Responder, a network take-over set of tools 
+# created and maintained by Laurent Gaffie.
+# email: laurent.gaffie@gmail.com
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -14,16 +14,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import os
-import settings
-
 from utils import *
 from SocketServer import BaseRequestHandler
 from packets import IMAPGreeting, IMAPCapability, IMAPCapabilityEnd
 
-# IMAP4 Server class
 class IMAP(BaseRequestHandler):
-
 	def handle(self):
 		try:
 			self.request.send(str(IMAPGreeting()))
@@ -50,6 +45,5 @@ class IMAP(BaseRequestHandler):
 				## FIXME: Close connection properly
 				## self.request.send(str(ditchthisconnection()))
 				## data = self.request.recv(1024)
-
 		except Exception:
 			pass

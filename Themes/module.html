@@ -1,3 +1,7 @@
+<!-- Author: 		    -->
+<!-- trashbo4t	            -->
+<!-- (github.com/trashbo4t) -->
+
 <div class="row" ng-controller="ThemesController">
 
         <div class="col-md-3">
@@ -78,7 +82,6 @@
                                     <tr><td>Favicon</td><td> {{ faviconcontrastText }}</td><td> N/A </td> </tr>
                                     <tr><td>Dashboard</td><td> {{ dashboardcontrastText }}</td><td> {{ dashboardcontrastBrightness }}</td> </tr>
                                     <tr><td>Recon</td><td> {{ reconcontrastText }}</td><td> {{ reconcontrastBrightness }}</td> </tr>
-                                    <tr><td>Profiling</td><td> {{ profilingcontrastText }}</td><td> {{ profilingcontrastBrightness }}</td> </tr>
                                     <tr><td>Clients</td><td> {{ clientscontrastText }}</td><td> {{ clientscontrastBrightness }}</td> </tr>
                                     <tr><td>Modules</td><td> {{ modulescontrastText }}</td><td> {{ modulescontrastBrightness }}</td> </tr>
                                     <tr><td>Filters</td><td> {{ filterscontrastText }}</td><td> {{ filterscontrastBrightness }}</td> </tr>
@@ -89,6 +92,7 @@
                                     <tr><td>Networking</td><td> {{ networkingcontrastText }}</td><td> {{ networkingcontrastBrightness }}</td> </tr>
                                     <tr><td>Configuration</td><td> {{ configurationcontrastText }}</td><td> {{ configurationcontrastBrightness }}</td> </tr>
                                     <tr><td>Advanced</td><td> {{ advancedcontrastText }}</td><td> {{ advancedcontrastBrightness }}</td> </tr>
+                                    <tr><td>Notes</td><td> {{ notescontrastText }}</td><td> {{ notescontrastBrightness }}</td> </tr>
                                     <tr><td>Help</td><td> {{ helpcontrastText }}</td><td> {{ helpcontrastBrightness }}</td> </tr>
                                 </tbody>
                                 </table>
@@ -376,26 +380,27 @@
                                         </button>
                                     </td>
                                 </tr>
-                                <td><b>Profiling</b></td>
-                                <td><img src="/modules/Profiling/module_icon.svg" width="30" height="30" /></td>
-                                <td><select ng-model="profilingcontrastText"
+
+				<td><b>Notes</b></td>
+                                <td><img src="/modules/Notes/module_icon.svg" width="30" height="30" /></td>
+                                <td><select ng-model="notescontrastText"
                                             ng-style="selectOptions" 
                                             ng-options="x for x in colors"
-                                            ng-value="{{ profilingcontrastText }}"
+                                            ng-value="{{ notescontrastText }}"
                                             >
                                     </select>
                                 </td>
-                                <td><select ng-model="profilingcontrastBrightness"
+                                <td><select ng-model="notescontrastBrightness"
                                             ng-style="selectOptions" 
                                             ng-options="x for x in brightness"
                                             
-                                            ng-value="{{ profilingcontrastBrightness }}"
+                                            ng-value="{{ notescontrastBrightness }}"
                                             >
                                     </select>
                                 </td>
                                 <td><button class="btn btn-default" 
                                             type="button"
-                                            ng-click="changeProfiling()">
+                                            ng-click="changeNotes()">
                                             Apply
                                     </button>
                                 </td>
@@ -755,6 +760,13 @@
                     </div>
                     <div id="collapseChangelog" class="panel-collapse collapse">
                         <div class="panel-body">
+                            <ul>
+                                <li><b>1.1</b></li>
+                                <ul>
+                                    <li class="text-muted">Removed profiling icon options</li>
+                                    <li class="text-muted">Added "Notes" icon options</li>
+                                </ul>
+                            </ul>
                             <ul>
                                 <li><b>1.0</b></li>
                                 <ul>

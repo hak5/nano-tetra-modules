@@ -1,11 +1,36 @@
-<div class="panel panel-default" ng-controller="Status_Controller"><div class="panel-heading"><h4 class="panel-title pull-left">{{title}}</h4><span class="pull-right">{{version}}</span><div class="clearfix"></div></div></div>
+<div class="panel panel-default" ng-controller="Status_Controller">
+	<div class="panel-heading">
+		<h4 class="panel-title pull-left">{{title}}</h4>
+		<span class="pull-right">{{version}}</span>
+		<div class="clearfix">
+		</div>
+		<table style="width:10%">
+		<tr>
+			<td>
+				Auto Refresh
+			</td>
+			<td>
+			<label class="switch" >
+			<input type="checkbox" class="btn btn-info pull-right btn-xs" ng-model="autoRefresh" ng-click="toggleAutoRefresh()" Auto Refresh /> 
+			<span class="slider round">
+			</span>
+			</label>
+		</td>
+
+		</tr>
+		<tr>
+		</tr>
+
+		</table>
+	</div>
+</div>
 
 <div class="row">
   <div class="col-md-6" ng-controller="Status_SystemController">
       <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title pull-left">System</h4>
-                <button type="button" class="btn btn-info pull-right btn-xs" ng-click="getInfo()">Refresh</button>
+                <button type="button" class="btn btn-info pull-right btn-xs" ng-disabled="autoRefresh" ng-click="getInfo()">Refresh</button>
                 <div class="clearfix"></div>
             </div>
             <div class="panel-body">
@@ -42,7 +67,7 @@
                 <h4 class="panel-title pull-left">CPU</h4>
                 <div class="btn-group pull-right">
                   <button type="button" class="btn btn-default btn-xs" ng-click="getSrc()" data-toggle="modal" data-target="#CPUModal">Graph</button>
-                  <button type="button" class="btn btn-info btn-xs" ng-click="getInfo()">Refresh</button>
+                  <button type="button" class="btn btn-info btn-xs" ng-disabled="autoRefresh" ng-click="getInfo()">Refresh</button>
                 </div>
                 <div class="clearfix"></div>
             </div>
@@ -106,7 +131,7 @@
       <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title pull-left">Memory</h4>
-                <button type="button" class="btn btn-info pull-right btn-xs" ng-click="getInfo()">Refresh</button>
+                <button type="button" class="btn btn-info pull-right btn-xs" ng-disabled="autoRefresh" ng-click="getInfo()">Refresh</button>
                 <div class="clearfix"></div>
             </div>
             <div class="panel-body">
@@ -148,7 +173,7 @@
       <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title pull-left">Swap</h4>
-                <button type="button" class="btn btn-info pull-right btn-xs" ng-click="getInfo()">Refresh</button>
+                <button type="button" class="btn btn-info pull-right btn-xs" ng-disabled="autoRefresh" ng-click="getInfo()">Refresh</button>
                 <div class="clearfix"></div>
             </div>
             <div class="panel-body">
@@ -200,7 +225,7 @@
       <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title pull-left">WiFi Clients <span class="badge">{{info.wifiClientsList.length}}</span></h4>
-                <button type="button" class="btn btn-info pull-right btn-xs" ng-click="getInfo()">Refresh</button>
+                <button type="button" class="btn btn-info pull-right btn-xs" ng-disabled="autoRefresh" ng-click="getInfo()">Refresh</button>
                 <div class="clearfix"></div>
             </div>
             <div class="panel-body">
@@ -246,7 +271,7 @@
       <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title pull-left">DHCP Clients <span class="badge">{{info.clientsList.length}}</span></h4>
-                <button type="button" class="btn btn-info pull-right btn-xs" ng-click="getInfo()">Refresh</button>
+                <button type="button" class="btn btn-info pull-right btn-xs" ng-disabled="autoRefresh" ng-click="getInfo()">Refresh</button>
                 <div class="clearfix"></div>
             </div>
             <div class="panel-body">
@@ -295,7 +320,7 @@
       <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title pull-left">Storage</h4>
-                <button type="button" class="btn btn-info pull-right btn-xs" ng-click="getInfo()">Refresh</button>
+                <button type="button" class="btn btn-info pull-right btn-xs" ng-disabled="autoRefresh" ng-click="getInfo()">Refresh</button>
                 <div class="clearfix"></div>
             </div>
             <div class="panel-body">
@@ -325,7 +350,7 @@
       <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title pull-left">Interfaces</h4>
-                <button type="button" class="btn btn-info pull-right btn-xs" ng-click="getInfo()">Refresh</button>
+                <button type="button" class="btn btn-info pull-right btn-xs" ng-disabled="autoRefresh" ng-click="getInfo()">Refresh</button>
                 <div class="clearfix"></div>
             </div>
             <div class="panel-body">

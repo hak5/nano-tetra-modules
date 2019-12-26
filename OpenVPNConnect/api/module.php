@@ -20,35 +20,50 @@ class OpenVPNConnect extends Module{
             case 'stopVPN':
                 $this->stopVPN();
                 break;
+            case 'checkVPNStatus':
+                $this->checkVPNStatus();
+                break;
             case 'initializeModule':
                 $this->initializeModule();
                 break;
             case 'handleDependencies':
-                $this->handleDependencies();
+                $this->handleDependencies(false);
+                break;
+            case 'handleDependenciesSDCard':
+                $this->handleDependenciesSDCard();
                 break;
             case 'checkDependencies':
                 $this->checkDependencies();
                 break;
             case 'uploadFile':
                 $this->uploadFile();
+                break;
         }
     }
 
 
     // Checks the dependencies using the pineapple API functions 
     private function checkDependencies(){
-
+        $installedFlag = false;
         if($this->checkDependency('openvpn')){
             $installLabel = 'success';
             $installLabelText = 'Installed';
+            $installButtonWidth = "90px";
+            $installLabelSDText = "Installed (SD Card)";
+            $installedFlag = true;
         }else{
             $installLabel = 'danger';
-            $installLabelText = 'Not Installed';
+            $installLabelText = 'Not Installed (Local Storage)';
+            $installButtonWidth = "210px";
+            $installLabelSDText = "Not Installed (SD Card)";
         }
          
         $this->response = array("success" => true,
                                 "label" => $installLabel,
-                                "text"   => $installLabelText);
+                                "text"  => $installLabelText,
+                                "buttonWidth" => $installButtonWidth,
+                                "textSD" => $installLabelSDText,
+                                "installed" => $installedFlag);
 
     }
 
@@ -87,30 +102,62 @@ class OpenVPNConnect extends Module{
     }
 
     // Handles dependency installation and removal
-    private function handleDependencies(){
-    
+    private function handleDependencies($sd){
 
         if($this->checkDependency('openvpn')){
-            exec('opkg remove openvpn-openssl');
+            $this->execBackground('opkg remove openvpn-openssl');
             $messsage = "Dependencies should now be removed! Note: the vpn_config directory is NOT removed in this process. Please wait for the page to refresh...";
         }else{
-            $this->installDependency('openvpn-openssl');
-            $messsage = "Depedencies should now be installed! Please wait for the page to refresh...";
+            if($sd){
+                $this->execBackground('opkg update');
+                $this->execBackground('opkg install openvpn-openssl --dest sd');
+                $messsage = "Depedencies should now be installed! (Installed to SD card) Please wait for the page to refresh...";
+            }else{
+                $this->installDependency('openvpn-openssl');
+                $messsage = "Depedencies should now be installed! (Installed to local storage) Please wait for the page to refresh...";
+            }
+
         }
          
         $this->response = array("success" => true,
-                                "content" => $messsage);
+                                "content" => $messsage,
+                                "test" => $sd);
     }
 
-    // Builds the openvpn command string and calls it to star the VPN
+    // Helper function to handle dependency installation and removal for sd card. Passes the SD flag to the real handleDependencies() function
+    private function handleDependenciesSDCard(){
+
+        $sd = true;
+
+        return handleDependencies($sd);
+
+    }
+
+
+    // Checks whether or not OpenVPN is currently running
+    private function checkVPNStatus(){
+        $result = exec("pgrep openvpn");
+
+        if($result){
+            $this->response = array("success" => true,
+            "content" => "VPN Running...");
+            return;
+        }
+
+        $this->response = array("success" => true,
+        "content" => "VPN Stopped...");
+
+    }
+
+    // Builds the openvpn command string and calls it to start the VPN
     private function startVPN(){
 
         $inputData = $this->request->data;
 
-        $open_vpn_cmd = "openvpn --config ";
+        $open_vpn_cmd = "openvpn --log /pineapple/modules/OpenVPNConnect/log/vpn.log --status /pineapple/modules/OpenVPNConnect/log/status.log --config ";
         
         if($inputData[0] != ''){
-            $config_name = $inputData[0];
+            $config_name = escapeshellcmd($inputData[0]);
             $open_vpn_cmd .= "/root/vpn_config/" . $config_name . " ";
         }else{
             $this->response = array("success" => false,
@@ -118,27 +165,42 @@ class OpenVPNConnect extends Module{
             return;
         }
 
-        if($inputData[1] != ''){
+
+        if($inputData[1] != '' && $inputData[2] != ''){
+            //Create auth.txt file for openvpn command to read in
+            $config_user = $inputData[1];
+            $config_pass = $inputData[2];
+            $config_string = $config_user . PHP_EOL . $config_pass;
+            $auth_file = fopen("/tmp/vpn_auth.txt", "w");
+            fwrite($auth_file, $config_string);
+            fclose($auth_file);
+            $open_vpn_cmd .= "--auth-nocache --auth-user-pass /tmp/vpn_auth.txt ";
+
+        }else if($inputData[2] != ''){
 
             //Create password file for openvpn command to read in
-            $config_pass = $inputData[1];
+            $config_pass = $inputData[2];
             $pass_file = fopen("/tmp/vpn_pass.txt", "w");
             fwrite($pass_file, $config_pass);
             fclose($pass_file);
             $open_vpn_cmd .= "--auth-nocache --askpass /tmp/vpn_pass.txt ";
         }
 
-        if($inputData[2] != ''){
-            $openvpn_flags = $inputData[2];
+
+        if($inputData[3] != ''){
+            $openvpn_flags = escapeshellcmd($inputData[3]);
             $open_vpn_cmd .= $openvpn_flags;
         }
 
         
-        if($inputData[3] == true){
+        if($inputData[4] == true){
         //Share VPN With Clients Connecting
-            $this->execBackground("iptables -t nat -A POSTROUTING -s 172.16.42.0/24 -o tun0 -j MASQUERADE");
-            $this->execBackground("iptables -A FORWARD -s 172.16.42.0/24 -o tun0 -j ACCEPT");
-            $this->execBackground("iptables -A FORWARD -d 172.16.42.0/24 -m state --state ESTABLISHED,RELATED -i tun0 -j ACCEPT");
+            $gateway = $this->uciGet("network.lan.gateway");
+            $netmask = $this->uciGet("network.lan.netmask");
+
+            $this->execBackground("iptables -t nat -A POSTROUTING -s ". $gateway ."/". $netmask. " -o tun0 -j MASQUERADE");
+            $this->execBackground("iptables -A FORWARD -s ". $gateway ."/". $netmask . " -o tun0 -j ACCEPT");
+            $this->execBackground("iptables -A FORWARD -d ". $gateway ."/". $netmask ." -m state --state ESTABLISHED,RELATED -i tun0 -j ACCEPT");
         }
 
         $result = $this->execBackground($open_vpn_cmd);
@@ -151,10 +213,20 @@ class OpenVPNConnect extends Module{
     // Calls pkill to kill the OpenVPN process and stop the VPN
     private function stopVPN(){
 
-        //Remove password file that could have been created, don't want any creds lying around ;)
+        //Remove any creds files that could have been created, don't want any creds lying around ;)
+        unlink("/tmp/vpn_auth.txt");
         unlink("/tmp/vpn_pass.txt");
 
-        exec("pkill openvpn");
+        //Delete any iptable rules that may have been created for sharing connection with clients                
+        $gateway = $this->uciGet("network.lan.gateway");
+        $netmask = $this->uciGet("network.lan.netmask");
+
+        $this->execBackground("iptables -t nat -D POSTROUTING -s ". $gateway ."/". $netmask. " -o tun0 -j MASQUERADE");
+        $this->execBackground("iptables -D FORWARD -s ". $gateway ."/". $netmask . " -o tun0 -j ACCEPT");
+        $this->execBackground("iptables -D FORWARD -d ". $gateway ."/". $netmask ." -m state --state ESTABLISHED,RELATED -i tun0 -j ACCEPT");
+        
+        //Kill openvpn
+        $this->execBackground("pkill openvpn");
 
         $this->response = array("success" => true,
                                 "content" => "VPN Stopped...");

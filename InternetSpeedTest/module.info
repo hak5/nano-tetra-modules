@@ -1,0 +1,10 @@
+{
+    "author": "trashbo4t",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "Internet Speed Test",
+    "description": "Test the download and upload speed of the network shared to your pineapple",
+    "version": "1.0"
+}

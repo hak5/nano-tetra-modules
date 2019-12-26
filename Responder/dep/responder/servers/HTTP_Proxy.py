@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-# This file is part of Responder
-# Original work by Laurent Gaffie - Trustwave Holdings
-#
+# This file is part of Responder, a network take-over set of tools 
+# created and maintained by Laurent Gaffie.
+# email: laurent.gaffie@gmail.com
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -14,8 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import os
-import settings
 import urlparse
 import select
 import zlib
@@ -43,24 +41,20 @@ def InjectData(data, client, req_uri):
 			return data
 
 		RedirectCodes = ['HTTP/1.1 300', 'HTTP/1.1 301', 'HTTP/1.1 302', 'HTTP/1.1 303', 'HTTP/1.1 304', 'HTTP/1.1 305', 'HTTP/1.1 306', 'HTTP/1.1 307']
-
-		if [s for s in RedirectCodes if s in Headers]:
+		if set(RedirectCodes) & set(Headers):
 			return data
 
 		if "content-encoding: gzip" in Headers.lower():
 			Content = zlib.decompress(Content, 16+zlib.MAX_WBITS)
 
 		if "content-type: text/html" in Headers.lower():
-
-			# Serve the custom HTML if needed
-			if settings.Config.Serve_Html:
+			if settings.Config.Serve_Html:  # Serve the custom HTML if needed
 				return RespondWithFile(client, settings.Config.Html_Filename)
 
-			Len = ''.join(re.findall('(?<=Content-Length: )[^\r\n]*', Headers))
-			HasBody = re.findall('(<body[^>]*>)', Content)
+			Len = ''.join(re.findall(r'(?<=Content-Length: )[^\r\n]*', Headers))
+			HasBody = re.findall(r'(<body[^>]*>)', Content, re.IGNORECASE)
 
-			if HasBody and len(settings.Config.HtmlToInject) > 2:
-
+			if HasBody and len(settings.Config.HtmlToInject) > 2 and not req_uri.endswith('.js'):
 				if settings.Config.Verbose:
 					print text("[PROXY] Injecting into HTTP Response: %s" % color(settings.Config.HtmlToInject, 3, 1))
 
@@ -71,11 +65,9 @@ def InjectData(data, client, req_uri):
 
 		Headers = Headers.replace("Content-Length: "+Len, "Content-Length: "+ str(len(Content)))
 		data = Headers +'\r\n\r\n'+ Content
-
 	else:
 		if settings.Config.Verbose:
 			print text("[PROXY] Returning unmodified HTTP response")
-
 	return data
 
 class ProxySock:
@@ -96,19 +88,17 @@ class ProxySock:
 	def connect(self, address) :
 
 		# Store the real remote adress
-		(self.host, self.port) = address
+		self.host, self.port = address
 	   
 		# Try to connect to the proxy 
 		for (family, socktype, proto, canonname, sockaddr) in socket.getaddrinfo(
 			self.proxy_host, 
 			self.proxy_port,
-			0, 0, socket.SOL_TCP) :
+			0, 0, socket.SOL_TCP):
 			try:
-				
 				# Replace the socket by a connection to the proxy
 				self.socket = socket.socket(family, socktype, proto)
 				self.socket.connect(sockaddr)
-					
 			except socket.error, msg:
 				if self.socket:
 					self.socket.close()
@@ -116,7 +106,7 @@ class ProxySock:
 				continue
 			break
 		if not self.socket :
-			raise socket.error, ms 
+			raise socket.error, msg
 		
 		# Ask him to create a tunnel connection to the target host/port
 		self.socket.send(
@@ -354,3 +344,4 @@ class HTTP_Proxy(BaseHTTPServer.BaseHTTPRequestHandler):
 	do_POST = do_GET
 	do_PUT  = do_GET
 	do_DELETE=do_GET
+

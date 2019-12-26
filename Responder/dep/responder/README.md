@@ -1,8 +1,8 @@
-# Responder.py #
+# Responder/MultiRelay #
 
-LLMNR/NBT-NS/mDNS Poisoner
+LLMNR/NBT-NS/mDNS Poisoner and NTLMv1/2 Relay.
 
-(Original work by Laurent Gaffie <lgaffie@trustwave.com> http://www.spiderlabs.com)
+Author: Laurent Gaffie <laurent.gaffie@gmail.com >  https://g-laurent.blogspot.com
 
 
 
@@ -16,7 +16,7 @@ The concept behind this is to target our answers, and be stealthier on the netwo
 
 - Built-in SMB Auth server.
 	
-Supports NTLMv1, NTLMv2 hashes with Extended Security NTLMSSP by default. Successfully tested from Windows 95 to Server 2012 RC, Samba and Mac OSX Lion. Clear text password is supported for NT4, and LM hashing downgrade when the --lm option is set. This functionality is enabled by default when the tool is launched.
+Supports NTLMv1, NTLMv2 hashes with Extended Security NTLMSSP by default. Successfully tested from Windows 95 to Server 2012 RC, Samba and Mac OSX Lion. Clear text password is supported for NT4, and LM hashing downgrade when the --lm option is set. SMBv2 has also been implemented and is supported by default.
 
 - Built-in MSSQL Auth server.
 
@@ -89,7 +89,7 @@ Additionally, all captured hashed are logged into an SQLite database which you c
 
 ## Considerations ##
 
-- This tool listens on several ports: UDP 137, UDP 138, UDP 53, UDP/TCP 389,TCP 1433, TCP 80, TCP 139, TCP 445, TCP 21, TCP 3141,TCP 25, TCP 110, TCP 587 and Multicast UDP 5553.
+- This tool listens on several ports: UDP 137, UDP 138, UDP 53, UDP/TCP 389,TCP 1433, UDP 1434, TCP 80, TCP 139, TCP 445, TCP 21, TCP 3141,TCP 25, TCP 110, TCP 587, TCP 3128 and Multicast UDP 5553.
 
 - If you run Samba on your system, stop smbd and nmbd and all other services listening on these ports.
 
@@ -103,13 +103,13 @@ Edit this file /etc/NetworkManager/NetworkManager.conf and comment the line: `dn
 
 - For OSX, please note: Responder must be launched with an IP address for the -i flag (e.g. -i YOUR_IP_ADDR). There is no native support in OSX for custom interface binding. Using -i en1 will not work. Also to run Responder with the best experience, run the following as root:
 
-    launchcl unload /System/Library/LaunchDaemons/com.apple.Kerberos.kdc.plist
+    launchctl unload /System/Library/LaunchDaemons/com.apple.Kerberos.kdc.plist
 
-    launchcl unload /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist
+    launchctl unload /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist
 
-    launchcl unload /System/Library/LaunchDaemons/com.apple.smbd.plist
+    launchctl unload /System/Library/LaunchDaemons/com.apple.smbd.plist
 
-    launchcl unload /System/Library/LaunchDaemons/com.apple.netbiosd.plist
+    launchctl unload /System/Library/LaunchDaemons/com.apple.netbiosd.plist
 
 ## Usage ##
 
@@ -121,47 +121,78 @@ Running the tool:
 
 Typical Usage Example:
 
-    ./Responder.py -I eth0 -wrf
+    ./Responder.py -I eth0 -rPv
 
 Options:
 
-	  --version             show program's version number and exit
-	  -h, --help            show this help message and exit
+	  --version             show program's version number and exit.
+	  -h, --help            show this help message and exit.
 	  -A, --analyze         Analyze mode. This option allows you to see NBT-NS,
 	                        BROWSER, LLMNR requests without responding.
 	  -I eth0, --interface=eth0
-	                        Network interface to use
+	                        Network interface to use.
+          -i 10.0.0.21, --ip=10.0.0.21
+                                Local IP to use (only for OSX)
+          -e 10.0.0.22, --externalip=10.0.0.22
+                                Poison all requests with another IP address than
+                                Responder's one.
 	  -b, --basic           Return a Basic HTTP authentication. Default: NTLM
 	  -r, --wredir          Enable answers for netbios wredir suffix queries.
 	                        Answering to wredir will likely break stuff on the
-	                        network. Default: False
+	                        network. Default: Off
 	  -d, --NBTNSdomain     Enable answers for netbios domain suffix queries.
 	                        Answering to domain suffixes will likely break stuff
-	                        on the network. Default: False
+	                        on the network. Default: Off
 	  -f, --fingerprint     This option allows you to fingerprint a host that
 	                        issued an NBT-NS or LLMNR query.
 	  -w, --wpad            Start the WPAD rogue proxy server. Default value is
-	                        False
+	                        Off
 	  -u UPSTREAM_PROXY, --upstream-proxy=UPSTREAM_PROXY
 	                        Upstream HTTP proxy used by the rogue WPAD Proxy for
 	                        outgoing requests (format: host:port)
 	  -F, --ForceWpadAuth   Force NTLM/Basic authentication on wpad.dat file
 	                        retrieval. This may cause a login prompt. Default:
-	                        False
+	                        Off
+	  -P, --ProxyAuth       Force NTLM (transparently)/Basic (prompt) 
+                                authentication for the proxy. WPAD doesn't need to
+                                be ON. This option is highly effective when combined
+                                with -r. Default: Off
 	  --lm                  Force LM hashing downgrade for Windows XP/2003 and
-	                        earlier. Default: False
+	                        earlier. Default: Off
 	  -v, --verbose         Increase verbosity.
 	
 
+## Donation ##
+
+You can contribute to this project by donating to the following BTC address:
+
+1Pv9rZMNfy9hsW19eQhNGs22gY9sf6twjW
 
 
+## Acknowledgments ##
+
+Late Responder development has been possible because of the donations received from individuals and companies.
+
+We would like to thanks those major donator:
+
+- SecureWorks : https://www.secureworks.com/
+
+- Black Hills Information Security: http://www.blackhillsinfosec.com/
+
+- TrustedSec: https://www.trustedsec.com/
+
+- And all, ALL the pentesters around the world who donated to this project.
+
+Thank you.
 
 ## Copyright ##
 
 NBT-NS/LLMNR Responder
-Created by Laurent Gaffie
-Copyright (C) 2013 Trustwave Holdings, Inc.
- 
+
+Responder, a network take-over set of tools created and maintained by Laurent Gaffie.
+
+email: laurent.gaffie@gmail.com
+
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -171,6 +202,6 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>
+along with this program.  If not, see <http://www.gnu.org/licenses/>.

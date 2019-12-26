@@ -1,10 +1,10 @@
 {
     "author": "Whistle Master",
-    "description": "Perform man-in-the-middle attacks using ettercap",
+    "description": "(FW2.5.4 or below) Perform man-in-the-middle attacks using ettercap",
     "devices": [
         "nano",
         "tetra"
     ],
     "title": "ettercap",
-    "version": "1.5"
+    "version": "1.7"
 }

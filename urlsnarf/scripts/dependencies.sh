@@ -1,8 +1,7 @@
 #!/bin/sh
 #2015 - Whistle Master
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sd/lib:/sd/usr/lib
-export PATH=$PATH:/sd/usr/bin:/sd/usr/sbin
+
 
 [[ -f /tmp/urlsnarf.progress ]] && {
   exit 0
@@ -28,8 +27,8 @@ if [ "$1" = "install" ]; then
   uci commit urlsnarf.module.installed
 
 elif [ "$1" = "remove" ]; then
-    opkg remove urlsnarf
-    rm -rf /etc/config/urlsnarf
+  opkg remove urlsnarf
+  rm -rf /etc/config/urlsnarf
 fi
 
 rm /tmp/urlsnarf.progress

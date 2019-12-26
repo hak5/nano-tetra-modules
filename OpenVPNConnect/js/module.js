@@ -4,6 +4,7 @@ registerController('openVPNConnectController', ['$api', '$scope', '$timeout', '$
     
     // Workspace Variables. Each value is populated by the form or displays to the form.
     $scope.workspace = {config: "", 
+                        user: "",
                         pass: "", 
                         flags: "", 
                         sharedconnection: false, 
@@ -18,14 +19,17 @@ registerController('openVPNConnectController', ['$api', '$scope', '$timeout', '$
     */
     $scope.content = "";
     $scope.installLabel = "default";
-    $scope.installLabelText = "Checking..."
+    $scope.installLabelText = "Checking...";
+    $scope.installSDLabelText = "Checking...";
     $scope.selectedFiles = [];
+    $scope.hideSDDependency = false;
     $scope.uploading = false;
+    $scope.installButtonWidth = "210px";
 
-    // Call a function to install/uninstall dependencies for the module
+    // Call a function to install/uninstall dependencies for the module (install to local storage)
     $scope.handleDependencies = function(){
 
-        $scope.workspace.setupcontent = "Handling dependencies please wait...";
+        $scope.workspace.setupcontent = "Handling dependencies (local storage) please wait...";
 
         $api.request({
             module: 'OpenVPNConnect', 
@@ -39,11 +43,33 @@ registerController('openVPNConnectController', ['$api', '$scope', '$timeout', '$
 
                 $timeout(function() {$window.location.reload();}, 5000);
             }
-            //console.log(response) //Log the response to the console, this is useful for debugging.
+           //console.log(response) //Log the response to the console, this is useful for debugging.
         });
 
     }
     
+        // Call a function to install/uninstall dependencies for the module (install to the SD card)
+        $scope.handleDependenciesSDCard = function(){
+
+            $scope.workspace.setupcontent = "Handling dependencies (SD card) please wait...";
+
+            $api.request({
+                module: 'OpenVPNConnect', 
+                action: 'handleDependenciesSDCard',
+            }, function(response) {
+                if (response.success === true) {
+
+                    $scope.workspace.setupcontent = response.content;
+
+                    checkDependencies();
+
+                    $timeout(function() {$window.location.reload();}, 5000);
+                }
+                //console.log(response) //Log the response to the console, this is useful for debugging.
+            });
+
+        }
+
     /* Checks the current status of the dependencies for the module and displays 
        it via the dependency install/uninstall button to the user. 
        This is checked each time the app is loaded or when the user 
@@ -57,6 +83,11 @@ registerController('openVPNConnectController', ['$api', '$scope', '$timeout', '$
             if (response.success === true) {
                 $scope.installLabel = response.label;
                 $scope.installLabelText = response.text;
+                $scope.installSDLabelText = response.textSD;
+                $scope.installButtonWidth = response.buttonWidth;
+                if(response.installed){
+                    $scope.hideSDDependency = true;
+                }
             }
             //console.log(response) //Log the response to the console, this is useful for debugging.
         });
@@ -64,6 +95,22 @@ registerController('openVPNConnectController', ['$api', '$scope', '$timeout', '$
 
     // Call the checkDependencies function on page load
     checkDependencies();
+
+    // Function to check if the VPN is currently running or not when re-visiting the module
+    var checkVPNStatus = function() {
+        $api.request({
+            module: 'OpenVPNConnect', 
+            action: 'checkVPNStatus'
+        }, function(response) {
+            if (response.success === true) {
+                $scope.workspace.outputcontent = response.content;
+            }
+            //console.log(response) //Log the response to the console, this is useful for debugging.
+        });
+    }
+    
+    // Call checkVPNStatus function on page load
+    checkVPNStatus();
 
     /* Initializes module by creating necessary folder structures and scanning for uploaded certs
        this function is called each time the app is loaded to make sure the module is set up correctly
@@ -100,7 +147,6 @@ registerController('openVPNConnectController', ['$api', '$scope', '$timeout', '$
         $scope.workspace.config = cert;
     }
     
-
     /* Calls the startVPN function, passes all the form params to the API to run the OpenVPN command
        Users can pass a config, an option password, and optional command line flags to run with the
        openvpn command line utility. Also the shared connection open lets the user share the 
@@ -111,6 +157,7 @@ registerController('openVPNConnectController', ['$api', '$scope', '$timeout', '$
             module: 'OpenVPNConnect', 
             action: 'startVPN',
             data: [$scope.workspace.config,
+                  $scope.workspace.user,
                   $scope.workspace.pass,
                   $scope.workspace.flags,
                   $scope.workspace.sharedconnection]

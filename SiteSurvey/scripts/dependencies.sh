@@ -1,8 +1,7 @@
 #!/bin/sh
 #2015 - Whistle Master
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sd/lib:/sd/usr/lib
-export PATH=$PATH:/sd/usr/bin:/sd/usr/sbin
+logger "== SITESURVEY INSTALL SCRIPT"
 
 [[ -f /tmp/SiteSurvey.progress ]] && {
   exit 0
@@ -13,8 +12,10 @@ touch /tmp/SiteSurvey.progress
 if [ "$1" = "install" ]; then
   if [ "$2" = "internal" ]; then
 	   opkg update
+	   opkg install mdk3
   elif [ "$2" = "sd" ]; then
-    opkg update
+        opkg update
+        opkg install mdk3 --dest=sd
   fi
 
   touch /etc/config/sitesurvey
@@ -22,8 +23,6 @@ if [ "$1" = "install" ]; then
 
   uci set sitesurvey.module.installed=1
   uci commit sitesurvey.module.installed
-
-  mkdir /pineapple/modules/SiteSurvey/capture
 
 elif [ "$1" = "remove" ]; then
     rm -rf /etc/config/sitesurvey

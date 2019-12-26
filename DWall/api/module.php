@@ -33,13 +33,13 @@ class DWall extends Module
     private function disable()
     {
         exec("killall http_sniffer");
-        exec("kill \$(ps | grep DWall | head -n1 | awk '{print $1}')");
+        exec("kill \$(ps -aux | grep DWall | head -n1 | awk '{print $2}')");
         $this->response = array("success" => true);
     }
 
     private function getStatus()
     {
-        if (trim(exec("ps -w | grep [D]Wall.py")) != "" && trim(exec("ps -w | grep [h]ttp_sniffer")) != "") {
+        if (trim(exec("ps -aux | grep [D]Wall.py")) != "" && trim(exec("ps -aux| grep [h]ttp_sniffer")) != "") {
             $this->response = array("running" => true);
         } else {
             $this->response = array("running" => false);

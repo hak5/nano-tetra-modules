@@ -1,9 +1,6 @@
 #!/bin/sh
 #2015 - Whistle Master
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sd/lib:/sd/usr/lib
-export PATH=$PATH:/sd/usr/bin:/sd/usr/sbin
-
 [[ -f /tmp/Occupineapple.progress ]] && {
   exit 0
 }
@@ -29,8 +26,8 @@ if [ "$1" = "install" ]; then
   uci commit occupineapple.module.installed
 
 elif [ "$1" = "remove" ]; then
-    opkg remove mdk3
-    rm -rf /etc/config/occupineapple
+  opkg remove mdk3
+  rm -rf /etc/config/occupineapple
 fi
 
 rm /tmp/Occupineapple.progress

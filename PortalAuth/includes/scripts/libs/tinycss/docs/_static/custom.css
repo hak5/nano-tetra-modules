@@ -1,0 +1,24 @@
+div.body {
+    text-align: left;
+}
+div.document p, div.document ul {
+    margin-top: 0;
+    margin-bottom: 1em;
+}
+div.document ul ul {
+    margin-top: 0;
+    margin-bottom: .5em;
+}
+.field-name {
+    padding-right: .5em;
+}
+table.field-list p, table.field-list ul {
+    margin-bottom: .5em;
+}
+table {
+    border-collapse: collapse;
+    margin-bottom: 1em;
+}
+table.docutils td, table.docutils th {
+    padding: .2em .5em;
+}

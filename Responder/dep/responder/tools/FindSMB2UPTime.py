@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-# This file is part of Responder
-# Original work by Laurent Gaffie - Trustwave Holdings
-#
+# This file is part of Responder, a network take-over set of tools 
+# created and maintained by Laurent Gaffie.
+# email: laurent.gaffie@gmail.com
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -14,14 +14,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import sys
+import re,sys,socket,struct
 import os
 import datetime
-import struct
-import socket
+import multiprocessing
+from socket import *
 
 sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '..')))
-from packets import SMBHeader,SMB2Header, SMB2Nego, SMB2NegoData
+from packets import SMBHeaderReq, SMB2NegoReq, SMB2NegoDataReq
 
 def GetBootTime(data):
     Filetime = int(struct.unpack('<q',data)[0])
@@ -30,43 +30,64 @@ def GetBootTime(data):
     return time, time.strftime('%Y-%m-%d %H:%M:%S')
 
 
-def IsDCVuln(t):
+def IsDCVuln(t, host):
     Date = datetime.datetime(2014, 11, 17, 0, 30)
     if t[0] < Date:
-       print "DC is up since:", t[1]
-       print "This DC is vulnerable to MS14-068"
-    else:
-       print "DC is up since:", t[1]
+       print "System is up since:", t[1]
+       print "This system may be vulnerable to MS14-068"
+    Date = datetime.datetime(2017, 03, 14, 0, 30)
+    if t[0] < Date:
+       print "System is up since:", t[1]
+       print "This system may be vulnerable to MS17-010"
+    print "Server", host[0], "is up since:", t[1]
 
-def NbtLen(data):
-    Len = struct.pack(">i", len(data))
-    return Len
 
 def run(host):
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(host)  
-    s.settimeout(5) 
-
-    Header = SMB2Header(Cmd="\x72",Flag1="\x18",Flag2="\x53\xc8")
-    Nego = SMB2Nego(Data = SMB2NegoData())
-    Nego.calculate()
-
-    Packet = str(Header)+str(Nego)
-    Buffer = NbtLen(Packet)+Packet
-    s.send(Buffer)
-
+    s = socket(AF_INET, SOCK_STREAM)
+    s.settimeout(5)       
     try:
+        s.connect(host)
+
+        Header = SMBHeaderReq(Cmd="\x72",Flag1="\x18",Flag2="\x53\xc8")
+        Nego = SMB2NegoReq(Data = SMB2NegoDataReq())
+        Nego.calculate()
+
+        Packet = str(Header)+str(Nego)
+        Buffer = struct.pack(">i", len(Packet)) + Packet
+        s.send(Buffer)
+
         data = s.recv(1024)
         if data[4:5] == "\xff":
-           print "This host doesn't support SMBv2" 
+            print "Server", host[0], "doesn't support SMBv2" 
         if data[4:5] == "\xfe":
-           IsDCVuln(GetBootTime(data[116:124]))
-    except Exception:
+            IsDCVuln(GetBootTime(data[116:124]), host)
+
+    except KeyboardInterrupt:
         s.close()
-        raise
+        sys.exit("\rExiting...")
+    except:
+        s.close()
+        pass
+
+def atod(a): 
+    return struct.unpack("!L",inet_aton(a))[0]
+
+def dtoa(d): 
+    return inet_ntoa(struct.pack("!L", d))
 
 if __name__ == "__main__":
     if len(sys.argv)<=1:
-        sys.exit('Usage: python '+sys.argv[0]+' DC-IP-address')
-    host = sys.argv[1],445
-    run(host)
+        sys.exit('Usage: python '+sys.argv[0]+' 10.1.3.37\nor:\nUsage: python '+sys.argv[0]+' 10.1.3.37/24')
+
+    m = re.search("/", str(sys.argv[1]))
+    if m :
+        net,_,mask = sys.argv[1].partition('/')
+        mask = int(mask)
+        net = atod(net)
+        threads = []
+        for host in (dtoa(net+n) for n in range(0, 1<<32-mask)):
+            p = multiprocessing.Process(target=run, args=((host,445),))
+            threads.append(p)
+            p.start()
+    else:
+        run((str(sys.argv[1]),445))

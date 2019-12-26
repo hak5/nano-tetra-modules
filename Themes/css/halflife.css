@@ -230,6 +230,17 @@ body {
     background-color: #991f00;
 }
 
+.well {
+    min-height: 20px;
+    padding: 19px;
+    margin-bottom: 20px;
+    background-color: #991f00;
+    border: 1px solid #000000;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+}
+
 .sidebar ul li {
     cursor: pointer;
     border-bottom: 1px solid #e62e00;
@@ -391,7 +402,15 @@ textarea.form-control {
 }
 
 .brand-text::after {
-    content: "pineapple";
+    content: "Wifi Pineapple | Halflife";
+    padding-top: 3px;
+    padding-left: 5px;
+    float: right;
+    color:#991f00 ;
+}
+
+.brand-text::after {
+    content: "Wifi Pineapple | Halflife";
     padding-top: 3px;
     padding-left: 5px;
     float: right;

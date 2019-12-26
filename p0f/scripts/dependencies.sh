@@ -1,9 +1,6 @@
 #!/bin/sh
 #2015 - Whistle Master
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sd/lib:/sd/usr/lib
-export PATH=$PATH:/sd/usr/bin:/sd/usr/sbin
-
 [[ -f /tmp/p0f.progress ]] && {
   exit 0
 }
@@ -32,8 +29,8 @@ if [ "$1" = "install" ]; then
   uci commit p0f.module.installed
 
 elif [ "$1" = "remove" ]; then
-    opkg remove p0f
-    rm -rf /etc/config/p0f
+  opkg remove p0f
+  rm -rf /etc/config/p0f
 fi
 
 rm /tmp/p0f.progress

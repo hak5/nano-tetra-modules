@@ -1,9 +1,6 @@
 #!/bin/sh
 #2015 - Whistle Master
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sd/lib:/sd/usr/lib
-export PATH=$PATH:/sd/usr/bin:/sd/usr/sbin
-
 MYTIME=`date +%s`
 MYINTERFACE=`uci get responder.autostart.interface`
 
@@ -14,6 +11,7 @@ NBTNS=`uci get responder.settings.NBTNS`
 FINGERPRINT=`uci get responder.settings.fingerprint`
 WPAD=`uci get responder.settings.wpad`
 FORCEWPADAUTH=`uci get responder.settings.forceWpadAuth`
+PROXYAUTH=`uci get responder.settings.proxyAuth`
 FORCELMDOWNGRADE=`uci get responder.settings.forceLmDowngrade`
 VERBOSE=`uci get responder.settings.verbose`
 ANALYSE=`uci get responder.settings.analyse`
@@ -33,6 +31,7 @@ if [ "$NBTNS" -ne 0 ]; then OPTIONS="${OPTIONS} --NBTNSdomain"; fi
 if [ "$FINGERPRINT" -ne 0 ]; then OPTIONS="${OPTIONS} --fingerprint"; fi
 if [ "$WPAD" -ne 0 ]; then OPTIONS="${OPTIONS} --wpad"; fi
 if [ "$FORCEWPADAUTH" -ne 0 ]; then OPTIONS="${OPTIONS} --ForceWpadAuth"; fi
+if [ "$PROXYAUTH" -ne 0 ]; then OPTIONS="${OPTIONS} --ProxyAuth"; fi
 if [ "$FORCELMDOWNGRADE" -ne 0 ]; then OPTIONS="${OPTIONS} --lm"; fi
 if [ "$VERBOSE" -ne 0 ]; then OPTIONS="${OPTIONS} --verbose"; fi
 if [ "$ANALYSE" -ne 0 ]; then OPTIONS="${OPTIONS} --analyze"; fi
