@@ -32,4 +32,4 @@ fi
 shift
 done;
 
-openssl rsa -in $KEYDIR$KEY -passin pass: | awk 'NR==0;'
+openssl rsa -in $KEYDIR$KEY -passin pass:_ | awk 'NR==0;'

@@ -3,8 +3,9 @@ Displays the keys currently being used by nginx on your Pineapple. These values 
 <br /><br />
 
 <strong>Dependencies</strong><br />
-The only dependencies for Papers are zip and unzip which are downloaded via opkg. They are used to pack, and unpack, certificate archives for download/upload.
-<br /><br />
+The only dependencies for Papers are zip and unzip which are downloaded via opkg. They are used to pack, and unpack, certificate archives for download/upload.<br />
+<p style="color: red">Since nginx is replaced with nginx-ssl in the installation process you may need to refresh your browser after installation if the button doesn't change to 'Uninstall'</p>
+<p style="color: red">In order to uninstall dependencies you must first remove the SSL certificates from your Pineapple.</p>
 
 <strong>Remove SSL</strong><br />
 This reverts the Pineapple back to its original web configuration and removes all traces of SSL from the nginx config.  This does not affect the certificate store or any configuration in the Papers module.

@@ -41,6 +41,7 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 	$scope.viewCert					= '';
 	$scope.selectedCert				= '';
 	$scope.loadingCert				= false;
+	$scope.certsInstalled			= true;
 
 	$scope.checkDepends = (function(){
 		$api.request({
@@ -61,10 +62,10 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 			module: 'Papers',
 			action: 'installDepends'
 		},function(response){
-			$scope.checkDepends();
 			if (response.success === false) {
 				alert("Failed to install dependencies.  Make sure you are connected to the internet.");
 			}
+			$scope.checkDepends();
 			$scope.dependsProcessing = false;
 		});
 	});
@@ -410,8 +411,10 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 			action: 'getNginxSSLCerts'
 		},function(response){
 			if (response.success === true) {
+				$scope.certsInstalled = true;
 				$scope.SSLStatus = response.data;
 			} else {
+				$scope.certsInstalled = false;
 				$scope.SSLStatus = response.message;
 			}
 		});
@@ -469,8 +472,8 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 		$scope.getLogs();
 		$scope.getChangeLogs();
 		$scope.clearDownloadArchive();
-	        $scope.getNginxSSLCerts();
-	        $scope.loadCertificates();
+	    $scope.getNginxSSLCerts();
+	    $scope.loadCertificates();
 	});
 	
 	// Upload functions
