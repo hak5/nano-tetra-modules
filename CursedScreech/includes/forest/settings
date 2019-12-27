@@ -1,8 +1,8 @@
 kuro_key=
 target_key=
 client_serial=File does not exist
-iface_name=br-lan
-iface_ip=172.16.42.1
+iface_name=wlan2
+iface_ip=192.168.0.138
 mcast_group=231.253.78.29
 mcast_port=19578
 target_list=/pineapple/modules/CursedScreech/includes/forest/targets.log

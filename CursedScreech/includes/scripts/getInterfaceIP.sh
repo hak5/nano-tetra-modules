@@ -6,4 +6,4 @@ if [ $# -lt 1 ]; then
 fi
 
 
-ifconfig $1 | grep inet | awk '{split($2,a,":"); print a[2]}'
+ifconfig $1 | grep inet | awk '{split($2,a,":"); print a[2]}' | tr -d '\n'

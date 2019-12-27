@@ -313,7 +313,7 @@ class CursedScreech extends Module {
 		$data = array();
 		exec("pgrep -lf " . $procName, $data);
 		$output = explode(" ", $data[0]);
-		if (strpos($output[2], $procName) !== False) {
+		if (strpos($output[1], "python") !== False) {
 			return $output[0];
 		}
 		return false;
