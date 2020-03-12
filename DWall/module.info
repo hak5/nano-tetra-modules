@@ -1,10 +1,10 @@
 {
     "author": "Sebkinne",
-    "description": "Display's HTTP URLs, Cookies, POST DATA, and images from browsing clients.",
+    "description": "Display's Plaintext HTTP URLs, Cookies, POST DATA, and images from browsing clients.",
     "devices": [
         "nano",
         "tetra"
     ],
     "title": "DWall",
-    "version": "1.3"
+    "version": "1.4"
 }
