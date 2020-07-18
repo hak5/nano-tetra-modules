@@ -281,8 +281,8 @@ class Papers extends Module
 			// Execute encryptRSAKeys.sh with the parameters and check for errors
 			$retData = array();
 			exec("echo " . escapeshellcmd($params['pkey_pass']) . " | " . __SCRIPTS__ . "encryptRSAKeys.sh {$argString}", $retData);
-			$res = implode("\n", $retData);
-			if ($res != "Complete") {
+			if (end($retData) != "Complete") {
+        $res = implode("\n", $retData);
 				$this->logError("Certificate Encryption Error", "The public and private keys were generated successfully but encryption failed with the following error:\n\n" . $res);
 				$this->respond(false, "Build finished with errors.  Check the logs for details.");
 				return;

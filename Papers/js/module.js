@@ -158,6 +158,12 @@ registerController('PapersController', ['$api', '$scope', '$sce', '$http', funct
 			}
 			if ($scope.certExportPKCS12 === true) {
         params['container'] = "pkcs12";
+        params['algo'] = $scope.certEncryptAlgo;
+				if (!$scope.certEncryptPassword) {
+					alert("You must set a password for the private key!");
+					return;
+				}
+				params['pkey_pass'] = $scope.certEncryptPassword;
 			}
 		
 			$scope.showBuildThrobber = true;
