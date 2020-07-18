@@ -83,7 +83,10 @@ class Papers extends Module
 				break;
 			case 'loadCertProps':
 				$this->loadCertificateProperties($this->request->certName);
-				break;
+        break;
+      case 'loadSSHKeys':
+        $this->loadSSHKeys($this->request->keyName);
+        break;
 			case 'downloadKeys':
 				$this->downloadKeys($this->request->parameters->name, $this->request->parameters->type);
 				break;
@@ -255,28 +258,19 @@ class Papers extends Module
 			$cryptInfo = array();
 			$argString = "";
 
-			$cryptInfo['-k'] = $keyName;			
+      $cryptInfo['-k'] = "{$keyName}.key";
+      $cryptInfo['-a'] = $params['algo'];
 
 			// Check if the certificate should be encrypted
 			if (array_key_exists('encrypt', $params)) {
 				$argString = "--encrypt ";
-	
-				$cryptInfo['-a'] = (array_key_exists('algo', $params)) ? $params['algo'] : False;
-				$cryptInfo['-p'] = (array_key_exists('pkey_pass', $params)) ? $params['pkey_pass'] : False;
-	
-				if (!$cryptInfo['-a'] || !$cryptInfo['-p']) {
-					$this->logError("Build Certificate Error", "The public and private keys were generated successfully but an algorithm or password were not supplied for encryption.  The certs can still be found in your SSL store.");
-					$this->respond(false, "Build finished with errors.  Check the logs for details.");
-					return;
-				}
 			}
 			// Check if the certificates should be placed into an encrypted container
 			if (array_key_exists('container', $params)) {
+        $cryptInfo['--pubkey'] = "{$keyName}.cer";
 				$cryptInfo['-c'] = (array_key_exists('container', $params)) ? $params['container'] : False;
-				$cryptInfo['-calgo'] = (array_key_exists('c_algo', $params)) ? $params['c_algo'] : False;
-				$cryptInfo['-cpass'] = (array_key_exists('c_pass', $params)) ? $params['c_pass'] : False;
 			}
-				
+			
 			// Build an argument string with all available arguments
 			foreach ($cryptInfo as $k => $v) {
 				if (!$v) {continue;}
@@ -284,9 +278,9 @@ class Papers extends Module
 			}
 			$argString = rtrim($argString);
 
-			// Execute encryptKeys.sh with the parameters and check for errors
+			// Execute encryptRSAKeys.sh with the parameters and check for errors
 			$retData = array();
-			exec(__SCRIPTS__ . "encryptKeys.sh " . $argString, $retData);
+			exec("echo " . escapeshellcmd($params['pkey_pass']) . " | " . __SCRIPTS__ . "encryptRSAKeys.sh {$argString}", $retData);
 			$res = implode("\n", $retData);
 			if ($res != "Complete") {
 				$this->logError("Certificate Encryption Error", "The public and private keys were generated successfully but encryption failed with the following error:\n\n" . $res);
@@ -298,16 +292,16 @@ class Papers extends Module
 	}
 	
 	private function encryptKey($keyName, $keyType, $algo, $pass) {
-		$retData = array();
-		$argString = "encryptKeys.sh --encrypt -k " . $keyName . " -a " . $algo . " -p " . $pass;
-		
+    $retData = array();
+    $cmdString = "encryptRSAKeys.sh --encrypt -k {$keyName}.key -a {$algo}";
+
 		if ($keyType == "SSH") {
-			$argString .= " --ssh";
-		}
+      $cmdString = "encryptSSHKey.sh -k {$keyName}.key";
+    }
 		
-		exec(__SCRIPTS__ . $argString, $retData);
-		$res = implode("\n", $retData);
-		if ($res != "Complete") {
+		exec("echo " . escapeshellcmd($pass) . " | " . __SCRIPTS__ . $cmdString, $retData);
+		if (end($retData) != "Complete") {
+      $res = implode("\n", $retData);
 			$this->logError("Key Encryption Error", "The following error occurred:\n\n" . $res);
 			return false;
 		}
@@ -315,16 +309,16 @@ class Papers extends Module
 	}
 	
 	private function decryptKey($keyName, $keyType, $pass) {
-		$retData = array();
-		$argString = "decryptKeys.sh -k " . $keyName . " -p " . $pass;
+    $retData = array();
+    $cmdString = "decryptRSAKeys.sh -k {$keyName}.key";
+
+    if ($keyType == "SSH") {
+      $cmdString = "decryptSSHKey.sh -k {$keyName}.key";
+    }
 		
-		if ($keyType == "SSH") {
-			$argString .= " --ssh";
-		}
-		
-		exec(__SCRIPTS__ . $argString, $retData);
-		$res = implode("\n", $retData);
-		if ($res != "Complete") {
+		exec("echo " . escapeshellcmd($pass) . " | " . __SCRIPTS__ . $cmdString, $retData);
+		if (end($retData) != "Complete") {
+      $res = implode("\n", $retData);
 			$this->logError("Key Decryption Error", "The following error occurred:\n\n" . $res);
 			return false;
 		}
@@ -374,7 +368,7 @@ class Papers extends Module
 		$retData = array();
 		$res = [];
 		
-		exec(__SCRIPTS__ . "getCertInfo.sh -k " . $cert, $retData);
+		exec(__SCRIPTS__ . "getCertInfo.sh -k {$cert}.cer", $retData);
 		if (count($retData) == 0) {
 			$this->respond(false);
 			return false;
@@ -386,12 +380,23 @@ class Papers extends Module
 			$key = $parts[0];
 			$val = $parts[1];
 			$res[$key] = $val;
-		}
+    }
+    
+    $res['privkey'] = file_get_contents(__SSLSTORE__ . "{$cert}.key");
+    $res['certificate'] = file_get_contents(__SSLSTORE__ . "{$cert}.cer");
 		
 		// Return success and the contents of the tmp file
 		$this->respond(true, null, $res);
 		return true;
-	}
+  }
+  
+  private function loadSSHKeys($name) {
+    $this->respond(true, null, array(
+      "privkey" => file_get_contents(__SSHSTORE__ . "{$name}.key"),
+      "pubkey" => file_get_contents(__SSHSTORE__ . "{$name}.pub"))
+    );
+    return true;
+  }
 	
 	private function getKeys($dir) {
 		$keyType = ($dir == __SSLSTORE__) ? "TLS/SSL" : "SSH";
@@ -436,12 +441,13 @@ class Papers extends Module
 
 	private function keyIsEncrypted($keyName, $keyType) {
 		$data = array();
-		$keyDir = ($keyType == "SSH") ? __SSHSTORE__ : __SSLSTORE__;
-		exec(__SCRIPTS__ . "testEncrypt.sh -k " . $keyName . " -d " . $keyDir . " 2>&1", $data);
-		if ($data[0] == "writing RSA key") {
-			return false;
-		} else if ($data[0] == "unable to load Private Key") {
+    $keyDir = ($keyType == "SSH") ? __SSHSTORE__ : __SSLSTORE__;
+    $type = ($keyType == "SSH") ? "SSH" : "RSA";
+		exec(__SCRIPTS__ . "isEncrypted.sh -k {$keyName}.key -d {$keyDir} -t {$type} 2>&1", $data);
+		if ($data[0] == "true") {
 			return true;
+		} else if ($data[0] == "false") {
+			return false;
 		}
 	}
 

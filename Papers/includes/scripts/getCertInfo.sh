@@ -4,14 +4,14 @@
 #  Date:   Dec 2018
 
 # Location of SSL keys
-ssl_store="/pineapple/modules/Papers/includes/ssl/";
+SSL_STORE="/pineapple/modules/Papers/includes/ssl/";
 
 help() {
 	echo "Get certificate properties via OpenSSL";
 	echo "Usage: ./getCertInfo.sh <opts>";
 	echo '';
 	echo 'NOTE:';
-	echo "Current SSL store is at $ssl_store";
+	echo "Current SSL store is at $SSL_STORE";
 	echo '';
 	echo 'Parameters:';
 	echo '';
@@ -28,7 +28,7 @@ while [ "$#" -gt 0 ]
 do
 
 if [[ "$1" == "-k" ]]; then
-	KEY="$ssl_store$2.cer";
+	KEY="$SSL_STORE/$2";
 fi
 
 shift
