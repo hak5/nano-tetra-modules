@@ -542,7 +542,7 @@ class Papers extends Module
 
 	private function checkSSLConfig() {
 		$retData = array();
-		exec(__SCRIPTS__ . "readKeys.sh", $retData);
+		exec(__SCRIPTS__ . "cfgNginx.py --getSSLCerts", $retData);
 		return implode(" ", $retData);
 	}
 
