@@ -19,6 +19,7 @@ fi
 if [[ "$1" == "-install" ]]; then
 	opkg update > /dev/null;
 	opkg install curl > /dev/null;
+	opkg install libcurl4 > /dev/null;
 	echo "Complete"
 fi
 

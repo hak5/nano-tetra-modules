@@ -1,0 +1,5 @@
+July 17, 2020<br /></br >
+- Fixed SSH key encryption to work with new OpenSSH format.<br />
+- Added raw key contents to key view modal for easy copy/paste.<br />
+- Merged encryption passphrase section with PKCS#12 export. The same password is used for both operations.<br />
+- Added coreutils-base64 dependency to help determine if an SSH key is encrypted.

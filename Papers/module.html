@@ -4,6 +4,10 @@
 	text-align: left;
 	font-weight: normal;
 }
+
+textarea {
+  width: 100%;
+}
 </style>
 
 <script>
@@ -67,7 +71,7 @@ $(document).on('mouseenter', '.papers_hoverDanger', function() {
 						<div>
 							<strong>Dependencies</strong><br />
 							<button type="button" class="btn btn-success" ng-show="!dependsInstalled" ng-disabled="dependsProcessing" ng-hide="dependsInstalled" ng-click="installDepends();"><img src="/modules/Papers/includes/icons/glyphicons-182-download-alt.png"/>&nbsp;&nbsp;Install</button>
-							<button type="button" class="btn papers_hoverDanger" ng-show="dependsInstalled" ng-disabled="dependsProcessing" ng-hide="!dependsInstalled" ng-click="removeDepends();"><img src="/modules/Papers/includes/icons/glyphicons-198-remove-circle.png"/>&nbsp;&nbsp;Uninstall</button>
+							<button type="button" class="btn papers_hoverDanger" ng-show="dependsInstalled" ng-disabled="dependsProcessing || certsInstalled" ng-hide="!dependsInstalled" ng-click="removeDepends();"><img src="/modules/Papers/includes/icons/glyphicons-198-remove-circle.png"/>&nbsp;&nbsp;Uninstall</button>
 							<img ng-show="dependsProcessing" ng-hide="!dependsProcessing" src='/img/throbber.gif'/>
 						</div><br />
 					</div>
@@ -90,7 +94,7 @@ $(document).on('mouseenter', '.papers_hoverDanger', function() {
 			</div>
 			
 			<div style="margin-top: 10px; margin-left: 10px">
-				<button type="button" class="btn papers_hoverInfo" data-toggle="modal" data-target="#papers_uploaderView"><img src="/modules/Papers/includes/icons/glyphicons-202-upload.png"/>&nbsp;&nbsp;Upload Keys</button>
+				<button type="button" class="btn papers_hoverInfo" ng-disabled="!dependsInstalled" data-toggle="modal" data-target="#papers_uploaderView"><img src="/modules/Papers/includes/icons/glyphicons-202-upload.png"/>&nbsp;&nbsp;Upload Keys</button>
 			</div>
 			
 			<div class="table-responsive table-dropdown">
@@ -112,7 +116,7 @@ $(document).on('mouseenter', '.papers_hoverDanger', function() {
 							<td>{{ data.Encrypted }}</td>
 							<td>
 								<button type="button" class="btn btn-sm papers_hoverDanger" ng-show="data.Authorized==true" ng-click="revokeSSHKey(data.Name);"><img src="/modules/Papers/includes/icons/glyphicons-205-unlock.png"/></button>
-								<button type="button" class="btn btn-sm papers_hoverSuccess" ng-disabled="data.Encrypted == 'Yes' && data.KeyType == 'TLS/SSL'" ng-show="data.Authorized==false" ng-click="securePineapple(data.Name, data.KeyType);"><img src="/modules/Papers/includes/icons/glyphicons-204-lock.png"/></button>
+								<button type="button" class="btn btn-sm papers_hoverSuccess" ng-disabled="(data.Encrypted == 'Yes' || !dependsInstalled) && data.KeyType == 'TLS/SSL'" ng-show="data.Authorized==false" ng-click="securePineapple(data.Name, data.KeyType);"><img src="/modules/Papers/includes/icons/glyphicons-204-lock.png"/></button>
 								
 								<!-- Encrypt button -->
 								<button type="button" class="btn btn-sm papers_hoverSuccess" data-toggle="modal" data-target="#encryptModal" ng-show="data.Encrypted == 'No'" ng-click="selectKey(data.Name, data.KeyType);"><img src="/modules/Papers/includes/icons/glyphicons-45-keys.png"/></button>
@@ -120,7 +124,8 @@ $(document).on('mouseenter', '.papers_hoverDanger', function() {
 								<!-- Decrypt button -->
 								<button type="button" class="btn btn-sm btn-success papers_hoverDanger" data-toggle="modal" data-target="#decryptModal" ng-show="data.Encrypted == 'Yes'" ng-click="selectKey(data.Name, data.KeyType);"><img src="/modules/Papers/includes/icons/glyphicons-45-keys.png"/></button>
 								
-								<button type="button" class="btn btn-sm papers_hoverInfo" ng-disabled="data.KeyType == 'SSH'" data-toggle="modal" data-target="#viewCert" ng-click="loadCertProps(data.Name);"><img src="/modules/Papers/includes/icons/glyphicons-28-search.png"/></button>
+                <button type="button" class="btn btn-sm papers_hoverInfo" ng-show="data.KeyType == 'TLS/SSL'" data-toggle="modal" data-target="#viewCert" ng-click="loadCertProps(data.Name);"><img src="/modules/Papers/includes/icons/glyphicons-28-search.png"/></button>
+                <button type="button" class="btn btn-sm papers_hoverInfo" ng-show="data.KeyType == 'SSH'" data-toggle="modal" data-target="#viewSSHKeys" ng-click="loadSSHKeys(data.Name);"><img src="/modules/Papers/includes/icons/glyphicons-28-search.png"/></button>
 								<button type="button" class="btn btn-sm papers_hoverInfo" ng-click="downloadKeys(data.Name, data.KeyType);"><img src="/modules/Papers/includes/icons/glyphicons-201-download.png"/></button>
 								<button type="button" class="btn btn-sm papers_hoverDanger" ng-click="deleteKeys(data.Name, data.KeyType);"><img src="/modules/Papers/includes/icons/glyphicons-17-bin.png"/></button>
 							</td>
@@ -136,7 +141,7 @@ $(document).on('mouseenter', '.papers_hoverDanger', function() {
 			<div class="panel-heading pointer" data-toggle="collapse" data-target="#papers_certBuilder">
 				<table style="width: 100%">
 					<tr><td align="left">
-						<h3 class="panel-title">Build Certificates</h3>
+						<h3 class="panel-title">Build</h3>
 					</td><td align="right">
 						<span class="panel-title">
 							<img ng-show="showBuildThrobber" ng-hide="!showBuildThrobber" src='/img/throbber.gif'/>
@@ -272,8 +277,13 @@ $(document).on('mouseenter', '.papers_hoverDanger', function() {
 					<div class="col-md-8">
 						<label>Encrypt Private Key? <input type="checkbox" ng-model="certEncryptKeysBool"></label>
 					</div>
+        </div>
+        <div class="form-group" ng-show="certKeyType=='tls_ssl'" ng-hide="certKeyType=='ssh'">
+					<div class="col-md-8">
+						<label>Export keys to PKCS#12 container? <input type="checkbox" ng-model="certExportPKCS12"></label>
+					</div>
 				</div>
-				<div class="panel-body" ng-show="certEncryptKeysBool" ng-hide="!certEncryptKeysBool">
+				<div class="panel-body" ng-show="certEncryptKeysBool || certExportPKCS12" ng-hide="!certEncryptKeysBool && !certExportPKCS12">
 					<div class="form-group" ng-show="certKeyType=='tls_ssl'" ng-hide="certKeyType=='ssh'">
 						<label class="col-md-2 control-label">Algorithm</label>
 						<div class="col-md-8">
@@ -294,31 +304,6 @@ $(document).on('mouseenter', '.papers_hoverDanger', function() {
 					</div>
 				</div>
 				<hr />
-				<div class="form-group" ng-show="certKeyType=='tls_ssl'" ng-hide="certKeyType=='ssh'">
-					<div class="col-md-8">
-						<label>Export keys to PKCS#12 container? <input type="checkbox" ng-model="certExportPKCS12"></label>
-					</div>
-				</div>
-				<div class="panel-body" ng-show="certExportPKCS12" ng-hide="!certExportPKCS12">
-					<div class="form-group">
-						<label class="col-md-2 control-label">Container Algorithm</label>
-						<div class="col-md-8">
-							<select class="form-control" style="width:auto" name="containerAlgo" ng-model="certEncryptPKCS12Algo">
-								<option value="aes128">AES 128</option>
-								<option value="aes192">AES 192</option>
-								<option value="aes256">AES 256</option>
-								<option value="des">DES</option>
-								<option value="des3">3DES</option>
-							</select>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-md-2 control-label">Container Password</label>
-						<div class="col-md-6">
-							<input type="password" class="form-control" ng-model="certContainerPassword">
-						</div>
-					</div>
-				</div>
 				</form>
 				<button type="button" class="btn papers_hoverInfo" ng-click="clearForm();"><img src="/modules/Papers/includes/icons/glyphicons-198-remove-circle.png"/>&nbsp;&nbsp;Clear Form</button>
 			</div>
@@ -374,8 +359,38 @@ $(document).on('mouseenter', '.papers_hoverDanger', function() {
 							</tr>
 							
 						</tbody>
-					</table>
-					
+          </table>
+          
+          <div ng-show="!loadingCert">
+            <h3>SSL Private Key</h3>
+            <textarea rows="20" ng-bind-html="sslPrivKey" readonly></textarea>
+
+            <h3>SSL Certificate</h3>
+            <textarea rows="20" ng-bind-html="sslCert" readonly></textarea>
+          </div>
+        </div>
+        
+			</div>
+		</div>
+  </div>
+  
+  <div id="viewSSHKeys" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h3>SSH Keys: {{ selectedSSHKeys }}</h3>
+				</div>
+				<div class="modal-body">
+          <img ng-show="loadingSSHKeys" ng-hide="!loadingCert" src='/img/throbber.gif'/>
+
+          <div ng-show="!loadingSSHKeys">
+            <h3>SSH Private Key</h3>
+            <textarea rows="20" ng-bind-html="sshPrivKey" readonly></textarea>
+
+            <h3>SSH Public Key</h3>
+            <textarea rows="10" ng-bind-html="sshPubKey" readonly></textarea>
+          </div>
 				</div>
 			</div>
 		</div>
@@ -403,10 +418,12 @@ $(document).on('mouseenter', '.papers_hoverDanger', function() {
 					<h3>Key Encryption : {{ selectedKey }}</h3>
 				</div>
 				<div class="modal-body">
-					
 					<div class="form-horizontal">
 						<div class="form-group">
-							<label class="col-md-3 control-label">Algorithm</label>
+              <div class="col-md-12">
+                *Algorithm is ignored for SSH keys.
+              </div>
+              <label class="col-md-3 control-label">Algorithm</label>
 							<div class="col-md-9">
 								<select class="form-control" style="width:auto" name="algo" ng-model="certEncryptAlgo">
 									<option value="aes128">AES 128</option>
@@ -415,8 +432,8 @@ $(document).on('mouseenter', '.papers_hoverDanger', function() {
 									<option value="des">DES</option>
 									<option value="des3">3DES</option>
 								</select>
-							</div>
-						</div>
+              </div>
+            </div>
 						<div class="form-group">
 							<label class="col-md-3 control-label">Key Password</label>
 							<div class="col-md-9">

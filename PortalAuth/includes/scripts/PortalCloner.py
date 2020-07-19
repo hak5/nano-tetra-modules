@@ -318,6 +318,6 @@ class PortalCloner:
 				epFile.write("{\"name\":\"" + self.portalName + "\",\"type\":\"basic\"}")
 			
 		# Copy jquery to the portal directory
-		shutil.copy(self.basePath + 'includes/scripts/jquery-2.2.1.min.js', self.portalDirectory)
+		shutil.copy(self.basePath + 'includes/scripts/jquery-3.4.1.min.js', self.portalDirectory)
 		
 		

@@ -1,8 +1,8 @@
 #!/bin/sh
 
 #  Author: sud0nick & adde88
-#  Date:   18.10.2019
+#  Date:   July 17, 2020
 
-/etc/init.d/nginx stop > /dev/null;
-opkg remove zip unzip nginx-ssl > /dev/null;
+opkg update > /dev/null;
+opkg remove zip unzip coreutils-base64 nginx-ssl > /dev/null;
 opkg install nginx > /dev/null;

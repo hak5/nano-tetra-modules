@@ -1,0 +1,5 @@
+Dec 26, 2019
+<br /><br />
+ - Fixed libcurl4 dependency issue<br />
+ - Fixed tinycss issue (again?)<br />
+ - Updated jQuery to 3.4.1 for injection sets<br />
