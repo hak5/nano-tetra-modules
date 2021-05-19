@@ -104,7 +104,7 @@ class PMKIDAttack extends Module
             touch($this->logPath);
         }
 
-        $this->response = array("pmkidlog" => file_get_contents($this->logPath));
+        $this->response = array("moduleLog" => file_get_contents($this->logPath));
     }
 
     protected function addLog($massage)
@@ -225,7 +225,7 @@ class PMKIDAttack extends Module
 
         $this->response = array(
             "success" => $status,
-            "output" => file_get_contents("/tmp/pmkid-output.txt"),
+            "pmkidLog" => file_get_contents("/tmp/pmkid-output.txt"),
         );
     }
 
@@ -291,6 +291,8 @@ class PMKIDAttack extends Module
     {
         $file = $this->request->file;
         exec("rm {$this->captureFolder}/{$file}.pcapng {$this->captureFolder}/{$file}.data");
+
+        $this->response = array("success" => true);
     }
 
     protected function viewAttackLog()
@@ -298,13 +300,13 @@ class PMKIDAttack extends Module
         $file = $this->request->file;
         if (!empty($file)) {
             exec("{$this->hcxpcaptoolPath} -o /tmp/pmkid-handshake.tmp {$this->captureFolder}/{$file}.pcapng &> /tmp/pmkid-old-output.txt");
-            $output = file_get_contents("/tmp/pmkid-old-output.txt");
+            $pmkidLog = file_get_contents("/tmp/pmkid-old-output.txt");
             exec("rm /tmp/pmkid-old-output.txt");
         } else {
-            $output = file_get_contents("/tmp/pmkid-output.txt");
+            $pmkidLog = file_get_contents("/tmp/pmkid-output.txt");
         }
 
-        $this->response = array("output" => $output);
+        $this->response = array("pmkidLog" => $pmkidLog);
     }
 
     protected function getStatusAttack()

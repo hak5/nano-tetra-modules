@@ -402,8 +402,9 @@ registerController('PMKIDAttack_ScanSettings', ['$api', '$scope', '$rootScope', 
 registerController('PMKIDAttack_ScanResults', ['$api', '$scope', '$interval', '$rootScope', function ($api, $scope, $interval, $rootScope) {
     $rootScope.ssid = '';
     $rootScope.bssid = '';
-    $rootScope.output = '';
+    $rootScope.pmkidLog = '';
     $rootScope.pmkids = [];
+    $rootScope.pmkidsLoading = false;
     $scope.reverseSort = false;
     $scope.orderByName = 'ssid';
 
@@ -463,15 +464,13 @@ registerController('PMKIDAttack_ScanResults', ['$api', '$scope', '$interval', '$
     };
 
     $rootScope.viewAttackLog = function (file = '') {
-        $rootScope.output = '';
+        $rootScope.pmkidLog = '';
         $api.request({
             action: 'viewAttackLog',
             module: 'PMKIDAttack',
             file: file
         }, function (response) {
-            if (response.output) {
-                $rootScope.output = response.output;
-            }
+            $rootScope.pmkidLog = response.pmkidLog;
         });
     };
 
@@ -480,7 +479,7 @@ registerController('PMKIDAttack_ScanResults', ['$api', '$scope', '$interval', '$
             action: 'catchPMKID',
             module: 'PMKIDAttack'
         }, function (response) {
-            $rootScope.output = response.output;
+            $rootScope.pmkidLog = response.pmkidLog;
             if (response.success) {
                 $rootScope.captureRunning = false;
             }
@@ -488,11 +487,15 @@ registerController('PMKIDAttack_ScanResults', ['$api', '$scope', '$interval', '$
     };
 
     $rootScope.getPMKIDFiles = function () {
+        $rootScope.pmkids = [];
+        $rootScope.pmkidsLoading = true;
+
         $api.request({
             action: 'getPMKIDFiles',
             module: 'PMKIDAttack',
         }, function (response) {
             $rootScope.pmkids = response.pmkids;
+            $rootScope.pmkidsLoading = false;
         });
     };
 
@@ -525,14 +528,19 @@ registerController('PMKIDAttack_ScanResults', ['$api', '$scope', '$interval', '$
 }]);
 
 registerController('PMKIDAttack_Log', ['$api', '$scope', '$rootScope', '$interval', function ($api, $scope, $rootScope, $interval) {
-    $scope.pmkidlog = '';
+    $scope.moduleLog = '';
+    $scope.moduleLogLading = false;
 
     $scope.refreshLog = function () {
+        $scope.moduleLog = '';
+        $scope.moduleLogLading = true;
+
         $api.request({
             module: "PMKIDAttack",
             action: "getLog"
         }, function (response) {
-            $scope.pmkidlog = response.pmkidlog;
+            $scope.moduleLog = response.moduleLog;
+            $scope.moduleLogLading = false;
         })
     };
 
@@ -541,7 +549,7 @@ registerController('PMKIDAttack_Log', ['$api', '$scope', '$rootScope', '$interva
             module: "PMKIDAttack",
             action: "clearLog"
         }, function (response) {
-            $scope.pmkidlog = '';
+            $scope.moduleLog = '';
         })
     };
 }]);
