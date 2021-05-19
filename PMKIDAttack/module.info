@@ -1,6 +1,6 @@
 {
     "author": "DSR!",
-    "description": "The module automates PMKID attack",
+    "description": "Complete automate PMKID attack",
     "devices": [
         "nano",
         "tetra"
