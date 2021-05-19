@@ -1,0 +1,10 @@
+{
+    "author": "DSR!",
+    "description": "The module automates PMKID attack",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "PMKIDAttack",
+    "version": "2.0"
+}

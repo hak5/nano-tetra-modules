@@ -1,0 +1,295 @@
+<!-- Controls -->
+<div class="row">
+    <div class="col-md-4" ng-controller="PMKIDAttack_Dependencies">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Controls</h3>
+            </div>
+            <div class="panel-body">
+                <table style="width:100%">
+                    <tr>
+                        <td style="padding-bottom: .5em;" class="text-muted">Dependencies</td>
+                        <td style="text-align:right;padding-bottom: .5em;">
+                            <button type="button" style="width: 90px;" class="btn btn-{{installLabel}} btn-xs"
+                                    ng-click="managerDependencies()"
+                                    ng-disabled="processing">
+                                {{ install }}
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="$root.installedDependencies">
+    <div class="col-md-6" ng-controller="PMKIDAttack_ScanSettings">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Captured WPA PMKID
+                    <span ng-show="pmkids.length" class="badge">{{ pmkids.length }}</span>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive" ng-show="pmkids.length !== 0">
+                    <table class="table">
+                        <thead>
+                        <tr class="default-cursor">
+                            <th style="width: 100%;">Name</th>
+                            <th>Log</th>
+                            <th>Download</th>
+                            <th>Delete</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="pmkid in pmkids">
+                            <td>{{ pmkid.name }}</td>
+                            <td>
+                                <button data-target="#viewLog" data-toggle="modal" class="btn btn-default btn-xs"
+                                        ng-click="$root.viewLogButton(pmkid.path)">
+                                    View Log
+                                </button>
+                            </td>
+                            <td>
+                                <button class="btn btn-default btn-xs" ng-click="$root.downloadPMKID(pmkid.path)">
+                                    Download
+                                </button>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger btn-xs" ng-click="$root.deletePMKID(pmkid.path)">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div ng-if="pmkids.length === 0">
+                    No PMKID results.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6" ng-controller="PMKIDAttack_ScanSettings">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Scan Settings
+                    <span class="label label-warning" ng-show="captureRunning">Running Attack on {{ $root.bssid }}</span>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="input-group">
+                            <div ng-show="device == 'tetra'">
+                                <label class="radio-inline"><input type="radio" ng-model="scanType" value="0"
+                                                                   ng-disabled="running">2.4GHz</label>
+                                <label class="radio-inline"><input type="radio" ng-model="scanType" value="1"
+                                                                   ng-disabled="running">5GHz</label>
+                                <label class="radio-inline"><input type="radio" ng-model="scanType" value="2"
+                                                                   ng-disabled="running">Both</label>
+                            </div>
+                            <label class="checkbox-inline"><input type="checkbox" ng-model="scanSettings.live"
+                                                                  ng-disabled="running || scanSettings.scanDuration === '0'"
+                                                                  ng-change="updateScanSettings()">Live</label>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row form-inline">
+                        <select class="fixed-width-200 form-control" ng-model="scanSettings.scanDuration"
+                                ng-change="updateScanSettings()" ng-disabled="running">
+                            <option value="0">Continuous</option>
+                            <option value="30">30 Seconds</option>
+                            <option value="60">1 Minute</option>
+                            <option value="120">2 Minutes</option>
+                            <option value="300">5 Minutes</option>
+                            <option value="600">10 Minutes</option>
+                        </select>
+                        <br/><br/>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default" ng-click="startScan()"
+                                    ng-disabled="running">
+                                <span ng-show="!running">Start</span>
+                                <img class="button-throbber" ng-show="running" src="img/throbber.gif">
+                            </button>
+                            </button>
+                            <button type="button" class="btn btn-default" ng-click="pauseLiveScan()"
+                                    ng-show="scanSettings.live && running && !paused && !captureRunning"
+                                    ng-disabled="!scanSettings.live && !running">Pause
+                            </button>
+                            <button type="button" class="btn btn-default" ng-click="resumeLiveScan()"
+                                    ng-show="scanSettings.live && running && paused && !captureRunning"
+                                    ng-disabled="!scanSettings.live && !running">Resume
+                            </button>
+                            <button type="button" class="btn btn-default" ng-click="stopAttack()"
+                                    ng-show="captureRunning">Stop Attack
+                            </button>
+                            <button type="button" class="btn btn-default"
+                                    data-toggle="modal" data-target="#viewLog"
+                                    ng-show="captureRunning"
+                                    ng-disabled="$root.output.length === 0">View Log
+                            </button>
+                            <button type="button" class="btn btn-default" ng-click="stopScan()"
+                                    ng-disabled="!running">Stop
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <br/>
+                        <div class="progress" ng-show="running && scanSettings.scanDuration > 0">
+                            <div class="progress-bar progress-bar-striped active" role="progressbar"
+                                 aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100"
+                                 style="width: {{ percent }}%">{{ percent | roundCeil }}%
+                            </div>
+                            <div class="alert well-sm alert-danger" ng-show="error">{{ error }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer" ng-show="!pineAPDRunning">
+                <div class="alert alert-info">
+                    <strong>Notice:</strong> In order to use Recon, PineAP must first be enabled.<br/>
+                    <button class="btn btn-default" ng-click="startPineAP()" ng-disabled="pineAPDStarting">
+                        <span ng-hide="pineAPDStarting">Start PineAP</span>
+                        <img class="button-throbber" ng-show="pineAPDStarting" src="img/throbber.gif">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="$root.installedDependencies">
+    <div class="col-md-12" ng-controller="PMKIDAttack_ScanResults">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Scan Results
+                    <span ng-show="$root.accessPoints.length" class="badge">{{ $root.accessPoints.length }}</span>
+                </h3>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover" ng-hide="($root.accessPoints.length == 0)">
+                    <thead>
+                    <tr class="default-cursor">
+                        <th ng-click="orderByName='ssid'; reverseSort = !reverseSort">SSID <span
+                                ng-show="orderByName=='ssid'"><span class="caret" ng-show="reverseSort"></span><span
+                                class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                        <th ng-click="orderByName='bssid'; reverseSort = !reverseSort">MAC <span
+                                ng-show="orderByName=='bssid'"><span class="caret"
+                                                                     ng-show="reverseSort"></span><span
+                                class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                        <th ng-click="orderByName='encryption'; reverseSort = !reverseSort">Security <span
+                                ng-show="orderByName=='encryption'"><span class="caret"
+                                                                          ng-show="reverseSort"></span><span
+                                class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                        <th ng-click="orderByName='wps'; reverseSort = !reverseSort">WPS <span
+                                ng-show="orderByName=='wps'"><span class="caret" ng-show="reverseSort"></span><span
+                                class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                        <th ng-click="orderByName='channel'; reverseSort = !reverseSort">Channel <span
+                                ng-show="orderByName=='channel'"><span class="caret"
+                                                                       ng-show="reverseSort"></span><span
+                                class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                        <th ng-click="orderByName='power'; reverseSort = !reverseSort">Signal <span
+                                ng-show="orderByName=='power'"><span class="caret"
+                                                                     ng-show="reverseSort"></span><span
+                                class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                        <th ng-click="orderByName='lastSeen'; reverseSort = !reverseSort">Last Seen <span
+                                ng-show="orderByName=='lastSeen'"><span class="caret"
+                                                                        ng-show="reverseSort"></span><span
+                                class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="accessPoint in $root.accessPoints|orderBy:orderByName:reverseSort"
+                        ng-show="accessPoint.encryption != 'Open'">
+                        <td class="autoselect">
+                            <span class="text-info" ng-hide="accessPoint.ssid"><i>Hidden</i></span>
+                            {{ accessPoint.ssid }}
+                        </td>
+                        <td>
+                            <span ng-bind-html="(hasNote(accessPoint.bssid) === true ? accessPoint.bssid.italics() : accessPoint.bssid) | rawHTML"></span>
+                        </td>
+                        <td>
+                            {{ accessPoint.encryption }}
+                        </td>
+                        <td>{{ (accessPoint.wps == 1) ? "Yes" : "No" }}</td>
+                        <td>{{ (accessPoint.channel == 0) ? "Wi-Fi Direct" : accessPoint.channel }}</td>
+                        <td>{{ accessPoint.power }}</td>
+                        <td class="autoselect">{{ accessPoint.lastSeen | timesinceepoch }}</td>
+                        <td>
+                            <button type="button" ng-click="startAttack(accessPoint.bssid)"
+                                    ng-disabled="$root.running || $root.captureRunning"
+                                    class="btn btn-default btn-xs">Attack
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="panel-body" ng-if="($root.accessPoints.length === 0) && !running">
+                No scan results.
+            </div>
+            <div class="panel-body" ng-if="($root.accessPoints.length === 0) && running">
+                <img src="img/throbber.gif">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div id="PMKIDAttack_Log" class="panel panel-default ng-scope" ng-controller="PMKIDAttack_Log">
+            <div class="panel-heading pointer" data-toggle="collapse" data-target="#log">
+                <h3 class="panel-title">
+                    Log
+                    <button class="btn btn-default btn-xs btn-fixed-length pull-right" ng-click="clearLog(); $event.stopPropagation();">
+                        Clear
+                    </button>
+                    <button class="btn btn-default btn-xs btn-fixed-length pull-right" ng-click="refreshLog(); $event.stopPropagation();">
+                        Refresh
+                    </button>
+                </h3>
+            </div>
+            <div id="log" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <p ng-show="pmkidlog === ''">No log entries found yet.</p>
+                    <pre class="scrollable-pre log-pre ng-binding" ng-hide="pmkidlog === ''">{{ pmkidlog }}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="viewLog" tabindex="-1" role="dialog" aria-labelledby="captureModalLabel"
+     style="display: none;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">×</span></button>
+                <h4 class="modal-title ng-binding" id="captureModalLabel">View Log</h4>
+            </div>
+            <div class="modal-body">
+                <pre class="scrollable-pre log-pre ng-binding">{{ $root.output }}</pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    // dirty hack for handle bootstrap events
+    $(function() {
+        $('#PMKIDAttack_Log').on('shown.bs.collapse', function (event) {
+            angular.element(event.currentTarget).scope().refreshLog();
+        });
+    });
+</script>
