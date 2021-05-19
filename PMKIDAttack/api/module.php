@@ -208,13 +208,15 @@ class PMKIDAttack extends Module
 
     protected function catchPMKID()
     {
-        if ($this->checkPMKID()) {
+        $status = $this->checkPMKID();
+        if ($status) {
             $this->addLog("PMKID " . $this->getBSSID() . " intercepted!");
-
-            $this->response = array("success" => true);
-        } else {
-            $this->response = array("success" => false);
         }
+
+        $this->response = array(
+            "success" => $status,
+            "output" => file_get_contents("/tmp/pmkid-output.txt"),
+        );
     }
 
     protected function getFormatBSSID()

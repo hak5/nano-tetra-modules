@@ -424,7 +424,6 @@ registerController('PMKIDAttack_ScanResults', ['$api', '$scope', '$interval', '$
             $rootScope.intervalCheckHash = $interval(function () {
                 if ($rootScope.captureRunning) {
                     $rootScope.catchPMKID();
-                    $rootScope.viewLog();
                 } else {
                     $rootScope.stopAttack();
                 }
@@ -459,6 +458,7 @@ registerController('PMKIDAttack_ScanResults', ['$api', '$scope', '$interval', '$
     };
 
     $rootScope.viewLog = function (pathPMKID = '') {
+        $rootScope.output = '';
         $api.request({
             action: 'getOutput',
             module: 'PMKIDAttack',
@@ -470,16 +470,12 @@ registerController('PMKIDAttack_ScanResults', ['$api', '$scope', '$interval', '$
         });
     };
 
-    $rootScope.viewLogButton = function (pathPMKID = '') {
-        $rootScope.output = 'Loading...';
-        $rootScope.viewLog(pathPMKID);
-    };
-
     $rootScope.catchPMKID = function () {
         $api.request({
             action: 'catchPMKID',
             module: 'PMKIDAttack'
         }, function (response) {
+            $rootScope.output = response.output;
             if (response.success) {
                 $rootScope.captureRunning = false;
             }
