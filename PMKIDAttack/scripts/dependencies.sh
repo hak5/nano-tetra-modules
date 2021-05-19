@@ -68,6 +68,7 @@ if [[ "$1" = "install" ]]; then
     uci add pmkidattack config
     uci set pmkidattack.@config[0].installed=1
     uci set pmkidattack.@config[0].attack=0
+    uci set pmkidattack.@config[0].ssid=''
     uci set pmkidattack.@config[0].bssid=''
     uci commit pmkidattack
 

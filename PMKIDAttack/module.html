@@ -34,7 +34,7 @@
             </div>
             <div class="panel-body">
                 <div class="table-responsive" ng-show="pmkids.length !== 0">
-                    <table class="table">
+                    <table class="table table-hover">
                         <thead>
                         <tr class="default-cursor">
                             <th style="width: 100%;">Name</th>
@@ -47,18 +47,17 @@
                         <tr ng-repeat="pmkid in pmkids">
                             <td>{{ pmkid.name }}</td>
                             <td>
-                                <button data-target="#viewLog" data-toggle="modal" class="btn btn-default btn-xs"
-                                        ng-click="$root.viewLog(pmkid.path)">
+                                <button data-target="#viewLog" data-toggle="modal" class="btn btn-default btn-xs" ng-click="$root.viewAttackLog(pmkid.file)">
                                     View Log
                                 </button>
                             </td>
                             <td>
-                                <button class="btn btn-default btn-xs" ng-click="$root.downloadPMKID(pmkid.path)">
+                                <button class="btn btn-default btn-xs" ng-click="$root.downloadPMKID(pmkid.file)">
                                     Download
                                 </button>
                             </td>
                             <td>
-                                <button class="btn btn-danger btn-xs" ng-click="$root.deletePMKID(pmkid.path)">
+                                <button class="btn btn-danger btn-xs" ng-click="$root.deletePMKID(pmkid.file)">
                                     Delete
                                 </button>
                             </td>
@@ -172,71 +171,73 @@
                     <span ng-show="$root.accessPoints.length" class="badge">{{ $root.accessPoints.length }}</span>
                 </h3>
             </div>
-            <div class="table-responsive">
-                <table class="table table-hover" ng-hide="($root.accessPoints.length == 0)">
-                    <thead>
-                    <tr class="default-cursor">
-                        <th ng-click="orderByName='ssid'; reverseSort = !reverseSort">SSID <span
-                                ng-show="orderByName=='ssid'"><span class="caret" ng-show="reverseSort"></span><span
-                                class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
-                        <th ng-click="orderByName='bssid'; reverseSort = !reverseSort">MAC <span
-                                ng-show="orderByName=='bssid'"><span class="caret"
-                                                                     ng-show="reverseSort"></span><span
-                                class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
-                        <th ng-click="orderByName='encryption'; reverseSort = !reverseSort">Security <span
-                                ng-show="orderByName=='encryption'"><span class="caret"
-                                                                          ng-show="reverseSort"></span><span
-                                class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
-                        <th ng-click="orderByName='wps'; reverseSort = !reverseSort">WPS <span
-                                ng-show="orderByName=='wps'"><span class="caret" ng-show="reverseSort"></span><span
-                                class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
-                        <th ng-click="orderByName='channel'; reverseSort = !reverseSort">Channel <span
-                                ng-show="orderByName=='channel'"><span class="caret"
-                                                                       ng-show="reverseSort"></span><span
-                                class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
-                        <th ng-click="orderByName='power'; reverseSort = !reverseSort">Signal <span
-                                ng-show="orderByName=='power'"><span class="caret"
-                                                                     ng-show="reverseSort"></span><span
-                                class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
-                        <th ng-click="orderByName='lastSeen'; reverseSort = !reverseSort">Last Seen <span
-                                ng-show="orderByName=='lastSeen'"><span class="caret"
-                                                                        ng-show="reverseSort"></span><span
-                                class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr ng-repeat="accessPoint in $root.accessPoints|orderBy:orderByName:reverseSort"
-                        ng-show="accessPoint.encryption != 'Open'">
-                        <td class="autoselect">
-                            <span class="text-info" ng-hide="accessPoint.ssid"><i>Hidden</i></span>
-                            {{ accessPoint.ssid }}
-                        </td>
-                        <td>
-                            <span ng-bind-html="(hasNote(accessPoint.bssid) === true ? accessPoint.bssid.italics() : accessPoint.bssid) | rawHTML"></span>
-                        </td>
-                        <td>
-                            {{ accessPoint.encryption }}
-                        </td>
-                        <td>{{ (accessPoint.wps == 1) ? "Yes" : "No" }}</td>
-                        <td>{{ (accessPoint.channel == 0) ? "Wi-Fi Direct" : accessPoint.channel }}</td>
-                        <td>{{ accessPoint.power }}</td>
-                        <td class="autoselect">{{ accessPoint.lastSeen | timesinceepoch }}</td>
-                        <td>
-                            <button type="button" ng-click="startAttack(accessPoint.bssid)"
-                                    ng-disabled="$root.running || $root.captureRunning"
-                                    class="btn btn-default btn-xs">Attack
-                            </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="panel-body" ng-if="($root.accessPoints.length === 0) && !running">
-                No scan results.
-            </div>
-            <div class="panel-body" ng-if="($root.accessPoints.length === 0) && running">
-                <img src="img/throbber.gif">
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" ng-hide="($root.accessPoints.length == 0)">
+                        <thead>
+                        <tr class="default-cursor">
+                            <th ng-click="orderByName='ssid'; reverseSort = !reverseSort">SSID <span
+                                    ng-show="orderByName=='ssid'"><span class="caret" ng-show="reverseSort"></span><span
+                                    class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                            <th ng-click="orderByName='bssid'; reverseSort = !reverseSort">MAC <span
+                                    ng-show="orderByName=='bssid'"><span class="caret"
+                                                                         ng-show="reverseSort"></span><span
+                                    class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                            <th ng-click="orderByName='encryption'; reverseSort = !reverseSort">Security <span
+                                    ng-show="orderByName=='encryption'"><span class="caret"
+                                                                              ng-show="reverseSort"></span><span
+                                    class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                            <th ng-click="orderByName='wps'; reverseSort = !reverseSort">WPS <span
+                                    ng-show="orderByName=='wps'"><span class="caret" ng-show="reverseSort"></span><span
+                                    class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                            <th ng-click="orderByName='channel'; reverseSort = !reverseSort">Channel <span
+                                    ng-show="orderByName=='channel'"><span class="caret"
+                                                                           ng-show="reverseSort"></span><span
+                                    class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                            <th ng-click="orderByName='power'; reverseSort = !reverseSort">Signal <span
+                                    ng-show="orderByName=='power'"><span class="caret"
+                                                                         ng-show="reverseSort"></span><span
+                                    class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                            <th ng-click="orderByName='lastSeen'; reverseSort = !reverseSort">Last Seen <span
+                                    ng-show="orderByName=='lastSeen'"><span class="caret"
+                                                                            ng-show="reverseSort"></span><span
+                                    class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="accessPoint in $root.accessPoints|orderBy:orderByName:reverseSort"
+                            ng-show="accessPoint.encryption != 'Open'">
+                            <td class="autoselect">
+                                <span class="text-info" ng-hide="accessPoint.ssid"><i>Hidden</i></span>
+                                {{ accessPoint.ssid }}
+                            </td>
+                            <td>
+                                <span ng-bind-html="(hasNote(accessPoint.bssid) === true ? accessPoint.bssid.italics() : accessPoint.bssid) | rawHTML"></span>
+                            </td>
+                            <td>
+                                {{ accessPoint.encryption }}
+                            </td>
+                            <td>{{ (accessPoint.wps == 1) ? "Yes" : "No" }}</td>
+                            <td>{{ (accessPoint.channel == 0) ? "Wi-Fi Direct" : accessPoint.channel }}</td>
+                            <td>{{ accessPoint.power }}</td>
+                            <td class="autoselect">{{ accessPoint.lastSeen | timesinceepoch }}</td>
+                            <td>
+                                <button type="button" ng-click="startAttack(accessPoint.ssid, accessPoint.bssid)"
+                                        ng-disabled="$root.running || $root.captureRunning"
+                                        class="btn btn-default btn-xs">Attack
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div ng-if="($root.accessPoints.length === 0) && !running">
+                    No scan results.
+                </div>
+                <div ng-if="($root.accessPoints.length === 0) && running">
+                    <img src="img/throbber.gif">
+                </div>
             </div>
         </div>
     </div>

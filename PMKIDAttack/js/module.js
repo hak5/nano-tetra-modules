@@ -400,6 +400,7 @@ registerController('PMKIDAttack_ScanSettings', ['$api', '$scope', '$rootScope', 
 
 
 registerController('PMKIDAttack_ScanResults', ['$api', '$scope', '$interval', '$rootScope', function ($api, $scope, $interval, $rootScope) {
+    $rootScope.ssid = '';
     $rootScope.bssid = '';
     $rootScope.output = '';
     $rootScope.pmkids = [];
@@ -412,6 +413,7 @@ registerController('PMKIDAttack_ScanResults', ['$api', '$scope', '$interval', '$
             module: "PMKIDAttack"
         }, function (response) {
             if (response.success) {
+                $rootScope.ssid = response.ssid;
                 $rootScope.bssid = response.bssid;
                 $scope.checkPMKID();
             }
@@ -431,11 +433,14 @@ registerController('PMKIDAttack_ScanResults', ['$api', '$scope', '$interval', '$
         }
     };
 
-    $scope.startAttack = function (bssid) {
+    $scope.startAttack = function (ssid, bssid) {
+        $rootScope.ssid = ssid;
         $rootScope.bssid = bssid;
+
         $api.request({
             action: 'startAttack',
             module: 'PMKIDAttack',
+            ssid: ssid,
             bssid: bssid
         }, function (response) {
             if (response.success) {
@@ -457,12 +462,12 @@ registerController('PMKIDAttack_ScanResults', ['$api', '$scope', '$interval', '$
         });
     };
 
-    $rootScope.viewLog = function (pathPMKID = '') {
+    $rootScope.viewAttackLog = function (file = '') {
         $rootScope.output = '';
         $api.request({
-            action: 'getOutput',
+            action: 'viewAttackLog',
             module: 'PMKIDAttack',
-            pathPMKID: pathPMKID
+            file: file
         }, function (response) {
             if (response.output) {
                 $rootScope.output = response.output;

