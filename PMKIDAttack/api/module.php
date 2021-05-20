@@ -256,7 +256,9 @@ class PMKIDAttack extends Module
         $file = file_get_contents("/tmp/pmkid-output.txt");
         exec("rm /tmp/pmkid-handshake.tmp");
 
-        return (strpos($file, " handshake(s) written to") !== false && strpos($file, "0 handshake(s) written to") === false);
+        // tested on hcxpcaptool 6.0
+        //return (strpos($file, " handshake(s) written to") !== false && strpos($file, "0 handshake(s) written to") === false);
+        return strpos($file, "Information: no hashes written to hash files") === false;
     }
 
     protected function getPMKIDFiles()

@@ -435,6 +435,7 @@ registerController('PMKIDAttack_ScanResults', ['$api', '$scope', '$interval', '$
     };
 
     $scope.startAttack = function (ssid, bssid) {
+        $rootScope.pmkidLog = '';
         $rootScope.ssid = ssid;
         $rootScope.bssid = bssid;
 
