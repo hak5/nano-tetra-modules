@@ -8,8 +8,10 @@ class PMKIDAttack extends Module
 {
     const MODULE_PATH = "/pineapple/modules/PMKIDAttack";
     const MODULE_SD_PATH = "/sd/modules/PMKIDAttack";
-    const TOOLS_PATH = "/sbin/";
-    const TOOLS_SD_PATH = "/sd/sbin/";
+    const DUMPTOOL_PATH = "/usr/sbin/hcxdumptool";
+    const DUMPTOOL_SD_PATH = "/sd/usr/sbin/hcxdumptool";
+    const CAPTOOL_PATH = "/sbin/hcxpcapngtool";
+    const CAPTOOL_SD_PATH = "/sd/sbin/hcxpcapngtool";
 
     private $pineAPHelper;
     private $moduleFolder;
@@ -26,8 +28,8 @@ class PMKIDAttack extends Module
         $this->moduleFolder = $this->getPathModule();
         $this->captureFolder = "{$this->moduleFolder}/pcapng";
         $this->logPath = "{$this->moduleFolder}/log/module.log";
-        $this->hcxdumptoolPath = $this->getToolPath("hcxdumptool");
-        $this->hcxpcaptoolPath = $this->getToolPath("hcxpcaptool"); // old name hcxpcaptool
+        $this->hcxdumptoolPath = $this->getDumpToolPath();
+        $this->hcxpcaptoolPath = $this->getCapToolPath();
     }
 
     public function route()
@@ -84,13 +86,22 @@ class PMKIDAttack extends Module
         return self::MODULE_PATH;
     }
 
-    protected function getToolPath($tool)
+    protected function getDumpToolPath()
     {
         if ($this->isSDAvailable()) {
-            return self::TOOLS_SD_PATH . $tool;
+            return self::DUMPTOOL_SD_PATH;
         }
 
-        return self::TOOLS_PATH . $tool;
+        return self::DUMPTOOL_PATH;
+    }
+
+    protected function getCapToolPath()
+    {
+        if ($this->isSDAvailable()) {
+            return self::CAPTOOL_SD_PATH;
+        }
+
+        return self::CAPTOOL_PATH;
     }
 
     protected function clearLog()
@@ -240,14 +251,11 @@ class PMKIDAttack extends Module
     {
         $BSSID = $this->getBSSID(true);
 
-        // hcxpcaptool 6.0   : -z <file> : output PMKID file (hashcat hashmode -m 16800 old format and john)
-        // hcxpcapngtool 6.1 : -o <file> : output WPA-PBKDF2-PMKID+EAPOL (hashcat -m 22000)hash file
         //exec("{$this->moduleFolder}/scripts/PMKIDAttack.sh check-bg " . $this->getBSSID(true));
         exec("{$this->hcxpcaptoolPath} -o /tmp/pmkid-handshake.tmp /tmp/{$BSSID}.pcapng &> /tmp/pmkid-output.txt");
         $file = file_get_contents("/tmp/pmkid-output.txt");
         exec("rm /tmp/pmkid-handshake.tmp");
 
-        // tested on hcxpcaptool 6.0
         return (strpos($file, " handshake(s) written to") !== false && strpos($file, "0 handshake(s) written to") === false);
     }
 

@@ -1,7 +1,4 @@
-#!/bin/bash
-
-export PATH=$PATH:/sd/bin:/sd/sbin:/sd/usr/sbin:/sd/usr/bin
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sd/lib:/sd/usr/lib
+#!/bin/sh
 
 TIMESTAMP=`date "+[%Y-%m-%d %H:%M:%S]"`
 LOGFILE="/pineapple/modules/PMKIDAttack/log/module.log"
@@ -20,7 +17,7 @@ function add_log {
 }
 
 if [[ "$1" == "" ]]; then
-    add_log "Argument to script missing! Run with \"dependencies.sh [install|remove]\""
+    echo "Argument to script missing! Run with \"dependencies.sh [install|remove]\""
     exit 1
 fi
 
@@ -80,8 +77,7 @@ if [[ "$1" = "remove" ]]; then
 
     rm -rf /etc/config/PMKIDAttack
 
-    opkg remove hcxtools-custom
-    opkg remove hcxdumptool-custom
+    opkg remove hcxtools hcxdumptool
 
     uci set pmkidattack.@config[0].installed=0
     uci commit pmkidattack
