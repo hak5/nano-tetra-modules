@@ -29,12 +29,6 @@ class OnlineHashCrack extends Module
 			case 'submitWPAOnlineStatus':
 				$this->submitWPAOnlineStatus();
 				break;
-			case 'submitHashOnline':
-				$this->submitHashOnline();
-				break;
-			case 'submitHashOnlineStatus':
-				$this->submitHashOnlineStatus();
-				break;
 			case 'getSettings':
 				$this->getSettings();
 				break;
@@ -161,24 +155,6 @@ class OnlineHashCrack extends Module
 		$this->response = array('success' => true);
 	}
 
-	private function submitHashOnlineStatus()
-	{
-		if (!file_exists('/tmp/OnlineHashCrack.progress'))
-		{
-			$this->response = array('success' => true);
-		}
-		else
-		{
-			$this->response = array('success' => false);
-		}
-	}
-
-	private function submitHashOnline()
-	{
-		$this->execBackground("/pineapple/modules/OnlineHashCrack/scripts/submit_hash.sh ".$this->request->hashes);
-		$this->response = array('success' => true);
-	}
-
 	private function getSettings()
 	{
 		$settings = array(
@@ -195,7 +171,7 @@ class OnlineHashCrack extends Module
 
 	private function getCapFiles()
 	{
-		exec("find -L /pineapple/modules/ -type f -name \"*.**cap\" 2>&1", $filesArray);
+		exec("find -L /pineapple/modules/ -type f -name \"*.**cap\" -o -name \"*.**pcap\" -o -name \"*.**pcapng\" -o -name \"*.**hccapx\" 2>&1", $filesArray);
 		$this->response = array("files" => $filesArray);
 	}
 }
