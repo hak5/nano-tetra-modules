@@ -59,50 +59,7 @@
     </div>
 </div>
 
-<div ng-show="$root.status.installed" class="well">Notice: Hashes and Handshakes are sent to <strong>www.onlinehashcrack.com</strong> web service.</div>
-
-<div class="panel panel-default" ng-show="$root.status.installed" ng-controller="OnlineHashCrack_SettingsController">
-    <div class="panel-heading pointer" data-toggle="collapse" data-target="#Settings">
-        <h4 class="panel-title">Settings</h4>
-    </div>
-    <div id="Settings" class="panel-collapse collapse">
-	    <div class="panel-body">
-
-        <div class="form-group">
-            <div class="btn-group pull-right">
-              <button class="btn btn-{{saveSettingsLabel}} btn-sm" ng-disabled="saving" ng-click="setSettings()">{{saveSettings}}</button>
-            </div>
-            <div class="clearfix"></div>
-        </div>
-
-        <div class="form-group">
-              <div class="input-group">
-                  <span class="input-group-addon input-sm">Email</span>
-                  <input type="text" class="form-control input-sm" ng-model="settings.email" placeholder="Notification email">
-              </div>
-          </div>
-
-	    </div>
-	</div>
-</div>
-
-<div class="panel panel-default" ng-show="$root.status.installed" ng-controller="OnlineHashCrack_HashController">
-	<div class="panel-heading">
-        <h4 class="panel-title">Password/Hashes crack</h4>
-    </div>
-    <div class="panel-body">
-
-      <div class="form-group">
-          <div class="input-group">
-              <span class="input-group-addon input-sm">Hashes</span>
-              <textarea class="form-control input-sm" ng-model="hashes" rows="5" placeholder="Up to 10 hashes. One hash per line."></textarea>
-          </div>
-      </div>
-
-      <button type="submit" class="btn btn-{{submitHashLabel}} btn-sm" ng-disabled="working || (hashes == '')" ng-click="submitHashOnline()">{{submitHash}}</button>
-
-    </div>
-</div>
+<div ng-show="$root.status.installed" class="well">Notice: Handshakes are sent to <strong>onlinehashcrack.com</strong> api service.</div>
 
 <div class="panel panel-default" ng-show="$root.status.installed" ng-controller="OnlineHashCrack_WPAController">
 	<div class="panel-heading">
@@ -123,15 +80,39 @@
       <div ng-hide="selectedFile != '--'" class="form-group">
           <div class="input-group">
               <span class="input-group-addon input-sm">File path</span>
-              <input type="text" class="form-control input-sm" ng-model="file" placeholder="Path to Handshake file (*.cap or *.pcap or *.hccap). Max 10 Mb.">
+              <input type="text" class="form-control input-sm" ng-model="file" placeholder="Path to Handshake file (*.cap *.pcap *.pcapng *.hccapx). Max 200 Mb.">
           </div>
       </div>
 
-      <button type="submit" class="btn btn-{{submitWPALabel}} btn-sm" ng-disabled="working || (file == '' && selectedFile == '--')" ng-click="submitWPAOnline()">{{submitWPA}}</button>
+      <button type="submit" class="btn btn-{{submitWPALabel}} btn-sm" ng-disabled="working || (file == '' && selectedFile == '--')" ng-click="submitWPAOnline()">{{ submitWPA }}</button>
 
     </div>
 </div>
 
+<div class="panel panel-default" ng-show="$root.status.installed" ng-controller="OnlineHashCrack_SettingsController">
+    <div class="panel-heading pointer" data-toggle="collapse" data-target="#Settings">
+        <h4 class="panel-title">Settings</h4>
+    </div>
+    <div id="Settings" class="panel-collapse collapse">
+      <div class="panel-body">
+
+        <div class="form-group">
+            <div class="btn-group pull-right">
+              <button class="btn btn-{{saveSettingsLabel}} btn-sm" ng-disabled="saving" ng-click="setSettings()">{{ saveSettings }}</button>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="form-group">
+              <div class="input-group">
+                  <span class="input-group-addon input-sm">Email</span>
+                  <input type="text" class="form-control input-sm" ng-model="settings.email" placeholder="Notification email">
+              </div>
+          </div>
+
+      </div>
+  </div>
+</div>
 
 <div class="panel panel-default" ng-show="$root.status.installed" ng-controller="OnlineHashCrack_OutputController">
 	<div class="panel-heading">
@@ -142,6 +123,6 @@
         <button class="btn btn-danger btn-sm" ng-click="clearOutput()">Clear Log</button>
       </div>
       <div class="clearfix"></div>
-      <pre class="scrollable-pre log-pre">{{output}}</pre>
+      <pre class="scrollable-pre log-pre">{{ output }}</pre>
     </div>
 </div>

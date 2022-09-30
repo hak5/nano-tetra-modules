@@ -117,49 +117,6 @@ registerController('OnlineHashCrack_OutputController', ['$api', '$scope', '$root
 
 }]);
 
-registerController('OnlineHashCrack_HashController', ['$api', '$scope', '$rootScope', '$interval', function($api, $scope, $rootScope, $interval) {
-	$scope.hashes = '';
-
-	$scope.submitHashLabel = "primary";
-	$scope.submitHash = "Submit";
-
-	$scope.working = false;
-
-	$scope.submitHashOnline = (function() {
-		$rootScope.status.refreshOutput = false;
-		$rootScope.status.refreshKnownHosts = false;
-
-		$api.request({
-			module: 'OnlineHashCrack',
-			action: 'submitHashOnline',
-			hashes: $scope.hashes
-		}, function(response) {
-			$scope.submitHashLabel = "warning";
-			$scope.submitHash = "Working...";
-			$scope.working = true;
-
-			$scope.submitHashOnlineInterval = $interval(function() {
-				$api.request({
-					module: 'OnlineHashCrack',
-					action: 'submitHashOnlineStatus'
-				}, function(response) {
-					if (response.success === true) {
-						$scope.working = false;
-						$interval.cancel($scope.submitHashOnlineInterval);
-
-						$scope.submitHashLabel = "primary";
-						$scope.submitHash = "Submit";
-
-						$rootScope.status.refreshOutput = true;
-						$rootScope.status.refreshKnownHosts = true;
-					}
-				});
-			}, 5000);
-		});
-	});
-
-}]);
-
 registerController('OnlineHashCrack_WPAController', ['$api', '$scope', '$rootScope', '$interval', function($api, $scope, $rootScope, $interval) {
 	$scope.file = '';
 
