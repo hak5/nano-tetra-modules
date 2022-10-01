@@ -29,7 +29,6 @@ $device = $argv[1];
 $srcDir = str_replace('build', 'src', getcwd());
 $moduleData = json_decode(file_get_contents("https://www.wifipineapple.com/{$device}/modules"), true);
 
-/*
 echo "======== Packages (" . count($moduleData) . ") ========\n";
 foreach ($moduleData as $key => $value) {
     if ($value["type"] !== 'Sys') {
@@ -39,7 +38,7 @@ foreach ($moduleData as $key => $value) {
         file_put_contents("{$key}.tar.gz", $file);
     }
 }
-*/
+
 echo "\n\n";
 echo "======== Extra Packages (" . count($moduleData) . ") ========\n";
 foreach ($extraPackages as $key) {
