@@ -17,7 +17,8 @@ if (!isset($argv[1]) || !in_array($argv[1], ['nano', 'tetra'])) {
 
 
 
-
+//tar czf OnlineHashCrack.tar.gz OnlineHashCrack
+//tar czf PMKIDAttack.tar.gz PMKIDAttack
 $extraPackages = [
     'OnlineHashCrack',
     'PMKIDAttack',
@@ -25,8 +26,9 @@ $extraPackages = [
 
 echo "\nsync mk6 packages - by DSR!\n\n";
 
-$device = $argv[1];
-$srcDir = str_replace('build', 'src', getcwd());
+$device     = $argv[1];
+$buildDir   = getcwd();
+$srcDir     = str_replace('build', 'src', $buildDir);
 $moduleData = json_decode(file_get_contents("https://www.wifipineapple.com/{$device}/modules"), true);
 
 echo "======== Packages (" . count($moduleData) . ") ========\n";
@@ -40,11 +42,10 @@ foreach ($moduleData as $key => $value) {
 }
 
 echo "\n\n";
-echo "======== Extra Packages (" . count($moduleData) . ") ========\n";
+echo "======== Extra Packages (" . count($extraPackages) . ") ========\n";
 foreach ($extraPackages as $key) {
-    //tar czf OnlineHashCrack.tar.gz OnlineHashCrack
-    //tar czf PMKIDAttack.tar.gz PMKIDAttack
-    $fileName = getcwd() . "/{$key}.tar.gz";
+    echo "    [+] {$key}\n";
+    $fileName = "{$buildDir}/{$key}.tar.gz";
     $infoData = json_decode(file_get_contents("{$srcDir}/{$key}/module.info"));
     
     $module = [
@@ -58,17 +59,17 @@ foreach ($extraPackages as $key) {
         'num_downloads' => '0',
     ];
     if (isset($infoData->system)) {
-        $module['type'] = "System";
+        $module['type'] = 'System';
     } elseif (isset($infoData->cliOnly)) {
-        $module['type'] = "CLI";
+        $module['type'] = 'CLI';
     } else {
-        $module['type'] = "GUI";
+        $module['type'] = 'GUI';
     }
-    var_dump($module);
 
     $moduleData[ $key ] = $module;
 }
 
+asort($moduleData);
 @unlink("{$device}.json");
 file_put_contents("{$device}.json", json_encode($moduleData));
 
