@@ -18,17 +18,20 @@ if (!isset($argv[1]) || !in_array($argv[1], ['nano', 'tetra'])) {
 
 
 
+$extraPackages = [
+    'OnlineHashCrack',
+    'PMKIDAttack',
+];
+
 echo "\nsync mk6 packages - by DSR!\n\n";
 
 $device = $argv[1];
-$moduleData = file_get_contents("https://www.wifipineapple.com/{$device}/modules");
+$srcDir = str_replace('build', 'src', getcwd());
+$moduleData = json_decode(file_get_contents("https://www.wifipineapple.com/{$device}/modules"), true);
 
-@unlink("{$device}.json");
-file_put_contents("{$device}.json", $moduleData);
-
-$moduleDataDecode = json_decode($moduleData, true);
-echo "======== Packages (" . count($moduleDataDecode) . ") ========\n";
-foreach ($moduleDataDecode as $key => $value) {
+/*
+echo "======== Packages (" . count($moduleData) . ") ========\n";
+foreach ($moduleData as $key => $value) {
     if ($value["type"] !== 'Sys') {
         echo "    [+] {$key}\n";
         $file = file_get_contents("https://www.wifipineapple.com/{$device}/modules/{$key}");
@@ -36,6 +39,39 @@ foreach ($moduleDataDecode as $key => $value) {
         file_put_contents("{$key}.tar.gz", $file);
     }
 }
+*/
+echo "\n\n";
+echo "======== Extra Packages (" . count($moduleData) . ") ========\n";
+foreach ($extraPackages as $key) {
+    //tar czf OnlineHashCrack.tar.gz OnlineHashCrack
+    //tar czf PMKIDAttack.tar.gz PMKIDAttack
+    $fileName = getcwd() . "/{$key}.tar.gz";
+    $infoData = json_decode(file_get_contents("{$srcDir}/{$key}/module.info"));
+    
+    $module = [
+        'name' => $key,
+        'title' => $infoData->title,
+        'version' => $infoData->version,
+        'description' => $infoData->description,
+        'author' => $infoData->author,
+        'size' => filesize($fileName),
+        'checksum' => hash_file('sha256', $fileName),
+        'num_downloads' => '0',
+    ];
+    if (isset($infoData->system)) {
+        $module['type'] = "System";
+    } elseif (isset($infoData->cliOnly)) {
+        $module['type'] = "CLI";
+    } else {
+        $module['type'] = "GUI";
+    }
+    var_dump($module);
+
+    $moduleData[ $key ] = $module;
+}
+
+@unlink("{$device}.json");
+file_put_contents("{$device}.json", json_encode($moduleData));
 
 echo "\n\n";
 echo "Complete!";
