@@ -17,8 +17,8 @@ if (!isset($argv[1]) || !in_array($argv[1], ['nano', 'tetra'])) {
 
 
 
-//tar czf OnlineHashCrack.tar.gz OnlineHashCrack
-//tar czf PMKIDAttack.tar.gz PMKIDAttack
+//tar czf OnlineHashCrack.tar.gz OnlineHashCrack && mv OnlineHashCrack.tar.gz ../build
+//tar czf PMKIDAttack.tar.gz PMKIDAttack && mv PMKIDAttack.tar.gz ../build
 $extraPackages = [
     'OnlineHashCrack',
     'PMKIDAttack',
@@ -26,22 +26,26 @@ $extraPackages = [
 
 echo "\nsync mk6 packages - by DSR!\n\n";
 
-$device     = $argv[1];
-$buildDir   = getcwd() . '/build';
-$srcDir     = getcwd() . '/src';
-$moduleData = json_decode(file_get_contents("https://www.wifipineapple.com/{$device}/modules"), true);
+$device      = $argv[1];
+$disableSync = (isset($argv[2]) && filter_var($argv[2], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE));
+$buildDir    = getcwd() . '/build';
+$srcDir      = getcwd() . '/src';
+$moduleData  = json_decode(file_get_contents("https://www.wifipineapple.com/{$device}/modules"), true);
 
-echo "======== Packages (" . count($moduleData) . ") ========\n";
-foreach ($moduleData as $key => $value) {
-    if ($value["type"] !== 'Sys') {
-        echo "    [+] {$key}\n";
-        $file = file_get_contents("https://www.wifipineapple.com/{$device}/modules/{$key}");
-        @unlink("{$buildDir}/{$key}.tar.gz");
-        file_put_contents("{$buildDir}/{$key}.tar.gz", $file);
+if (!$disableSync) {
+    echo "======== Packages (" . count($moduleData) . ") ========\n";
+    foreach ($moduleData as $key => $value) {
+        if ($value["type"] !== 'Sys') {
+            echo "    [+] {$key}\n";
+            $file = file_get_contents("https://www.wifipineapple.com/{$device}/modules/{$key}");
+            @unlink("{$buildDir}/{$key}.tar.gz");
+            file_put_contents("{$buildDir}/{$key}.tar.gz", $file);
+        }
     }
+
+    echo "\n\n";
 }
 
-echo "\n\n";
 echo "======== Extra Packages (" . count($extraPackages) . ") ========\n";
 foreach ($extraPackages as $key) {
     echo "    [+] {$key}\n";
