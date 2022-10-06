@@ -70,8 +70,10 @@ foreach ($extraPackages as $key) {
 }
 
 asort($moduleData);
-@unlink("{$device}.json");
-file_put_contents("{$device}.json", json_encode($moduleData));
+//@unlink("{$buildDir}/{$device}.json");
+//file_put_contents("{$buildDir}/{$device}.json", json_encode($moduleData));
+@unlink("{$buildDir}/modules.json");
+file_put_contents("{$buildDir}/modules.json", json_encode($moduleData));
 
 echo "\n\n";
 echo "Complete!";
