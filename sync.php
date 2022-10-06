@@ -36,8 +36,8 @@ foreach ($moduleData as $key => $value) {
     if ($value["type"] !== 'Sys') {
         echo "    [+] {$key}\n";
         $file = file_get_contents("https://www.wifipineapple.com/{$device}/modules/{$key}");
-        @unlink("{$key}.tar.gz");
-        file_put_contents("{$key}.tar.gz", $file);
+        @unlink("{$buildDir}/{$key}.tar.gz");
+        file_put_contents("{$buildDir}/{$key}.tar.gz", $file);
     }
 }
 
