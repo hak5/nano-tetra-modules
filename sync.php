@@ -27,8 +27,8 @@ $extraPackages = [
 echo "\nsync mk6 packages - by DSR!\n\n";
 
 $device     = $argv[1];
-$buildDir   = getcwd();
-$srcDir     = str_replace('build', 'src', $buildDir);
+$buildDir   = getcwd() . '/build';
+$srcDir     = getcwd() . '/src';
 $moduleData = json_decode(file_get_contents("https://www.wifipineapple.com/{$device}/modules"), true);
 
 echo "======== Packages (" . count($moduleData) . ") ========\n";
