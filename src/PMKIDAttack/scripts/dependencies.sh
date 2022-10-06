@@ -15,10 +15,10 @@ LOGFILE="/pineapple/modules/PMKIDAttack/log/module.log"
 
 # V6.2
 # Dependencies from https://github.com/adde88/openwrt-useful-tools/tree/packages-19.07_mkvi
-# https://github.com/adde88/openwrt-useful-tools/raw/88e354ccdc0da1eae4fcb758bb61214c930afc45/hcxtools-custom_6.2.5-3_mips_24kc.ipk
-# https://github.com/adde88/openwrt-useful-tools/raw/88e354ccdc0da1eae4fcb758bb61214c930afc45/hcxdumptool-custom_6.2.5-3_mips_24kc.ipk
-HCXTOOLS_IPK="/pineapple/modules/PMKIDAttack/scripts/hcxtools-custom_6.2.5-3_mips_24kc.ipk"
-HCXDUMPTOOL_IPK="/pineapple/modules/PMKIDAttack/scripts/hcxdumptool-custom_6.2.5-3_mips_24kc.ipk"
+# https://github.com/adde88/openwrt-useful-tools/blob/a5c9ce6997a3953f318f0f4c0ca2293b2d5c6307/hcxtools-custom_6.2.5-8_mips_24kc.ipk
+# https://github.com/adde88/openwrt-useful-tools/blob/a5c9ce6997a3953f318f0f4c0ca2293b2d5c6307/hcxdumptool-custom_6.2.5-8_mips_24kc.ipk
+HCXTOOLS_IPK="/pineapple/modules/PMKIDAttack/scripts/hcxtools-custom_6.2.5-8_mips_24kc.ipk"
+HCXDUMPTOOL_IPK="/pineapple/modules/PMKIDAttack/scripts/hcxdumptool-custom_6.2.5-8_mips_24kc.ipk"
 
 # V6.1
 # downloads from oficial opkg
