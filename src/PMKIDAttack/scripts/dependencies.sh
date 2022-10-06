@@ -42,7 +42,7 @@ add_log "Starting dependencies script with argument: $1"
 touch /tmp/PMKIDAttack.progress
 
 if [[ "$1" = "install" ]]; then
-    #opkg update
+    opkg update
 
     if [[ -e /sd ]]; then
         add_log "Installing on sd"
