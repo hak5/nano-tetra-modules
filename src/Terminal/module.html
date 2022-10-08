@@ -1,0 +1,24 @@
+<!-- Controls -->
+<div class="row">
+    <div class="col-md-4" ng-controller="Terminal_Dependencies">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Controls</h3>
+            </div>
+            <div class="panel-body">
+                <table style="width:100%">
+                    <tr>
+                        <td style="padding-bottom: .5em;" class="text-muted">Dependencies</td>
+                        <td style="text-align:right;padding-bottom: .5em;">
+                            <button type="button" class="btn btn-{{installLabel}} btn-xs"
+                                    ng-click="managerDependencies()"
+                                    ng-disabled="processing">
+                                {{ install }}
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

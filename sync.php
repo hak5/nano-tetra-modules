@@ -19,9 +19,11 @@ if (!isset($argv[1]) || !in_array($argv[1], ['nano', 'tetra'])) {
 
 //tar czf OnlineHashCrack.tar.gz OnlineHashCrack && mv OnlineHashCrack.tar.gz ../build
 //tar czf PMKIDAttack.tar.gz PMKIDAttack && mv PMKIDAttack.tar.gz ../build
+//tar czf Terminal.tar.gz Terminal && mv Terminal.tar.gz ../build
 $extraPackages = [
     'OnlineHashCrack',
     'PMKIDAttack',
+    'Terminal',
 ];
 
 echo "\nsync mk6 packages - by DSR!\n\n";

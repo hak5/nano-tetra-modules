@@ -1,0 +1,11 @@
+{
+    "author": "DSR!",
+    "description": "Integrate ttyd terminal to panel",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "Terminal",
+    "version": "1.0",
+    "injectJS": "js/loader.js"
+}
