@@ -1,3 +1,9 @@
+# Deprecated!
+
+This repo in deprecated. For the release of the WPC v3 unify everything in [a single repo](https://github.com/xchwarze/wifi-pineapple-community) 
+
+
+
 # WiFi Pineapple Module Repository
 
 This is the module repository for the WiFi Pineapple NANO and TETRA. All the community developed modules are stored here, and developers should create pull requests for any changes to their 
