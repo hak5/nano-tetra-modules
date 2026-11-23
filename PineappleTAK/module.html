@@ -1,0 +1,113 @@
+<div ng-controller="PineappleTAKController">
+<div class="row">
+<div class="col-md-8">
+
+<div class="alert" ng-show="message" ng-class="messageOk ? 'alert-success' : 'alert-danger'">{{ message }}</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">PineappleTAK</h3>
+    </div>
+    <div class="panel-body">
+        <p class="text-muted">Connects this WiFi Pineapple to your TAK Server: position, GeoChat, alerts, reports and Wi-Fi sensors.</p>
+        <p ng-hide="status">Loading...</p>
+
+        <div ng-show="status && !status.installed">
+            <p>PineappleTAK is not installed yet. Installing copies the service to <code>/root/pineappletak</code><span ng-show="status.missing.length">
+                and installs {{ status.missing.join(', ') }} (internet needed)</span>.</p>
+        </div>
+
+        <div ng-show="status && status.installed">
+            <h4 ng-class="linkClass()"><span class="glyphicon glyphicon-record"></span> {{ linkText() }}</h4>
+            <table class="table table-condensed">
+                <tr ng-show="status.callsign"><td class="text-muted">Callsign</td><td>{{ status.callsign }}</td></tr>
+                <tr ng-show="status.server"><td class="text-muted">TAK Server</td><td>{{ status.server }}</td></tr>
+                <tr ng-show="status.running && status.lastReport"><td class="text-muted">Last position report</td><td>{{ status.lastReport }}</td></tr>
+                <tr ng-show="status.error"><td class="text-muted">Last error</td><td>{{ status.error }}</td></tr>
+                <tr><td class="text-muted">Position</td><td>{{ status.position }}</td></tr>
+                <tr><td class="text-muted">Version</td><td>{{ status.serviceVersion }}</td></tr>
+            </table>
+        </div>
+
+        <div ng-show="status.installing">
+            <p><span class="glyphicon glyphicon-refresh"></span> Working... this can take a few minutes.</p>
+            <pre>{{ status.installLog.join('\n') }}</pre>
+        </div>
+
+        <div class="alert alert-warning" ng-show="status.installed && !status.passwordSet && !status.installing">
+            <b>Next: set a console password</b> (below). You sign in to the PineappleTAK console with it, and it can only start once one is set.
+        </div>
+
+        <div ng-show="status && !status.installing">
+            <button class="btn btn-primary" ng-show="!status.installed" ng-disabled="busy" ng-click="install()">Install</button>
+            <span ng-show="status.installed">
+                <a class="btn btn-primary" ng-show="status.running" ng-href="{{ openUrl() }}" target="_blank" rel="noopener">Open PineappleTAK</a>
+                <button class="btn btn-default" ng-show="!status.running" ng-disabled="busy || !status.passwordSet" ng-click="service('start')"
+                        title="{{ status.passwordSet ? '' : 'Set a console password first' }}">Start</button>
+                <button class="btn btn-default" ng-show="status.running" ng-disabled="busy" ng-click="service('restart')">Restart</button>
+                <button class="btn btn-default" ng-show="status.running" ng-disabled="busy" ng-click="service('stop')">Stop</button>
+                <label class="checkbox-inline" style="margin-left: 12px">
+                    <input type="checkbox" ng-checked="status.enabled" ng-disabled="busy" ng-click="toggleBoot()"> Start at boot
+                </label>
+            </span>
+        </div>
+        <p class="small" ng-show="status.installed && status.running && status.urls.length" style="margin-top: 8px">
+            Console addresses: <span ng-repeat="u in status.urls"><a ng-href="{{ u }}" target="_blank" rel="noopener">{{ u }}</a> </span>
+        </p>
+    </div>
+</div>
+
+<div class="panel panel-default" ng-show="updateAvailable() && !status.installing">
+    <div class="panel-heading"><h3 class="panel-title">Update available</h3></div>
+    <div class="panel-body">
+        <p>This module has PineappleTAK {{ status.moduleVersion }}; {{ status.serviceVersion }} is installed.
+            Your settings, certificates, zones and markers are kept.</p>
+        <button class="btn btn-primary" ng-disabled="busy" ng-click="install()">Update</button>
+    </div>
+</div>
+
+<div class="panel" ng-class="status.passwordSet ? 'panel-default' : 'panel-warning'" ng-show="status.installed">
+    <div class="panel-heading"><h3 class="panel-title">Console password</h3></div>
+    <div class="panel-body">
+        <p class="text-warning" ng-hide="status.passwordSet">Set a password before the first start. You sign in to the console with it.</p>
+        <p class="text-muted" ng-show="status.passwordSet">A password is set. Enter a new one to change it.</p>
+        <form class="form-inline" ng-submit="setPassword()">
+            <input type="password" class="form-control" placeholder="New password" ng-model="pw.one" autocomplete="new-password">
+            <input type="password" class="form-control" placeholder="Repeat" ng-model="pw.two" autocomplete="new-password">
+            <button type="submit" class="btn btn-default" ng-disabled="busy || !pw.one">Set password</button>
+        </form>
+    </div>
+</div>
+
+<div class="panel panel-default" ng-show="status.installed">
+    <div class="panel-heading"><h3 class="panel-title">Console access</h3></div>
+    <div class="panel-body">
+        <p class="text-muted">Where the PineappleTAK console can be opened from. Saving restarts PineappleTAK if it is running.</p>
+        <form class="form-inline" ng-submit="setListen()">
+            <select class="form-control" ng-model="access.listen">
+                <option value="all">All interfaces: host name, IP and USB</option>
+                <option value="vpn">USB + VPN (NetBird / WireGuard)</option>
+                <option value="usb">USB address only</option>
+            </select>
+            <button type="submit" class="btn btn-default" ng-disabled="busy || !access.listen || access.listen === status.listen">Save</button>
+        </form>
+        <p class="small text-muted" ng-show="access.listen === 'all'" style="margin-top: 8px">Anyone on a network the Pineapple is on can reach the console's sign-in page.</p>
+    </div>
+</div>
+
+<div class="panel panel-default" ng-show="status.installed">
+    <div class="panel-heading"><h3 class="panel-title">Recent activity</h3></div>
+    <div class="panel-body">
+        <pre style="max-height: 260px; overflow: auto">{{ status.log.length ? status.log.join('\n') : 'Nothing yet.' }}</pre>
+        <button class="btn btn-default btn-sm" ng-disabled="busy || status.installing" ng-click="install()"
+                title="Copy this module's PineappleTAK over the installed one again. Settings, certificates, zones and markers are kept.">Reinstall</button>
+        <button class="btn btn-default btn-sm" ng-disabled="busy || status.installing" ng-click="uninstall()">Uninstall</button>
+    </div>
+</div>
+
+<p class="small text-muted">Unofficial community module, not supported by Hak5 or the TAK Product Center.
+    Full guide: github.com/SECT0101/PineappleTAK-MK5.8-Tetra</p>
+
+</div>
+</div>
+</div>

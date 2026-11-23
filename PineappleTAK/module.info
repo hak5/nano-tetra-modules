@@ -1,0 +1,9 @@
+{
+    "author": "SECT0101",
+    "description": "Connects the WiFi Pineapple to a TAK Server: position, GeoChat, alerts, reports and Wi-Fi sensors",
+    "devices": [
+        "tetra"
+    ],
+    "title": "PineappleTAK",
+    "version": "1.0.1"
+}
